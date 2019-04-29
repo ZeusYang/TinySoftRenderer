@@ -31,7 +31,10 @@ SOURCES += \
     SoftRenderer/Math/Vector3D.cpp \
     SoftRenderer/Math/Vector4D.cpp \
     SoftRenderer/Math/Matrix4x4.cpp \
-    RenderThread.cpp
+    RenderThread.cpp \
+    SoftRenderer/Mesh.cpp \
+    SoftRenderer/BaseShader.cpp \
+    SoftRenderer/FrameBuffer.cpp
 
 HEADERS += \
         Window.h \
@@ -40,7 +43,10 @@ HEADERS += \
     SoftRenderer/Math/Vector3D.h \
     SoftRenderer/Math/Vector4D.h \
     SoftRenderer/Math/Matrix4x4.h \
-    RenderThread.h
+    RenderThread.h \
+    SoftRenderer/Mesh.h \
+    SoftRenderer/BaseShader.h \
+    SoftRenderer/FrameBuffer.h
 
 FORMS += \
         Window.ui
