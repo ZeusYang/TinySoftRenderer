@@ -973,7 +973,10 @@ debug\RenderLoop.obj: ..\RenderLoop.cpp ../RenderLoop.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QTimer \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtimer.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasictimer.h
 
 debug\moc_Window.obj: debug\moc_Window.cpp 
 

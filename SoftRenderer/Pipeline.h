@@ -62,7 +62,7 @@ private:
 
     void bresenhamLineRasterization(const VertexOut &from, const VertexOut &to);
 
-    void scanLinePerRow(VertexOut &left, VertexOut &right);
+    void scanLinePerRow(const VertexOut &left, const VertexOut &right);
 
     void rasterTopTriangle(VertexOut &v1, VertexOut &v2, VertexOut &v3);
 

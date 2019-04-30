@@ -14,6 +14,10 @@ public:
 
     void stopIt() {stoped = true;}
 
+    void setFpsZero(){fps = 0;}
+
+    int getFps(){return fps;}
+
 signals:
     void frameOut(unsigned char *image);
 
@@ -22,6 +26,7 @@ public slots:
 
 private:
     bool stoped;
+    int fps;
     SoftRenderer::Pipeline *pipeline;
     int width, height, channel;
 };

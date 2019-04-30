@@ -8,6 +8,7 @@ class Window;
 }
 
 class QImage;
+class QTimer;
 class QThread;
 class RenderLoop;
 class RenderThread;
@@ -25,8 +26,11 @@ private:
 protected slots:
     void receiveFrame(unsigned char *image);
 
+    void fpsTimeOut();
+
 private:
     Ui::Window *ui;
+    QTimer *timer;
     QImage *canvas;
     QThread *loopThread;
     RenderLoop *loop;

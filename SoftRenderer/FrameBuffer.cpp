@@ -1,9 +1,6 @@
 #include "FrameBuffer.h"
 
 #include <QDebug>
-//#include "tbb/parallel_for.h"
-
-//using namespace tbb;
 
 namespace SoftRenderer
 {

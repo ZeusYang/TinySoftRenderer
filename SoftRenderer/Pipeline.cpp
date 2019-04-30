@@ -180,7 +180,7 @@ void Pipeline::bresenhamLineRasterization(const VertexOut &from, const VertexOut
     }
 }
 
-void Pipeline::scanLinePerRow(VertexOut &left, VertexOut &right)
+void Pipeline::scanLinePerRow(const VertexOut &left, const VertexOut &right)
 {
     VertexOut current;
     int length = right.posH.x - left.posH.x + 1;
@@ -189,6 +189,8 @@ void Pipeline::scanLinePerRow(VertexOut &left, VertexOut &right)
         // linear interpolation
         double weight = static_cast<double>(i)/length;
         current = lerp(left, right, weight);
+        current.posH.x = left.posH.x + i;
+        current.posH.y = left.posH.y;
         // fragment shader
         m_backBuffer->drawPixel(current.posH.x, current.posH.y,
                                 m_shader->fragmentShader(current));
@@ -207,9 +209,9 @@ void Pipeline::rasterTopTriangle(VertexOut &v1, VertexOut &v2, VertexOut &v3)
         left = right;
         right = tmp;
     }
-    int dy = left.posH.y - dest.posH.y;
+    int dy = left.posH.y - dest.posH.y + 1;
 
-    for(int i = 0;i <= dy;++i)
+    for(int i = 0;i < dy;++i)
     {
         double weight = 0;
         if(dy != 0)
@@ -233,10 +235,10 @@ void Pipeline::rasterBottomTriangle(VertexOut &v1, VertexOut &v2, VertexOut &v3)
         left = right;
         right = tmp;
     }
-    int dy = dest.posH.y - left.posH.y;
+    int dy = dest.posH.y - left.posH.y + 1;
 
 
-    for(int i = 0;i <= dy;++i)
+    for(int i = 0;i < dy;++i)
     {
         double weight = 0;
         if(dy != 0)

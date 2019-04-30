@@ -42,7 +42,7 @@ public:
 
     void retranslateUi(QWidget *Window)
     {
-        Window->setWindowTitle(QApplication::translate("Window", "Window", nullptr));
+        Window->setWindowTitle(QApplication::translate("Window", "Soft Renderer By YangWC", nullptr));
     } // retranslateUi
 
 };
