@@ -556,4 +556,13 @@ void Matrix4x4::setLookAt(Vector3D cameraPos, Vector3D target, Vector3D worldUp)
     entries[14] = -(zAxis.dotProduct(cameraPos));
 }
 
+void Matrix4x4::setViewPort(int left, int bottom, int width, int height)
+{
+    loadIdentity();
+    entries[0]  =  static_cast<float>(width)/2.0f;
+    entries[5]  = -static_cast<float>(height)/2.0f;
+    entries[12] =  static_cast<float>(left)+static_cast<float>(width)/2.0f;
+    entries[13] =  static_cast<float>(bottom)+static_cast<float>(height)/2.0f;
+}
+
 }

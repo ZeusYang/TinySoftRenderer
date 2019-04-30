@@ -8,6 +8,8 @@ class Window;
 }
 
 class QImage;
+class QThread;
+class RenderLoop;
 class RenderThread;
 class Window : public QWidget
 {
@@ -26,7 +28,8 @@ protected slots:
 private:
     Ui::Window *ui;
     QImage *canvas;
-    RenderThread *render;
+    QThread *loopThread;
+    RenderLoop *loop;
 };
 
 #endif // WINDOW_H

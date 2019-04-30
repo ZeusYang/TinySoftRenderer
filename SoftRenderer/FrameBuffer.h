@@ -1,6 +1,7 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
+#include <vector>
 #include "Math/Vector4D.h"
 
 /**
@@ -17,7 +18,7 @@ class FrameBuffer
 {
 private:
     int m_width, m_height, m_channel;
-    unsigned char *m_colorBuffer;
+   std::vector<unsigned char> m_colorBuffer;
 
 public:
     FrameBuffer(int width, int height);
@@ -26,6 +27,10 @@ public:
     int getWidth(){return m_width;}
 
     int getHeight(){return m_height;}
+
+    unsigned char *getColorBuffer() {return m_colorBuffer.data();}
+
+    void clearColorBuffer(const Vector4D &color);
 
     void drawPixel(unsigned int x, unsigned int y, const Vector4D &color);
 

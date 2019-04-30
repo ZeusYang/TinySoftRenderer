@@ -3,13 +3,14 @@
 
 #include <QThread>
 
+#include "SoftRenderer/Pipeline.h"
+
 /**
  * @projectName   SoftRenderer
  * @brief         the thread that actually run renderer.
  * @author        YangWC
  * @date          2019-04-29
  */
-
 class RenderThread : public QThread
 {
     Q_OBJECT
@@ -31,8 +32,8 @@ protected:
 
 private:
     bool stoped;
+    SoftRenderer::Pipeline *pipeline;
     int width, height, channel;
-    unsigned char *pixels;
 };
 
 #endif // RENDERTHREAD_H

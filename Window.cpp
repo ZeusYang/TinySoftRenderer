@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QDebug>
 
+#include "RenderLoop.h"
 #include "RenderThread.h"
 
 Window::Window(QWidget *parent) :
@@ -12,25 +13,27 @@ Window::Window(QWidget *parent) :
 {
     ui->setupUi(this);
     canvas = nullptr;
-    render = new RenderThread(width(),height(),this);
-    connect(render,&RenderThread::frameOut,this,&Window::receiveFrame);
-    render->start();
+    loop = new RenderLoop(width(), height(), nullptr);
+    loopThread = new QThread(this);
+    loop->moveToThread(loopThread);
+    connect(loopThread,&QThread::finished,loop, &RenderLoop::deleteLater);
+    connect(loopThread,&QThread::started,loop,&RenderLoop::loop);
+    connect(loop,&RenderLoop::frameOut,this,&Window::receiveFrame);
+    loopThread->start();
 }
 
 Window::~Window()
 {
-    render->stopIt();
     delete ui;
-    if(render)
-    {
-        render->quit();
-        render->wait();
-        delete render;
-    }
-    render = nullptr;
-    if(canvas)
-        delete canvas;
+    loop->stopIt();
+    loopThread->quit();
+    loopThread->wait();
+    //if(loop)delete loop;
+    if(canvas)delete canvas;
+    if(loopThread)delete loopThread;
+    loop = nullptr;
     canvas = nullptr;
+    loopThread = nullptr;
 }
 
 void Window::paintEvent(QPaintEvent *event)
@@ -45,8 +48,7 @@ void Window::paintEvent(QPaintEvent *event)
 
 void Window::receiveFrame(unsigned char *image)
 {
-    //qDebug() << "receiving....";
-    if(image) delete canvas;
+    if(canvas) delete canvas;
     canvas = new QImage(image, width(), height(), QImage::Format_RGBA8888);
     repaint();
 }

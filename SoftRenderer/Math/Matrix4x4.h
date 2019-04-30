@@ -76,6 +76,7 @@ public:
     void setPerspective(float left, float right, float bottom, float top, float near, float far);
     void setOrtho(float left, float right, float bottom, float top, float near, float far);
     void setLookAt(Vector3D cameraPos, Vector3D target, Vector3D worldUp);
+    void setViewPort(int left, int bottom, int width, int height);
 };
 
 }

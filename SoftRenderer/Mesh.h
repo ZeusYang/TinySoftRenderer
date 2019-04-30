@@ -78,6 +78,7 @@ public:
     void asBox(double width, double height, double depth);
 
     void asTriangle(const Vector3D p1, const Vector3D p2, const Vector3D p3);
+
 };
 
 }

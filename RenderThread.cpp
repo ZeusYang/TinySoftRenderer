@@ -2,36 +2,28 @@
 
 #include <QDebug>
 
+using namespace SoftRenderer;
+
 RenderThread::RenderThread(int w, int h, QObject *parent)
     :QThread(parent),width(w),height(h)
 {
     stoped = false;
-    channel = 4;
-    pixels = new unsigned char[width * height * channel];
+    pipeline = new Pipeline(width, height);
 }
 
 RenderThread::~RenderThread()
 {
-    if(pixels)
-        delete pixels;
-    pixels = nullptr;
+    if(pipeline) delete pipeline;
+    pipeline = nullptr;
 }
 
 void RenderThread::run()
 {
+    pipeline->initialize();
     while(!stoped)
     {
-        for(int row = 0;row < height;++ row)
-        {
-            for(int col = 0;col < width;++ col)
-            {
-                pixels[row*width*channel+col*channel + 0] = static_cast<unsigned char>(255);
-                pixels[row*width*channel+col*channel + 1] = static_cast<unsigned char>(0);
-                pixels[row*width*channel+col*channel + 2] = static_cast<unsigned char>(0);
-                pixels[row*width*channel+col*channel + 3] = static_cast<unsigned char>(255);
-            }
-        }
+        pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
 
-        emit frameOut(pixels);
+        emit frameOut(pipeline->output());
     }
 }
