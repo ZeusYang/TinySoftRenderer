@@ -1,11 +1,11 @@
 #include "Window.h"
 #include "ui_Window.h"
 
+#include <QThread>
 #include <QPainter>
 #include <QDebug>
 
 #include "RenderLoop.h"
-#include "RenderThread.h"
 
 Window::Window(QWidget *parent) :
     QWidget(parent),
@@ -50,5 +50,5 @@ void Window::receiveFrame(unsigned char *image)
 {
     if(canvas) delete canvas;
     canvas = new QImage(image, width(), height(), QImage::Format_RGBA8888);
-    repaint();
+    update();
 }

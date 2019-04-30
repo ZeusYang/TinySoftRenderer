@@ -21,7 +21,7 @@ enum ShadingMode
 
 enum RenderMode
 {
-    polygon = 0,
+    wire = 0,
     fill =1
 };
 
@@ -30,7 +30,8 @@ class Pipeline
 private:
     int m_width, m_height;                  // width and height of viewport.
     BaseShader *m_shader;                   // shaders including vertex shader and fragment shader.
-    FrameBuffer *m_device;                  // render taget->framebuffer.
+    FrameBuffer *m_frontBuffer;
+    FrameBuffer *m_backBuffer;
     Matrix4x4 viewPortMatrix;               // viewport transformation matrix.
     std::vector<Vertex> m_vertices;         // vertex buffer.
     std::vector<unsigned int> m_indices;    // index buffer.
@@ -51,9 +52,23 @@ public:
 
     void setShaderMode(ShadingMode mode);
 
-    unsigned char *output(){return m_device->getColorBuffer();}
+    unsigned char *output(){return m_frontBuffer->getColorBuffer();}
+
+    void swapBuffer();
 
 private:
+
+    VertexOut lerp(const VertexOut &n1, const VertexOut &n2, double weight);
+
+    void bresenhamLineRasterization(const VertexOut &from, const VertexOut &to);
+
+    void scanLinePerRow(VertexOut &left, VertexOut &right);
+
+    void rasterTopTriangle(VertexOut &v1, VertexOut &v2, VertexOut &v3);
+
+    void rasterBottomTriangle(VertexOut &v1, VertexOut &v2, VertexOut &v3);
+
+    void edgeWalkingFillRasterization(const VertexOut &v1, const VertexOut &v2, const VertexOut &v3);
 
     void rasterization();
 

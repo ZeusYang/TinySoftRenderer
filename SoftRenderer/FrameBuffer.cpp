@@ -40,6 +40,8 @@ void FrameBuffer::clearColorBuffer(const Vector4D &color)
 
 void FrameBuffer::drawPixel(unsigned int x, unsigned int y, const Vector4D &color)
 {
+    if(x < 0 || x >= m_width || y < 0 || y >= m_height)
+        return;
     unsigned char red = static_cast<unsigned char>(255*color.x);
     unsigned char green = static_cast<unsigned char>(255*color.y);
     unsigned char blue = static_cast<unsigned char>(255*color.z);
