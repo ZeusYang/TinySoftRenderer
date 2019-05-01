@@ -11,7 +11,6 @@ RenderLoop::RenderLoop(int w, int h, QObject *parent)
     : QObject(parent), width(w), height(h), channel(4)
 {
     fps = 0;
-    lastFrameTime = 0;
     deltaFrameTime = 0;
     stoped = false;
     pipeline = new Pipeline(width, height);
@@ -26,49 +25,99 @@ RenderLoop::~RenderLoop()
 void RenderLoop::loop()
 {
     // mesh
-    Mesh line;
-    line.asTriangle(Vector3D(0.f,1.f,0.f),Vector3D(-1.f,-.5f,0.f),Vector3D(+1.f,-.5f,0.f));
-    //line.asTriangle(Vector3D(0.f,-1.f,0.f),Vector3D(1.f,.5f,0.f),Vector3D(-1.f,.5f,0.f));
-    //line.asTriangle(Vector3D(0.f,1.f,0.f),Vector3D(-1.f,0.5f,0.f),Vector3D(1.f,-.5f,0.f));
-    //line.asTriangle(Vector3D(-0.8f,0.8f,0.f),Vector3D(0.2f,0.3f,0.f),Vector3D(1.f,-.5f,0.f));
+    Mesh cube, floor;
+    cube.asBox(1.0,1.0,1.0);
+    floor.asFloor(8.0,-0.5f);
 
     // pipeline
     pipeline->initialize();
-    pipeline->setVertexBuffer(line.vertices);
-    pipeline->setIndexBuffer(line.indices);
 
     // transformation.
     double angle = 0.0;
-    Matrix4x4 scales, rotat;
-    scales.setScale(Vector3D(5.0f,5.0f,5.0f));
-    pipeline->setModelMatrix(scales);
-    pipeline->setViewMatrix(Vector3D(0.0f,0.0f,20.0f),Vector3D(0.0f,0.0f,0.0f),Vector3D(0.0f,1.0f,.0f));
-    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 100.0f);
+    Matrix4x4 cubeRotat, floorMat;
+    Matrix4x4 cubes[4], scales;
+    //scales.setScale(Vector3D(5.0,5.0,5.0));
+    //floorMat.setRotationX(90.0);
+    cubes[0].setTranslation(Vector3D(1.0f, 0.0f,-1.0f));
+    cubes[1].setTranslation(Vector3D(2.0f, 0.0f,-1.0f));
+    cubes[2].setTranslation(Vector3D(1.5f, 1.0f,-1.0f));
+    cubes[3].setTranslation(Vector3D(-1.5f,0.0f,+2.0f));
+
+    pipeline->setViewMatrix(Vector3D(+3.0f,2.0f,7.0f),Vector3D(0.0f,0.0f,0.0f),Vector3D(0.0f,1.0f,.0f));
+    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 50.0f);
 
     // calculate time stamp.
     clock_t start, finish;
 
     // fps counting.
     fps = 0;
+
+    // load textures.
+    unsigned int cubeUnit = pipeline->loadTexture("./res/cube.jpg");
+    unsigned int cube1Unit = pipeline->loadTexture("./res/cube1.bmp");
+    unsigned int cube2Unit = pipeline->loadTexture("./res/marble.jpg");
+    unsigned int floorUnit = pipeline->loadTexture("./res/cube.jpg");
+
+    // render loop.
     while(!stoped)
     {
         start = clock();
 
+        pipeline->beginFrame();
+
         pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
 
-        pipeline->drawIndex(RenderMode::fill);
+        // render cube.
+        {
+            pipeline->bindTexture(cubeUnit);
+            pipeline->setVertexBuffer(cube.vertices);
+            pipeline->setIndexBuffer(cube.indices);
+
+            pipeline->setModelMatrix(cubeRotat * scales);
+            pipeline->drawIndex(RenderMode::fill);
+
+            pipeline->bindTexture(cube1Unit);
+            pipeline->setModelMatrix(cubes[0]);
+            pipeline->drawIndex(RenderMode::fill);
+
+            pipeline->setModelMatrix(cubes[1]);
+            pipeline->drawIndex(RenderMode::fill);
+
+            pipeline->setModelMatrix(cubes[2]);
+            pipeline->drawIndex(RenderMode::fill);
+
+            pipeline->bindTexture(cube2Unit);
+            pipeline->setModelMatrix(cubes[3]);
+            pipeline->drawIndex(RenderMode::fill);
+
+            pipeline->unBindTexture(cubeUnit);
+        }
+
+        // render floor.
+        {
+            pipeline->bindTexture(floorUnit);
+            pipeline->setModelMatrix(floorMat);
+            pipeline->setVertexBuffer(floor.vertices);
+            pipeline->setIndexBuffer(floor.indices);
+            pipeline->drawIndex(RenderMode::fill);
+            pipeline->unBindTexture(floorUnit);
+        }
 
         pipeline->swapBuffer();
 
-        emit frameOut(pipeline->output());
-        ++ fps;
+        pipeline->endFrame();
 
         finish = clock();
-
         deltaFrameTime = (double)(finish-start)/CLOCKS_PER_SEC;
+
+        // cube rotation.
         angle += 45 * deltaFrameTime;
         angle = fmod(angle, 360.0);
-        rotat.setRotationY(angle);
-        pipeline->setModelMatrix(rotat * scales);
+        cubeRotat.setRotationY(angle);
+
+        // send the frame.
+        emit frameOut(pipeline->output(), pipeline->getProfile().num_triangles,
+                      pipeline->getProfile().num_vertices);
+        ++ fps;
     }
 }

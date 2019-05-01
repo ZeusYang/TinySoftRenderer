@@ -36,7 +36,8 @@ SOURCES += \
     SoftRenderer/FrameBuffer.cpp \
     SoftRenderer/Pipeline.cpp \
     SoftRenderer/SimpleShader.cpp \
-    RenderLoop.cpp
+    RenderLoop.cpp \
+    SoftRenderer/Texture2D.cpp
 
 HEADERS += \
         Window.h \
@@ -50,7 +51,8 @@ HEADERS += \
     SoftRenderer/FrameBuffer.h \
     SoftRenderer/Pipeline.h \
     SoftRenderer/SimpleShader.h \
-    RenderLoop.h
+    RenderLoop.h \
+    SoftRenderer/Texture2D.h
 
 FORMS += \
         Window.ui
@@ -60,7 +62,4 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32: LIBS += -L$$PWD/lib/ -ltbb
-
 INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include

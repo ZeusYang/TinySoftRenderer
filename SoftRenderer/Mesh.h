@@ -37,7 +37,7 @@ public:
     Vector2D texcoord;  //纹理坐标
     Vector3D normal;	//法线
     Vector4D color;	    //颜色
-    double oneDivZ;     //1/z用于深度测试
+    double oneDivZ;
 
     VertexOut() = default;
     VertexOut(Vector4D _posT, Vector4D _posH, Vector2D _tex,
@@ -46,7 +46,7 @@ public:
           normal(_normal),color(_color),oneDivZ(_oneDivZ) {}
     VertexOut(const VertexOut& rhs) :posTrans(rhs.posTrans),
         posH(rhs.posH), texcoord(rhs.texcoord), normal(rhs.normal),
-        color(rhs.color), oneDivZ(rhs.oneDivZ) {}
+        color(rhs.color),oneDivZ(rhs.oneDivZ) {}
 };
 
 class Mesh
@@ -85,6 +85,8 @@ public:
     }
 
     void asBox(double width, double height, double depth);
+
+    void asFloor(double length, double height);
 
     void asTriangle(const Vector3D p1, const Vector3D p2, const Vector3D p3);
 

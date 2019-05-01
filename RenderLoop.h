@@ -19,7 +19,8 @@ public:
     int getFps(){return fps;}
 
 signals:
-    void frameOut(unsigned char *image);
+    void frameOut(unsigned char *image, const unsigned int &num_triangles,
+                  const unsigned int &num_vertices);
 
 public slots:
     void loop();
@@ -27,7 +28,7 @@ public slots:
 private:
     bool stoped;
     int fps;
-    double lastFrameTime, deltaFrameTime;
+    double deltaFrameTime;
     SoftRenderer::Pipeline *pipeline;
     int width, height, channel;
 };

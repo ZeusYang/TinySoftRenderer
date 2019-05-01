@@ -56,16 +56,21 @@ void Window::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 }
 
-void Window::receiveFrame(unsigned char *image)
+void Window::receiveFrame(unsigned char *image, const unsigned int &num_triangles,
+                          const unsigned int &num_vertices)
 {
     if(canvas) delete canvas;
     canvas = new QImage(image, width(), height(), QImage::Format_RGBA8888);
-    repaint();
+    this->num_trangles = num_triangles;
+    this->num_vertices = num_vertices;
+    update();
 }
 
 void Window::fpsTimeOut()
 {
     int fps = loop->getFps();
     loop->setFpsZero();
-    this->setWindowTitle("Soft Renderer By YangWC " + QString(" fps: %1").arg(fps));
+    this->setWindowTitle("Soft Renderer By YangWC "
+                         + QString(" fps: %1 triangles: %2 vertices: %3")
+                         .arg(fps).arg(num_trangles).arg(num_vertices));
 }
