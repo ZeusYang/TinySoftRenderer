@@ -493,30 +493,6 @@ void Matrix4x4::setPerspective(float fovy, float aspect, float near, float far)
     entries[14]        = (-2.0f*near*far)/(far-near);
 }
 
-void Matrix4x4::setPerspective(float left, float right, float bottom, float top, float near, float far)
-{
-    loadZero();
-    // prevent artifacts with infinite far plane
-    float nudge     = 0.999f;
-    // check for division by 0
-    if(equal(left,right) || equal(top,bottom) || equal(near,far))
-        return;
-
-    entries[0]      = (2*near)/(right-left);
-    entries[5]      = (2*near)/(top-bottom);
-    entries[8]      = (right+left)/(right-left);
-    entries[9]      = (top+bottom)/(top-bottom);
-    if(equal(far,-1.0))
-        entries[10] = -(far+near)/(far-near);
-    else//if f==-1, use an infinite far plane
-        entries[10] = -nudge;
-
-    entries[11]     = -1;
-    if(equal(far,-1.0))
-        entries[14] = -(2*far*near)/(far-near);
-    else//if f==-1, use an infinite far plane
-        entries[14] = -2.0*near*nudge;
-}
 
 void Matrix4x4::setOrtho(float left, float right, float bottom, float top, float near, float far)
 {
@@ -556,13 +532,13 @@ void Matrix4x4::setLookAt(Vector3D cameraPos, Vector3D target, Vector3D worldUp)
     entries[14] = -(zAxis.dotProduct(cameraPos));
 }
 
-void Matrix4x4::setViewPort(int left, int bottom, int width, int height)
+void Matrix4x4::setViewPort(int left, int top, int width, int height)
 {
     loadIdentity();
     entries[0]  =  static_cast<float>(width)/2.0f;
     entries[5]  = -static_cast<float>(height)/2.0f;
     entries[12] =  static_cast<float>(left)+static_cast<float>(width)/2.0f;
-    entries[13] =  static_cast<float>(bottom)+static_cast<float>(height)/2.0f;
+    entries[13] =  static_cast<float>(top)+static_cast<float>(height)/2.0f;
 }
 
 }

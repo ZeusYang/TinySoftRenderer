@@ -11,10 +11,6 @@ FrameBuffer::FrameBuffer(int width, int height)
     m_colorBuffer.resize(m_width*m_height*m_channel, 255);
 }
 
-FrameBuffer::~FrameBuffer()
-{
-}
-
 void FrameBuffer::clearColorBuffer(const Vector4D &color)
 {
     // fill the color buffer.

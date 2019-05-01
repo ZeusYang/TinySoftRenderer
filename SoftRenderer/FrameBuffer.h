@@ -18,11 +18,11 @@ class FrameBuffer
 {
 private:
     int m_width, m_height, m_channel;
-   std::vector<unsigned char> m_colorBuffer;
+    std::vector<unsigned char> m_colorBuffer;
 
 public:
     FrameBuffer(int width, int height);
-    ~FrameBuffer();
+    ~FrameBuffer() = default;
 
     int getWidth(){return m_width;}
 

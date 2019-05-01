@@ -6,7 +6,7 @@
 
 /**
  * @projectName   SoftRenderer
- * @brief         The basic shader.
+ * @brief         The virtual shader.
  * @author        YangWC
  * @date          2019-04-29
  */
@@ -24,7 +24,6 @@ public:
     virtual void setModelMatrix(const Matrix4x4 &world) = 0;
     virtual void setViewMatrix(const Matrix4x4 &view) = 0;
     virtual void setProjectMatrix(const Matrix4x4 &project) = 0;
-
 };
 
 }

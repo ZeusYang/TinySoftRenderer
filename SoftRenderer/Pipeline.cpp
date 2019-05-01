@@ -37,14 +37,37 @@ void Pipeline::initialize()
     m_shader = new SimpleShader();
 }
 
+void Pipeline::setViewPort(int left, int top, int width, int height)
+{
+    viewPortMatrix.setViewPort(left, top, width, height);
+}
+
+void Pipeline::setModelMatrix(Matrix4x4 modelMatrix)
+{
+    m_shader->setModelMatrix(modelMatrix);
+}
+
+void Pipeline::setViewMatrix(Vector3D eye, Vector3D target, Vector3D up)
+{
+    Matrix4x4 viewMatrix;
+    viewMatrix.setLookAt(eye, target, up);
+    m_shader->setViewMatrix(viewMatrix);
+}
+
+void Pipeline::setProjectMatrix(float fovy, float aspect, float near, float far)
+{
+    Matrix4x4 projectMatrix;
+    projectMatrix.setPerspective(fovy, aspect, near, far);
+    m_shader->setProjectMatrix(projectMatrix);
+}
+
 void Pipeline::drawIndex(RenderMode mode)
 {
-    (void)mode;
     if(m_indices.empty())return;
 
     for(unsigned int i = 0;i < m_indices.size()/3;++ i)
     {
-        //! primitives assembly to triangle.
+        //! assembly to triangle primitive.
         Vertex p1,p2,p3;
         {
             p1 = m_vertices[3*i+0];
@@ -60,11 +83,22 @@ void Pipeline::drawIndex(RenderMode mode)
             v3 = m_shader->vertexShader(p3);
         }
 
-        //! rasterization and fragment shader stage.
+        //! perspective division.
+        {
+            perspectiveDivision(v1);
+            perspectiveDivision(v2);
+            perspectiveDivision(v3);
+        }
+
+        //! view port transformation.
         {
             v1.posH = viewPortMatrix * v1.posH;
             v2.posH = viewPortMatrix * v2.posH;
             v3.posH = viewPortMatrix * v3.posH;
+        }
+
+        //! rasterization and fragment shader stage.
+        {
             if(mode == RenderMode::wire)
             {
                 bresenhamLineRasterization(v1,v2);
@@ -100,6 +134,14 @@ void Pipeline::swapBuffer()
     FrameBuffer *tmp = m_frontBuffer;
     m_frontBuffer = m_backBuffer;
     m_backBuffer = tmp;
+}
+
+void Pipeline::perspectiveDivision(VertexOut &target)
+{
+    target.posH.x /= target.posH.w;
+    target.posH.y /= target.posH.w;
+    target.posH.z /= target.posH.w;
+    target.posH.w = 1.0f;
 }
 
 VertexOut Pipeline::lerp(const VertexOut &n1, const VertexOut &n2, double weight)
@@ -158,7 +200,7 @@ void Pipeline::bresenhamLineRasterization(const VertexOut &from, const VertexOut
             }
         }
     }
-    // slope < 1.
+    // slope > 1.
     else
     {
         int flag = d2x - dy;

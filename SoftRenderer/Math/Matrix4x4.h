@@ -73,7 +73,6 @@ public:
     void setRotationZ(const double angle);
     void setRotationEuler(const double angleX, const double angleY, const double angleZ);
     void setPerspective(float fovy, float aspect, float near, float far);
-    void setPerspective(float left, float right, float bottom, float top, float near, float far);
     void setOrtho(float left, float right, float bottom, float top, float near, float far);
     void setLookAt(Vector3D cameraPos, Vector3D target, Vector3D worldUp);
     void setViewPort(int left, int bottom, int width, int height);

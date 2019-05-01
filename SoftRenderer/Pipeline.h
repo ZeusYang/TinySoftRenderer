@@ -42,7 +42,13 @@ public:
 
     void initialize();
 
-    void drawIndex(RenderMode mode);
+    void setViewPort(int left, int top, int width, int height);
+
+    void setModelMatrix(Matrix4x4 modelMatrix);
+
+    void setViewMatrix(Vector3D eye, Vector3D target, Vector3D up);
+
+    void setProjectMatrix(float fovy, float aspect, float near, float far);
 
     void clearBuffer(const Vector4D &color, bool depth = false);
 
@@ -52,11 +58,16 @@ public:
 
     void setShaderMode(ShadingMode mode);
 
-    unsigned char *output(){return m_frontBuffer->getColorBuffer();}
+    void drawIndex(RenderMode mode);
 
     void swapBuffer();
 
+    unsigned char *output(){return m_frontBuffer->getColorBuffer();}
+
+
 private:
+
+    void perspectiveDivision(VertexOut &target);
 
     VertexOut lerp(const VertexOut &n1, const VertexOut &n2, double weight);
 
@@ -69,8 +80,6 @@ private:
     void rasterBottomTriangle(VertexOut &v1, VertexOut &v2, VertexOut &v3);
 
     void edgeWalkingFillRasterization(const VertexOut &v1, const VertexOut &v2, const VertexOut &v3);
-
-    void rasterization();
 
 };
 

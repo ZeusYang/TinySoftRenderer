@@ -27,6 +27,7 @@ public slots:
 private:
     bool stoped;
     int fps;
+    double lastFrameTime, deltaFrameTime;
     SoftRenderer::Pipeline *pipeline;
     int width, height, channel;
 };

@@ -60,7 +60,7 @@ void Window::receiveFrame(unsigned char *image)
 {
     if(canvas) delete canvas;
     canvas = new QImage(image, width(), height(), QImage::Format_RGBA8888);
-    update();
+    repaint();
 }
 
 void Window::fpsTimeOut()

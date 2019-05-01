@@ -2,6 +2,7 @@
 #define SIMPLESHADER_H
 
 #include "BaseShader.h"
+#include "Math/Matrix4x4.h"
 
 /**
  * @projectName   SoftRenderer
@@ -14,8 +15,13 @@ namespace SoftRenderer
 
 class SimpleShader : public BaseShader
 {
+private:
+    Matrix4x4 m_modelMatrix;
+    Matrix4x4 m_viewMatrix;
+    Matrix4x4 m_projectMatrix;
+
 public:
-    SimpleShader() = default;
+    SimpleShader();
     virtual ~SimpleShader() = default;
 
     virtual VertexOut vertexShader(const Vertex &in);
