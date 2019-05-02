@@ -24,7 +24,7 @@ VertexOut SimpleShader::vertexShader(const Vertex &in)
     result.normal = in.normal;
     result.texcoord = in.texcoord;
 
-    //这里将需要插值的信息都乘以1/z 得到 s/z和t/z等，方便光栅化阶段进行插值
+    // oneDivZ to correct mapping.
     result.oneDivZ = 1.0 / result.posH.w;
     result.posTrans *= result.oneDivZ;
     result.texcoord *= result.oneDivZ;

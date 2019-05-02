@@ -38,17 +38,17 @@ class Texture2D;
 class Pipeline
 {
 private:
-    Profile m_profile;                      // show some infomations.
-    Vector3D m_eyePos;                      // camera position.
-    RenderMode m_mode;                      // wire or fill.
-    int m_width, m_height;                  // width and height of viewport.
-    BaseShader *m_shader;                   // shaders including vertex shader and fragment shader.
-    FrameBuffer *m_frontBuffer;             // the frame buffer that is going to be shown.
-    FrameBuffer *m_backBuffer;              // the frame buffer that is goint to be written.
-    Matrix4x4 viewPortMatrix;               // viewport transformation matrix.
-    std::vector<Vertex> m_vertices;         // vertex buffer.
-    std::vector<unsigned int> m_indices;    // index buffer.
-    std::vector<Texture2D*> m_textureUnits; // texture units.
+    Profile m_profile;                          // show some infomations.
+    Vector3D m_eyePos;                          // camera position.
+    RenderMode m_mode;                          // wire or fill.
+    int m_width, m_height;                      // width and height of viewport.
+    BaseShader *m_shader;                       // shaders including vertex shader and fragment shader.
+    FrameBuffer *m_frontBuffer;                 // the frame buffer that is going to be shown.
+    FrameBuffer *m_backBuffer;                  // the frame buffer that is goint to be written.
+    Matrix4x4 viewPortMatrix;                   // viewport transformation matrix.
+    const std::vector<Vertex> *m_vertices;      // vertex buffer.
+    const std::vector<unsigned int> *m_indices; // index buffer.
+    std::vector<Texture2D*> m_textureUnits;     // texture units.
 
 public:
     Pipeline(int width, int height);
@@ -76,9 +76,9 @@ public:
 
     void clearBuffer(const Vector4D &color);
 
-    void setVertexBuffer(const std::vector<Vertex> &vertices){m_vertices = vertices;}
+    void setVertexBuffer(const std::vector<Vertex> *vertices){m_vertices = vertices;}
 
-    void setIndexBuffer(const std::vector<unsigned int> &indices){m_indices = indices;}
+    void setIndexBuffer(const std::vector<unsigned int> *indices){m_indices = indices;}
 
     void setShaderMode(ShadingMode mode);
 

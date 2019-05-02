@@ -52,36 +52,36 @@ public:
 class Mesh
 {
 public:
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<Vertex> m_vertices;
+    std::vector<unsigned int> m_indices;
 
     Mesh() = default;
 
-    ~Mesh() = default;
+    virtual ~Mesh() = default;
 
     Mesh(const Mesh& mesh)
-        :vertices(mesh.vertices), indices(mesh.indices){}
+        :m_vertices(mesh.m_vertices), m_indices(mesh.m_indices){}
 
     Mesh& operator=(const Mesh& mesh)
     {
         if (&mesh == this)
             return *this;
-        vertices = mesh.vertices;
-        indices = mesh.indices;
+        m_vertices = mesh.m_vertices;
+        m_indices = mesh.m_indices;
         return *this;
     }
 
 
     void setVertices(Vertex* _vs, int count)
     {
-        vertices.resize(count);
-        new(&vertices[0])std::vector<Vertex>(_vs, _vs + count);
+        m_vertices.resize(count);
+        new(&m_vertices[0])std::vector<Vertex>(_vs, _vs + count);
     }
 
     void setIndices(int* _es, int count)
     {
-        indices.resize(count);
-        new(&indices)std::vector<unsigned int>(_es, _es + count);
+        m_indices.resize(count);
+        new(&m_indices)std::vector<unsigned int>(_es, _es + count);
     }
 
     void asBox(double width, double height, double depth);

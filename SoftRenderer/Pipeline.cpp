@@ -108,17 +108,17 @@ void Pipeline::drawIndex(RenderMode mode)
     // renderer pipeline.
     bool line1 = false, line2 = false, line3 = false;
     m_mode = mode;
-    if(m_indices.empty())return;
+    if(m_indices->empty())return;
 
-    for(unsigned int i = 0;i < m_indices.size();i += 3)
+    for(unsigned int i = 0;i < m_indices->size();i += 3)
     {
         //! assembly to triangle primitive.
         Vertex p1,p2,p3;
         {
 
-            p1 = m_vertices[m_indices[i+0]];
-            p2 = m_vertices[m_indices[i+1]];
-            p3 = m_vertices[m_indices[i+2]];
+            p1 = (*m_vertices)[(*m_indices)[i+0]];
+            p2 = (*m_vertices)[(*m_indices)[i+1]];
+            p3 = (*m_vertices)[(*m_indices)[i+2]];
         }
 
         //! vertex shader stage.
@@ -256,7 +256,7 @@ bool Pipeline::lineCliping(const VertexOut &from, const VertexOut &to)
     tmp = (x1<vMin)?1:0;
     outcode1 |= tmp;
 
-    //outcode2 calculation.
+    // outcode2 calculation.
     tmp = (y2>vMax)?1:0;
     tmp <<= 3;
     outcode2 |= tmp;
@@ -271,6 +271,16 @@ bool Pipeline::lineCliping(const VertexOut &from, const VertexOut &to)
 
     if((outcode1 & outcode2) != 0)
         return true;
+
+    // bounding box judge.
+    Vector2D minPoint,maxPoint;
+    minPoint.x = min(from.posH.x, to.posH.x);
+    minPoint.y = min(from.posH.y, to.posH.y);
+    maxPoint.x = max(from.posH.x, to.posH.x);
+    maxPoint.y = max(from.posH.y, to.posH.y);
+    if(minPoint.x > vMax || maxPoint.x < vMin || minPoint.y > vMax || maxPoint.y < vMin)
+        return true;
+
     return false;
 }
 
@@ -280,18 +290,6 @@ bool Pipeline::triangleCliping(const VertexOut &v1, const VertexOut &v2, const V
     // false: clip.
     float vMin = -v1.posH.w;
     float vMax = +v1.posH.w;
-    // if there is a point inside, just return true.
-    bool v1Inside =
-            v1.posH.x >= vMin && v1.posH.x <= vMax &&
-            v1.posH.y >= vMin && v1.posH.y <= vMax;
-    bool v2Inside =
-            v2.posH.x >= vMin && v2.posH.x <= vMax &&
-            v2.posH.y >= vMin && v2.posH.y <= v2.posH.w;
-    bool v3Inside =
-            v3.posH.x >= vMin && v3.posH.x <= vMax &&
-            v3.posH.y >= vMin && v3.posH.y <= vMax;
-    if(v1Inside || v2Inside || v3Inside)
-        return true;
 
     // if the triangle is too far to see it, just return false.
     if(v1.posH.z > vMax && v2.posH.z > vMax && v3.posH.z > vMax)

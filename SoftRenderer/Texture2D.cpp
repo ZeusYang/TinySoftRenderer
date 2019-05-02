@@ -61,15 +61,23 @@ Vector4D Texture2D::sample(const Vector2D &texcoord) const
     Vector3D texels[4];
     int index[4];
     index[0] = (x * m_width + y) * m_channel;
-    index[1] = (x * m_width + y + 1) * m_channel;
-    index[2] = ((x + 1) * m_width + y + 1) * m_channel;
-    index[3] = ((x + 1) * m_width + y) * m_channel;
+    if(y + 1 >= m_height)
+        index[1] = index[0];
+    else
+        index[1] = (x * m_width + y + 1) * m_channel;
+    if(y + 1 >= m_height || x + 1 >= m_width)
+        index[2] = index[0];
+    else
+        index[2] = ((x + 1) * m_width + y + 1) * m_channel;
+    if(x + 1 >= m_width)
+        index[3] = index[0];
+    else
+        index[3] = ((x + 1) * m_width + y) * m_channel;
 
     // left bottom
     texels[0].x = static_cast<float>(m_pixelBuffer[index[0] + 0]) * INV_SCALE;
     texels[0].y = static_cast<float>(m_pixelBuffer[index[0] + 1]) * INV_SCALE;
     texels[0].z = static_cast<float>(m_pixelBuffer[index[0] + 2]) * INV_SCALE;
-    //return texels[0];
 
     // left top
     texels[1].x = static_cast<float>(m_pixelBuffer[index[1] + 0]) * INV_SCALE;

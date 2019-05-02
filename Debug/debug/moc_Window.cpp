@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Window_t {
-    QByteArrayData data[6];
-    char stringdata0[53];
+    QByteArrayData data[8];
+    char stringdata0[80];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,11 +36,14 @@ QT_MOC_LITERAL(1, 7, 12), // "receiveFrame"
 QT_MOC_LITERAL(2, 20, 0), // ""
 QT_MOC_LITERAL(3, 21, 14), // "unsigned char*"
 QT_MOC_LITERAL(4, 36, 5), // "image"
-QT_MOC_LITERAL(5, 42, 10) // "fpsTimeOut"
+QT_MOC_LITERAL(5, 42, 13), // "num_triangles"
+QT_MOC_LITERAL(6, 56, 12), // "num_vertices"
+QT_MOC_LITERAL(7, 69, 10) // "fpsTimeOut"
 
     },
     "Window\0receiveFrame\0\0unsigned char*\0"
-    "image\0fpsTimeOut"
+    "image\0num_triangles\0num_vertices\0"
+    "fpsTimeOut"
 };
 #undef QT_MOC_LITERAL
 
@@ -58,11 +61,11 @@ static const uint qt_meta_data_Window[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   24,    2, 0x09 /* Protected */,
-       5,    0,   27,    2, 0x09 /* Protected */,
+       1,    3,   24,    2, 0x09 /* Protected */,
+       7,    0,   31,    2, 0x09 /* Protected */,
 
  // slots: parameters
-    QMetaType::Void, 0x80000000 | 3,    4,
+    QMetaType::Void, 0x80000000 | 3, QMetaType::UInt, QMetaType::UInt,    4,    5,    6,
     QMetaType::Void,
 
        0        // eod
@@ -74,7 +77,7 @@ void Window::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         Window *_t = static_cast<Window *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->receiveFrame((*reinterpret_cast< unsigned char*(*)>(_a[1]))); break;
+        case 0: _t->receiveFrame((*reinterpret_cast< unsigned char*(*)>(_a[1])),(*reinterpret_cast< const uint(*)>(_a[2])),(*reinterpret_cast< const uint(*)>(_a[3]))); break;
         case 1: _t->fpsTimeOut(); break;
         default: ;
         }

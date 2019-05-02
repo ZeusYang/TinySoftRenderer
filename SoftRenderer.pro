@@ -37,7 +37,9 @@ SOURCES += \
     SoftRenderer/Pipeline.cpp \
     SoftRenderer/SimpleShader.cpp \
     RenderLoop.cpp \
-    SoftRenderer/Texture2D.cpp
+    SoftRenderer/Texture2D.cpp \
+    SoftRenderer/ObjModel.cpp \
+    SoftRenderer/Light.cpp
 
 HEADERS += \
         Window.h \
@@ -52,7 +54,9 @@ HEADERS += \
     SoftRenderer/Pipeline.h \
     SoftRenderer/SimpleShader.h \
     RenderLoop.h \
-    SoftRenderer/Texture2D.h
+    SoftRenderer/Texture2D.h \
+    SoftRenderer/ObjModel.h \
+    SoftRenderer/Light.h
 
 FORMS += \
         Window.ui

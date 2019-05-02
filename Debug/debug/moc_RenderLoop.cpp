@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_RenderLoop_t {
-    QByteArrayData data[6];
-    char stringdata0[47];
+    QByteArrayData data[8];
+    char stringdata0[74];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,11 +36,13 @@ QT_MOC_LITERAL(1, 11, 8), // "frameOut"
 QT_MOC_LITERAL(2, 20, 0), // ""
 QT_MOC_LITERAL(3, 21, 14), // "unsigned char*"
 QT_MOC_LITERAL(4, 36, 5), // "image"
-QT_MOC_LITERAL(5, 42, 4) // "loop"
+QT_MOC_LITERAL(5, 42, 13), // "num_triangles"
+QT_MOC_LITERAL(6, 56, 12), // "num_vertices"
+QT_MOC_LITERAL(7, 69, 4) // "loop"
 
     },
     "RenderLoop\0frameOut\0\0unsigned char*\0"
-    "image\0loop"
+    "image\0num_triangles\0num_vertices\0loop"
 };
 #undef QT_MOC_LITERAL
 
@@ -58,13 +60,13 @@ static const uint qt_meta_data_RenderLoop[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   24,    2, 0x06 /* Public */,
+       1,    3,   24,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    0,   27,    2, 0x0a /* Public */,
+       7,    0,   31,    2, 0x0a /* Public */,
 
  // signals: parameters
-    QMetaType::Void, 0x80000000 | 3,    4,
+    QMetaType::Void, 0x80000000 | 3, QMetaType::UInt, QMetaType::UInt,    4,    5,    6,
 
  // slots: parameters
     QMetaType::Void,
@@ -78,14 +80,14 @@ void RenderLoop::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         RenderLoop *_t = static_cast<RenderLoop *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->frameOut((*reinterpret_cast< unsigned char*(*)>(_a[1]))); break;
+        case 0: _t->frameOut((*reinterpret_cast< unsigned char*(*)>(_a[1])),(*reinterpret_cast< const uint(*)>(_a[2])),(*reinterpret_cast< const uint(*)>(_a[3]))); break;
         case 1: _t->loop(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            typedef void (RenderLoop::*_t)(unsigned char * );
+            typedef void (RenderLoop::*_t)(unsigned char * , const unsigned int & , const unsigned int & );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&RenderLoop::frameOut)) {
                 *result = 0;
                 return;
@@ -131,9 +133,9 @@ int RenderLoop::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void RenderLoop::frameOut(unsigned char * _t1)
+void RenderLoop::frameOut(unsigned char * _t1, const unsigned int & _t2, const unsigned int & _t3)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_WARNING_POP
