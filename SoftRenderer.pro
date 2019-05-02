@@ -39,7 +39,9 @@ SOURCES += \
     RenderLoop.cpp \
     SoftRenderer/Texture2D.cpp \
     SoftRenderer/ObjModel.cpp \
-    SoftRenderer/Light.cpp
+    SoftRenderer/Light.cpp \
+    SoftRenderer/GouraudShader.cpp \
+    SoftRenderer/PhongShader.cpp
 
 HEADERS += \
         Window.h \
@@ -56,7 +58,9 @@ HEADERS += \
     RenderLoop.h \
     SoftRenderer/Texture2D.h \
     SoftRenderer/ObjModel.h \
-    SoftRenderer/Light.h
+    SoftRenderer/Light.h \
+    SoftRenderer/GouraudShader.h \
+    SoftRenderer/PhongShader.h
 
 FORMS += \
         Window.ui

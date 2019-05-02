@@ -1,8 +1,11 @@
 #include "Pipeline.h"
-#include "SimpleShader.h"
 
 #include <QDebug>
+
+#include "SimpleShader.h"
 #include "Texture2D.h"
+#include "GouraudShader.h"
+#include "PhongShader.h"
 
 namespace SoftRenderer
 {
@@ -76,6 +79,13 @@ bool Pipeline::unBindTexture(const unsigned int &unit)
     if(unit >= m_textureUnits.size())
         return false;
     m_shader->bindShaderUnit(nullptr);
+    return true;
+}
+
+void Pipeline::setMaterial(const Material *material)
+{
+    m_material = material;
+    m_shader->setMaterial(m_material);
 }
 
 void Pipeline::setViewPort(int left, int top, int width, int height)
@@ -93,6 +103,7 @@ void Pipeline::setViewMatrix(Vector3D eye, Vector3D target, Vector3D up)
     this->m_eyePos = eye;
     Matrix4x4 viewMatrix;
     viewMatrix.setLookAt(eye, target, up);
+    m_shader->setEyePos(eye);
     m_shader->setViewMatrix(viewMatrix);
 }
 
@@ -101,6 +112,12 @@ void Pipeline::setProjectMatrix(float fovy, float aspect, float near, float far)
     Matrix4x4 projectMatrix;
     projectMatrix.setPerspective(fovy, aspect, near, far);
     m_shader->setProjectMatrix(projectMatrix);
+}
+
+void Pipeline::setDirectionLight(Vector3D dir, Vector3D amb, Vector3D diff, Vector3D spec)
+{
+    m_dirLight.setDirectionalLight(amb, diff, spec, dir);
+    m_shader->setLight(&m_dirLight);
 }
 
 void Pipeline::drawIndex(RenderMode mode)
@@ -115,7 +132,6 @@ void Pipeline::drawIndex(RenderMode mode)
         //! assembly to triangle primitive.
         Vertex p1,p2,p3;
         {
-
             p1 = (*m_vertices)[(*m_indices)[i+0]];
             p2 = (*m_vertices)[(*m_indices)[i+1]];
             p3 = (*m_vertices)[(*m_indices)[i+2]];
@@ -197,10 +213,13 @@ void Pipeline::clearBuffer(const Vector4D &color)
 void Pipeline::setShaderMode(ShadingMode mode)
 {
     if(m_shader)delete m_shader;
-    if(mode == ShadingMode::simple)
+    m_shader = nullptr;
+    if(mode == ShadingMode::Simple)
         m_shader = new SimpleShader();
-    else if(mode == ShadingMode::phong)
-        ;
+    else if(mode == ShadingMode::Gouraud)
+        m_shader = new GouraudShader();
+    else if(mode == ShadingMode::Phong)
+        m_shader = new PhongShader();
 }
 
 void Pipeline::swapBuffer()

@@ -27,6 +27,19 @@ void RenderLoop::loop()
 {
     // pipeline
     pipeline->initialize();
+    pipeline->setShaderMode(ShadingMode::Phong);
+
+    // lighting
+    Material material;
+    material.setMaterial(Vector3D(0.1,0.1,0.1),
+                         Vector3D(0.5,0.5,0.5),
+                         Vector3D(0.8,0.8,0.8),
+                         2.0);
+    pipeline->setMaterial(&material);
+    pipeline->setDirectionLight(Vector3D(-1,-2,-1),
+                                Vector3D(0.05,0.05,0.05),
+                                Vector3D(0.6,0.6,0.6),
+                                Vector3D(0.4,0.4,0.4));
 
     // ObjModel
     ObjModel diablo("./res/diablo3_pose.obj");
@@ -42,7 +55,7 @@ void RenderLoop::loop()
     cubes[0].setTranslation(Vector3D(3.0f, -1.0f,-1.0f));
     cubes[1].setTranslation(Vector3D(4.0f, -1.0f,-1.0f));
     cubes[2].setTranslation(Vector3D(3.5f, 0.0f,-1.0f));
-    diabloMatrix = diablo.setSize(2.0,2.0,2.0);
+    diabloMatrix = diablo.setSize(2.3,2.3,2.3);
 
     pipeline->setViewMatrix(Vector3D(-3.0f, 2.0f, 5.0f),Vector3D(0.0f,0.0f,0.0f),Vector3D(0.0f,1.0f,.0f));
     pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 50.0f);
@@ -52,7 +65,7 @@ void RenderLoop::loop()
     fps = 0;
 
     // load textures.
-    unsigned int cubeUnit = pipeline->loadTexture("./res/marble.jpg");
+    unsigned int cubeUnit = pipeline->loadTexture("./res/cube.jpg");
     unsigned int floorUnit = pipeline->loadTexture("./res/floor.jpg");
     unsigned int diablo3 = pipeline->loadTexture("./res/diablo3_pose_diffuse.jpg");
 
@@ -63,7 +76,8 @@ void RenderLoop::loop()
 
         pipeline->beginFrame();
 
-        pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
+        //pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
+        pipeline->clearBuffer(Vector4D(0.0,0.0,0.0,1.0f));
 
         // render cube.
         {

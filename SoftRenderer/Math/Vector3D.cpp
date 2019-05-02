@@ -1,7 +1,16 @@
 #include "Vector3D.h"
 
+#include "Vector4D.h"
+
 namespace SoftRenderer
 {
+
+Vector3D::Vector3D(const Vector4D &rhs)
+{
+    x = rhs.x;
+    y = rhs.y;
+    z = rhs.z;
+}
 
 void Vector3D::normalize()
 {

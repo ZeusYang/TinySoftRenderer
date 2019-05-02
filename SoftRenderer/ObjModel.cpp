@@ -72,6 +72,7 @@ void ObjModel::loadObjFile(const std::string &path)
             iss >> normal.x;
             iss >> normal.y;
             iss >> normal.z;
+            normal.normalize();
             normals.push_back(normal);
         }
         // texcoord

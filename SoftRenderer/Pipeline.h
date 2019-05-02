@@ -1,6 +1,7 @@
 #ifndef PIPELINE_H
 #define PIPELINE_H
 
+#include "Light.h"
 #include "BaseShader.h"
 #include "FrameBuffer.h"
 
@@ -15,8 +16,9 @@ namespace SoftRenderer
 
 enum ShadingMode
 {
-    simple = 0,
-    phong = 1
+    Simple = 0,
+    Gouraud = 1,
+    Phong = 2
 };
 
 enum RenderMode
@@ -34,10 +36,12 @@ public:
     void setZero(){num_triangles = num_vertices = 0;}
 };
 
+class Material;
 class Texture2D;
 class Pipeline
 {
 private:
+    DirectionalLight m_dirLight;                // directional light.
     Profile m_profile;                          // show some infomations.
     Vector3D m_eyePos;                          // camera position.
     RenderMode m_mode;                          // wire or fill.
@@ -49,6 +53,7 @@ private:
     const std::vector<Vertex> *m_vertices;      // vertex buffer.
     const std::vector<unsigned int> *m_indices; // index buffer.
     std::vector<Texture2D*> m_textureUnits;     // texture units.
+    const Material *m_material;                 // material.
 
 public:
     Pipeline(int width, int height);
@@ -66,6 +71,8 @@ public:
 
     bool unBindTexture(const unsigned int &unit);
 
+    void setMaterial(const Material *material);
+
     void setViewPort(int left, int top, int width, int height);
 
     void setModelMatrix(Matrix4x4 modelMatrix);
@@ -73,6 +80,8 @@ public:
     void setViewMatrix(Vector3D eye, Vector3D target, Vector3D up);
 
     void setProjectMatrix(float fovy, float aspect, float near, float far);
+
+    void setDirectionLight(Vector3D dir, Vector3D amb, Vector3D diff, Vector3D spec);
 
     void clearBuffer(const Vector4D &color);
 

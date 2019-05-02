@@ -13,6 +13,8 @@
 namespace SoftRenderer
 {
 
+class Light;
+class Material;
 class Texture2D;
 class BaseShader
 {
@@ -26,6 +28,9 @@ public:
     virtual void setModelMatrix(const Matrix4x4 &world) = 0;
     virtual void setViewMatrix(const Matrix4x4 &view) = 0;
     virtual void setProjectMatrix(const Matrix4x4 &project) = 0;
+    virtual void setMaterial(const Material *material) = 0;
+    virtual void setLight(const Light *light) = 0;
+    virtual void setEyePos(const Vector3D eye) = 0;
 };
 
 }
