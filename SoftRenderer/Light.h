@@ -63,13 +63,14 @@ public:
                           Vector3D& diffuse,
                           Vector3D& specular) const;
 
-    void setDirectionalLight(Vector3D _amb, Vector3D _diff, Vector3D _spec, Vector3D _dir)
+    void setDirectionalLight(Vector3D _amb, Vector3D _diff, Vector3D _spec,
+                             Vector3D _dir)
     {
         m_ambient = _amb;
         m_diffuse = _diff;
         m_specular = _spec;
-        _dir.normalize();
         m_direction = _dir;
+        m_direction.normalize();
     }
 };
 
@@ -89,12 +90,22 @@ public:
                           Vector3D& ambient,
                           Vector3D& diffuse,
                           Vector3D& specular) const;
+
+    void setPointLight(Vector3D _amb, Vector3D _diff, Vector3D _spec,
+                       Vector3D _pos, Vector3D _atte)
+    {
+        m_ambient = _amb;
+        m_diffuse = _diff;
+        m_specular = _spec;
+        m_position = _pos;
+        m_attenuation = _atte;
+    }
 };
 
 class SpotLight : public Light
 {
 public:
-    double spot;
+    double m_cutoff, m_outcutoff;
     Vector3D m_ambient;
     Vector3D m_diffuse;
     Vector3D m_specular;
@@ -109,6 +120,20 @@ public:
                           Vector3D& ambient,
                           Vector3D& diffuse,
                           Vector3D& specular) const;
+
+    void setSpotLight(Vector3D _amb, Vector3D _diff, Vector3D _spec,
+                      double _cut, Vector3D _pos, Vector3D _dir, Vector3D _atte)
+    {
+        m_cutoff = cos(_cut * M_PI/180.0);
+        m_outcutoff = cos((_cut + 10.0) * M_PI/180.0);
+        m_ambient = _amb;
+        m_diffuse = _diff;
+        m_specular = _spec;
+        m_position = _pos;
+        m_direction = _dir;
+        m_attenuation = _atte;
+        m_direction.normalize();
+    }
 };
 
 }

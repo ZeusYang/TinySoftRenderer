@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+#include "Light.h"
 #include "SimpleShader.h"
 #include "Texture2D.h"
 #include "GouraudShader.h"
@@ -13,16 +14,18 @@ namespace SoftRenderer
 Pipeline::Pipeline(int width, int height)
     :m_width(width),m_height(height)
     ,m_shader(nullptr),m_frontBuffer(nullptr)
-    ,m_backBuffer(nullptr)
+    ,m_backBuffer(nullptr),m_light(nullptr)
 {
     m_eyePos = Vector3D(0.0f,0.0f,0.0f);
 }
 
 Pipeline::~Pipeline()
 {
+    if(m_light)delete m_light;
     if(m_shader)delete m_shader;
     if(m_frontBuffer)delete m_frontBuffer;
     if(m_backBuffer)delete m_backBuffer;
+    m_light = nullptr;
     m_shader = nullptr;
     m_frontBuffer = nullptr;
     m_backBuffer = nullptr;
@@ -36,16 +39,16 @@ Pipeline::~Pipeline()
 
 void Pipeline::initialize()
 {
+    if(m_shader)
+        delete m_shader;
     if(m_frontBuffer)
         delete m_frontBuffer;
     if(m_backBuffer)
         delete m_backBuffer;
-    if(m_shader)
-        delete m_shader;
+    m_shader = new SimpleShader();
     viewPortMatrix.setViewPort(0,0,m_width,m_height);
     m_frontBuffer = new FrameBuffer(m_width, m_height);
     m_backBuffer = new FrameBuffer(m_width, m_height);
-    m_shader = new SimpleShader();
 }
 
 void Pipeline::beginFrame()
@@ -114,10 +117,32 @@ void Pipeline::setProjectMatrix(float fovy, float aspect, float near, float far)
     m_shader->setProjectMatrix(projectMatrix);
 }
 
-void Pipeline::setDirectionLight(Vector3D dir, Vector3D amb, Vector3D diff, Vector3D spec)
+void Pipeline::setDirectionLight(Vector3D amb, Vector3D diff, Vector3D spec, Vector3D dir)
 {
-    m_dirLight.setDirectionalLight(amb, diff, spec, dir);
-    m_shader->setLight(&m_dirLight);
+    if(m_light)delete m_light;
+    DirectionalLight *tmp = new DirectionalLight();
+    tmp->setDirectionalLight(amb, diff, spec, dir);
+    m_light = reinterpret_cast<Light*>(tmp);
+    m_shader->setLight(m_light);
+}
+
+void Pipeline::setPointLight(Vector3D _amb, Vector3D _diff, Vector3D _spec, Vector3D _pos, Vector3D _atte)
+{
+    if(m_light)delete m_light;
+    PointLight *tmp = new PointLight();
+    tmp->setPointLight(_amb, _diff, _spec, _pos, _atte);
+    m_light = reinterpret_cast<Light*>(tmp);
+    m_shader->setLight(m_light);
+}
+
+void Pipeline::setSpotLight(Vector3D _amb, Vector3D _diff, Vector3D _spec, double _cutoff,
+                            Vector3D _pos, Vector3D _dir, Vector3D _atte)
+{
+    if(m_light)delete m_light;
+    SpotLight *tmp = new SpotLight();
+    tmp->setSpotLight(_amb, _diff, _spec, _cutoff, _pos, _dir, _atte);
+    m_light = reinterpret_cast<Light*>(tmp);
+    m_shader->setLight(m_light);
 }
 
 void Pipeline::drawIndex(RenderMode mode)
