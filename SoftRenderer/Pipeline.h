@@ -1,6 +1,7 @@
 #ifndef PIPELINE_H
 #define PIPELINE_H
 
+#include "Camera3D.h"
 #include "BaseShader.h"
 #include "FrameBuffer.h"
 
@@ -40,6 +41,7 @@ class Texture2D;
 class Pipeline
 {
 private:
+    Camera3D *m_test;
     Light *m_light;                             // light.
     Profile m_profile;                          // show some infomations.
     Vector3D m_eyePos;                          // camera position.
@@ -69,6 +71,7 @@ public:
     void setMaterial(const Material *material);
     void setViewPort(int left, int top, int width, int height);
     void setModelMatrix(Matrix4x4 modelMatrix);
+    void setViewMatrix(Vector3D eye, const Matrix4x4 &viewMatrix);
     void setViewMatrix(Vector3D eye, Vector3D target, Vector3D up);
     void setProjectMatrix(float fovy, float aspect, float near, float far);
     void setDirectionLight(Vector3D _amb, Vector3D _diff, Vector3D _spec, Vector3D _dir);

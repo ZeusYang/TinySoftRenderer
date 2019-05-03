@@ -101,6 +101,13 @@ void Pipeline::setModelMatrix(Matrix4x4 modelMatrix)
     m_shader->setModelMatrix(modelMatrix);
 }
 
+void Pipeline::setViewMatrix(Vector3D eye, const Matrix4x4 &viewMatrix)
+{
+    this->m_eyePos = eye;
+    m_shader->setEyePos(eye);
+    m_shader->setViewMatrix(viewMatrix);
+}
+
 void Pipeline::setViewMatrix(Vector3D eye, Vector3D target, Vector3D up)
 {
     this->m_eyePos = eye;
@@ -462,6 +469,12 @@ void Pipeline::scanLinePerRow(const VertexOut &left, const VertexOut &right)
         if(current.posH.z > depth)
             continue;// fail to pass the depth testing.
         m_backBuffer->drawDepth(current.posH.x,current.posH.y,current.posH.z);
+
+        //
+        if(current.posH.x < 0 || current.posH.y < 0)
+            continue;
+        if(current.posH.x >= m_width || current.posH.y >= m_height)
+            break;
 
         double w = 1.0/current.oneDivZ;
         current.posTrans *= w;

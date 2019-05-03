@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "SoftRenderer/Pipeline.h"
+#include "SoftRenderer/FPSCamera.h"
 
 class RenderLoop : public QObject
 {
@@ -18,6 +19,10 @@ public:
 
     int getFps(){return fps;}
 
+    void receiveKeyEvent(char key);
+
+    void receiveMouseEvent(double deltaX, double deltaY);
+
 signals:
     void frameOut(unsigned char *image, const unsigned int &num_triangles,
                   const unsigned int &num_vertices);
@@ -29,6 +34,7 @@ private:
     bool stoped;
     int fps;
     double deltaFrameTime;
+    SoftRenderer::FPSCamera *fpsCamera;
     SoftRenderer::Pipeline *pipeline;
     int width, height, channel;
 };

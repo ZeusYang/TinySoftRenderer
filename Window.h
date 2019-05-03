@@ -29,8 +29,14 @@ protected slots:
 
     void fpsTimeOut();
 
+protected:
+    void mouseMoveEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+
 private:
     Ui::Window *ui;
+    bool firstMouseMove;
+    QPoint preMousePos;
     QTimer *timer;
     QImage *canvas;
     int num_trangles, num_vertices;

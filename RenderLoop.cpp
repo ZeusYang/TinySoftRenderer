@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include <time.h>
+#include "SoftRenderer/Math/Quaternion.h"
 #include "SoftRenderer/Light.h"
 #include "SoftRenderer/Mesh.h"
 #include "SoftRenderer/ObjModel.h"
@@ -15,12 +16,15 @@ RenderLoop::RenderLoop(int w, int h, QObject *parent)
     fps = 0;
     deltaFrameTime = 0;
     stoped = false;
+    fpsCamera = nullptr;
     pipeline = new Pipeline(width, height);
 }
 
 RenderLoop::~RenderLoop()
 {
     if(pipeline) delete pipeline;
+    if(fpsCamera)delete fpsCamera;
+    fpsCamera = nullptr;
     pipeline = nullptr;
 }
 
@@ -43,6 +47,10 @@ void RenderLoop::loop()
                          Vector3D(0.5,0.5,0.5),
                          Vector3D(0.8,0.8,0.8),
                          16.0);
+
+    // camera
+    fpsCamera = new FPSCamera(Vector3D(-0.0f, 3.0f, 8.0f));
+    fpsCamera->rotate(FPSCamera::LocalRight, -30.0f);
 
     // illumination.
     pipeline->setMaterial(&material);
@@ -71,17 +79,18 @@ void RenderLoop::loop()
 
     // transformation.
     double angle = 0.0;
+    Quaternion test;
     Matrix4x4 rotat, diabloMatrix, cubes[3], floorM;
     cubes[0].setTranslation(Vector3D(3.0f, -1.0f,-1.0f));
     cubes[1].setTranslation(Vector3D(4.0f, -1.0f,-1.0f));
     cubes[2].setTranslation(Vector3D(3.5f, 0.0f,-1.0f));
     diabloMatrix = diablo.setSize(2.3,2.3,2.3);
-    pipeline->setViewMatrix(Vector3D(-3.0f, 2.0f, 5.0f),Vector3D(0.0f,0.0f,0.0f),Vector3D(0.0f,1.0f,.0f));
     pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 50.0f);
 
     // calculate time stamp.
     clock_t start, finish;
     fps = 0;
+    pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
 
     // render loop.
     while(!stoped)
@@ -93,6 +102,7 @@ void RenderLoop::loop()
         //pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
         pipeline->clearBuffer(Vector4D(0.0,0.0,0.0,1.0f));
 
+        pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
         // render cube.
         {
             pipeline->bindTexture(cubeUnit);
@@ -115,7 +125,7 @@ void RenderLoop::loop()
         // render diablo model.
         {
             pipeline->bindTexture(diablo3);
-            pipeline->setModelMatrix(rotat * diabloMatrix);
+            pipeline->setModelMatrix(test.toMatrix() * diabloMatrix);
             pipeline->setVertexBuffer(&diablo.m_vertices);
             pipeline->setIndexBuffer(&diablo.m_indices);
             pipeline->drawIndex(RenderMode::fill);
@@ -125,7 +135,7 @@ void RenderLoop::loop()
         // render floor.
         {
             pipeline->bindTexture(floorUnit);
-            pipeline->setModelMatrix(floorM);
+            pipeline->setModelMatrix(test.toMatrix());
             pipeline->setVertexBuffer(&floor.m_vertices);
             pipeline->setIndexBuffer(&floor.m_indices);
             pipeline->drawIndex(RenderMode::fill);
@@ -142,11 +152,22 @@ void RenderLoop::loop()
         // rotation.
         angle += 45 * deltaFrameTime;
         angle = fmod(angle, 360.0);
-        rotat.setRotationY(angle);
+        test.setRotationAxis(Vector3D(0,1,0), angle);
+        //rotat.setRotationY(angle);
 
         // send the frame.
         emit frameOut(pipeline->output(), pipeline->getProfile().num_triangles,
                       pipeline->getProfile().num_vertices);
         ++ fps;
     }
+}
+
+void RenderLoop::receiveKeyEvent(char key)
+{
+    fpsCamera->onKeyPress(key);
+}
+
+void RenderLoop::receiveMouseEvent(double deltaX, double deltaY)
+{
+    fpsCamera->onMouseMove(deltaX, deltaY);
 }

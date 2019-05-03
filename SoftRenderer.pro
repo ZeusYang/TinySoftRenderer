@@ -41,7 +41,11 @@ SOURCES += \
     SoftRenderer/ObjModel.cpp \
     SoftRenderer/Light.cpp \
     SoftRenderer/GouraudShader.cpp \
-    SoftRenderer/PhongShader.cpp
+    SoftRenderer/PhongShader.cpp \
+    SoftRenderer/Camera3D.cpp \
+    SoftRenderer/Math/Quaternion.cpp \
+    SoftRenderer/FPSCamera.cpp \
+    SoftRenderer/TPSCamera.cpp
 
 HEADERS += \
         Window.h \
@@ -60,7 +64,11 @@ HEADERS += \
     SoftRenderer/ObjModel.h \
     SoftRenderer/Light.h \
     SoftRenderer/GouraudShader.h \
-    SoftRenderer/PhongShader.h
+    SoftRenderer/PhongShader.h \
+    SoftRenderer/Camera3D.h \
+    SoftRenderer/Math/Quaternion.h \
+    SoftRenderer/FPSCamera.h \
+    SoftRenderer/TPSCamera.h
 
 FORMS += \
         Window.ui

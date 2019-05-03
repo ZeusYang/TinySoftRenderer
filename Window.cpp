@@ -3,6 +3,8 @@
 
 #include <QTimer>
 #include <QThread>
+#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QDebug>
 
@@ -10,7 +12,8 @@
 
 Window::Window(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Window)
+    ui(new Ui::Window),
+    firstMouseMove(true)
 {
     ui->setupUi(this);
     canvas = nullptr;
@@ -30,6 +33,8 @@ Window::Window(QWidget *parent) :
     // begin the thread.
     loopThread->start();
     timer->start(1000);
+
+    setMouseTracking(true);
 }
 
 Window::~Window()
@@ -73,4 +78,40 @@ void Window::fpsTimeOut()
     this->setWindowTitle("Soft Renderer By YangWC "
                          + QString(" fps: %1 triangles: %2 vertices: %3")
                          .arg(fps).arg(num_trangles).arg(num_vertices));
+}
+
+void Window::mouseMoveEvent(QMouseEvent *event)
+{
+    if(!(event->buttons() & Qt::LeftButton))
+        firstMouseMove = true;
+    if(firstMouseMove)
+    {
+        firstMouseMove = false;
+        preMousePos = event->pos();
+    }
+    else
+    {
+        QPoint delta = event->pos() - preMousePos;
+        preMousePos = event->pos();
+        loop->receiveMouseEvent(delta.x(), delta.y());
+    }
+}
+
+void Window::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+    case Qt::Key_W:
+        loop->receiveKeyEvent('W');break;
+    case Qt::Key_S:
+        loop->receiveKeyEvent('S');break;
+    case Qt::Key_A:
+        loop->receiveKeyEvent('A');break;
+    case Qt::Key_D:
+        loop->receiveKeyEvent('D');break;
+    case Qt::Key_Q:
+        loop->receiveKeyEvent('Q');break;
+    case Qt::Key_E:
+        loop->receiveKeyEvent('E');break;
+    }
 }
