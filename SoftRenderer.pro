@@ -45,7 +45,8 @@ SOURCES += \
     SoftRenderer/Camera3D.cpp \
     SoftRenderer/Math/Quaternion.cpp \
     SoftRenderer/FPSCamera.cpp \
-    SoftRenderer/TPSCamera.cpp
+    SoftRenderer/TPSCamera.cpp \
+    SoftRenderer/Transform3D.cpp
 
 HEADERS += \
         Window.h \
@@ -68,7 +69,8 @@ HEADERS += \
     SoftRenderer/Camera3D.h \
     SoftRenderer/Math/Quaternion.h \
     SoftRenderer/FPSCamera.h \
-    SoftRenderer/TPSCamera.h
+    SoftRenderer/TPSCamera.h \
+    SoftRenderer/Transform3D.h
 
 FORMS += \
         Window.ui

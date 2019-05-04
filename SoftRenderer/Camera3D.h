@@ -23,10 +23,10 @@ public:
     virtual ~Camera3D(){}
 
     virtual Matrix4x4 getViewMatrix() = 0;
-    virtual Vector3D getPosition() const = 0;
+    virtual Vector3D getPosition() = 0;
     virtual void onKeyPress(char key) = 0;
     virtual void onWheelMove(double delta) = 0;
-    virtual void onMouseMove(double deltaX, double deltaY) = 0;
+    virtual void onMouseMove(double deltaX, double deltaY, std::string button) = 0;
 };
 
 }

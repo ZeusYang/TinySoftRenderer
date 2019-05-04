@@ -27,11 +27,11 @@ public:
     FPSCamera(Vector3D _pos);
     virtual ~FPSCamera() = default;
 
-    virtual Vector3D getPosition() const {return m_translation;}
+    virtual Vector3D getPosition() {return m_translation;}
     virtual Matrix4x4 getViewMatrix();
     virtual void onKeyPress(char key);
     virtual void onWheelMove(double delta);
-    virtual void onMouseMove(double deltaX, double deltaY);
+    virtual void onMouseMove(double deltaX, double deltaY, std::string button);
 
     void translate(const Vector3D &dt);
     void rotate(const Vector3D &axis, float angle);

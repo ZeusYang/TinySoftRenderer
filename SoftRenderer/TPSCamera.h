@@ -1,8 +1,8 @@
 #ifndef TPSCAMERA_H
 #define TPSCAMERA_H
 
-#include "Math/Quaternion.h"
 #include "Camera3D.h"
+#include "Transform3D.h"
 
 /**
  * @projectName   SoftRenderer
@@ -18,24 +18,31 @@ class TPSCamera : public Camera3D
 {
 private:
     mutable bool m_dirty;
-    Vector3D m_translation;
+    bool first = true;
+    Vector3D m_cameraPos;
     Quaternion m_rotation;
+    double m_yaw, m_pitch, m_distance;
+    Transform3D m_player;
     Matrix4x4 m_viewMatrix;
-    Matrix4x4 m_targetMatrix;
 
 public:
     TPSCamera(Vector3D target);
     virtual ~TPSCamera() = default;
 
-    virtual Vector3D getPosition() const {return m_translation;}
+    Matrix4x4 getPlayerMatrix();
+
+    virtual Vector3D getPosition() {update();return m_cameraPos;}
     virtual Matrix4x4 getViewMatrix();
     virtual void onKeyPress(char key);
     virtual void onWheelMove(double delta);
-    virtual void onMouseMove(double deltaX, double deltaY);
+    virtual void onMouseMove(double deltaX, double deltaY, std::string button);
 
     Vector3D forward() const;
     Vector3D up() const;
     Vector3D right() const;
+
+private:
+    void update();
 };
 
 }

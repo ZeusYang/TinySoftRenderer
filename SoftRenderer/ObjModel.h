@@ -21,7 +21,8 @@ public:
     ObjModel(const std::string &path);
     virtual ~ObjModel();
 
-    Matrix4x4 setSize(float sx, float sy, float sz) const;
+    Vector3D setSizeToVector(float sx, float sy, float sz) const;
+    Matrix4x4 setSizeToMatrix(float sx, float sy, float sz) const;
 
 private:
     void loadObjFile(const std::string &path);

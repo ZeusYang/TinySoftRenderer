@@ -83,8 +83,8 @@ Vector3D Quaternion::eulerAngle() const
     float yaw = atan2(2 * (w * x + z * y), 1 - 2 * (x * x + y * y));
     float pitch = asin(2 * (w * y - x * z));
     float roll = atan2(2 * (w * z + x * y), 1 - 2 * (z * z + y * y));
-    if(pitch < -1.0f)pitch = -1.0f;
-    if(pitch > +1.0f)pitch = +1.0f;
+//    if(pitch < -1.0f)pitch = -1.0f;
+//    if(pitch > +1.0f)pitch = +1.0f;
     return Vector3D(
                 angles(yaw),
                 angles(pitch),

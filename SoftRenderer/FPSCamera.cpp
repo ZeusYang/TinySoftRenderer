@@ -13,7 +13,6 @@ Matrix4x4 FPSCamera::getViewMatrix()
     if(m_dirty)
     {
         m_dirty = false;
-        m_viewMatrix.loadIdentity();
         m_viewMatrix = m_rotation.conjugate().toMatrix();
         Matrix4x4 trans;
         trans.setTranslation(-m_translation);
@@ -54,7 +53,7 @@ void FPSCamera::onWheelMove(double delta)
     // nothing now.
 }
 
-void FPSCamera::onMouseMove(double deltaX, double deltaY)
+void FPSCamera::onMouseMove(double deltaX, double deltaY, std::string button)
 {
     double speed = 0.1f;
     deltaX *= speed;

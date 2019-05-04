@@ -5,6 +5,7 @@
 
 #include "SoftRenderer/Pipeline.h"
 #include "SoftRenderer/FPSCamera.h"
+#include "SoftRenderer/TPSCamera.h"
 
 class RenderLoop : public QObject
 {
@@ -20,8 +21,8 @@ public:
     int getFps(){return fps;}
 
     void receiveKeyEvent(char key);
-
-    void receiveMouseEvent(double deltaX, double deltaY);
+    void receiveMouseWheelEvent(double delta);
+    void receiveMouseEvent(double deltaX, double deltaY, std::string button);
 
 signals:
     void frameOut(unsigned char *image, const unsigned int &num_triangles,
@@ -35,6 +36,7 @@ private:
     int fps;
     double deltaFrameTime;
     SoftRenderer::FPSCamera *fpsCamera;
+    SoftRenderer::TPSCamera *tPSCamera;
     SoftRenderer::Pipeline *pipeline;
     int width, height, channel;
 };

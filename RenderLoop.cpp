@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include <time.h>
+#include "SoftRenderer/Transform3D.h"
 #include "SoftRenderer/Math/Quaternion.h"
 #include "SoftRenderer/Light.h"
 #include "SoftRenderer/Mesh.h"
@@ -17,14 +18,17 @@ RenderLoop::RenderLoop(int w, int h, QObject *parent)
     deltaFrameTime = 0;
     stoped = false;
     fpsCamera = nullptr;
+    tPSCamera = nullptr;
     pipeline = new Pipeline(width, height);
 }
 
 RenderLoop::~RenderLoop()
 {
     if(pipeline) delete pipeline;
-    if(fpsCamera)delete fpsCamera;
+    if(fpsCamera) delete fpsCamera;
+    if(tPSCamera) delete tPSCamera;
     fpsCamera = nullptr;
+    tPSCamera = nullptr;
     pipeline = nullptr;
 }
 
@@ -35,61 +39,74 @@ void RenderLoop::loop()
     pipeline->setShaderMode(ShadingMode::Phong);
     unsigned int cubeUnit = pipeline->loadTexture("./res/cube.jpg");
     unsigned int floorUnit = pipeline->loadTexture("./res/floor.jpg");
+    unsigned int treeUnit = pipeline->loadTexture("./res/tree.png");
     unsigned int diablo3 = pipeline->loadTexture("./res/diablo3_pose_diffuse.jpg");
+    unsigned int lowPolygonTree = pipeline->loadTexture("./res/lowPolyTree.png");
+    unsigned int playerUnit = pipeline->loadTexture("./res/player.png");
 
     // mesh
+    ObjModel player("./res/player.obj");
     ObjModel diablo("./res/diablo3_pose.obj");
+    ObjModel tree("./res/tree.obj");
+    ObjModel tree1("./res/lowPolyTree.obj");
     Mesh cube, floor;
     cube.asBox(1.0,1.0,1.0);
-    floor.asFloor(4.3,-1.5f);
+    floor.asFloor(15.3,-1.5f);
     Material material;
     material.setMaterial(Vector3D(0.1,0.1,0.1),
                          Vector3D(0.5,0.5,0.5),
                          Vector3D(0.8,0.8,0.8),
                          16.0);
+    pipeline->setMaterial(&material);
 
     // camera
-    fpsCamera = new FPSCamera(Vector3D(-0.0f, 3.0f, 8.0f));
+    fpsCamera = new FPSCamera(Vector3D(-0.0f, 5.0f, 14.0f));
     fpsCamera->rotate(FPSCamera::LocalRight, -30.0f);
+    tPSCamera = new TPSCamera(Vector3D(+4,-1.0, +4));
 
     // illumination.
-    pipeline->setMaterial(&material);
     // directional light
 //    pipeline->setDirectionLight(
 //                Vector3D(0.05,0.05,0.05),
 //                Vector3D(0.9,0.1,0.1),
 //                Vector3D(0.9,0.1,0.1),
-//                Vector3D(-1,-2,-1));
+//                Vector3D(+1,-2,-1));
     // point light.
     pipeline->setPointLight(
                 Vector3D(0.2,0.2,0.2),
                 Vector3D(0.9,0.1,0.1),
                 Vector3D(0.9,0.1,0.1),
-                Vector3D(0.0,0.0,0.0),
+                Vector3D(0.0,3.0,0.0),
                 Vector3D(1.0f,0.07f,0.017f));
     // spot light.
-//    pipeline->setSpotLight(
-//                Vector3D(0.1,0.1,0.1),
-//                Vector3D(0.9,0.1,0.1),
-//                Vector3D(0.9,0.1,0.1),
-//                15.0f,
-//                Vector3D(0.0,2.8,0.0),
-//                Vector3D(0.0,-3.0,0.0),
-//                Vector3D(1.0f,0.07f,0.017f));
+    pipeline->setSpotLight(
+                Vector3D(0.1,0.1,0.1),
+                Vector3D(0.9,0.1,0.1),
+                Vector3D(0.9,0.1,0.1),
+                40.0f,
+                Vector3D(0.0,5.0,0.0),
+                Vector3D(0.0,-3.0,0.0),
+                Vector3D(1.0f,0.07f,0.017f));
 
     // transformation.
     double angle = 0.0;
     Quaternion test;
-    Matrix4x4 rotat, diabloMatrix, cubes[3], floorM;
-    cubes[0].setTranslation(Vector3D(3.0f, -1.0f,-1.0f));
-    cubes[1].setTranslation(Vector3D(4.0f, -1.0f,-1.0f));
-    cubes[2].setTranslation(Vector3D(3.5f, 0.0f,-1.0f));
-    diabloMatrix = diablo.setSize(2.3,2.3,2.3);
-    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 50.0f);
+    Transform3D diabloTransform, floorTransform, cubeTransform;
+    Transform3D tree0Transform, tree1Transform, playerTransform;
+    diabloTransform.setScale(diablo.setSizeToVector(2.3, 2.3, 2.3));
+    cubeTransform.setTranslation(Vector3D(3.0f,-1.0f,+2.0f));
+    tree0Transform.setScale(tree.setSizeToVector(2.0,2.0,2.0));
+    tree0Transform.setTranslation(Vector3D(-4,-1.5f,-4));
+    tree1Transform.setScale(tree.setSizeToVector(0.15,0.15,0.15));
+    tree1Transform.setTranslation(Vector3D(-4,-1.5f,+4));
+    playerTransform.setScale(player.setSizeToVector(1.0,1.0,1.0));
+    playerTransform.setTranslation(Vector3D(+4,-1.0, +4));
+
+    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 40.0f);
 
     // calculate time stamp.
-    clock_t start, finish;
     fps = 0;
+    clock_t start, finish;
     pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
 
     // render loop.
@@ -102,30 +119,23 @@ void RenderLoop::loop()
         //pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
         pipeline->clearBuffer(Vector4D(0.0,0.0,0.0,1.0f));
 
-        pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
+        //pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
+        pipeline->setViewMatrix(tPSCamera->getPosition(), tPSCamera->getViewMatrix());
         // render cube.
         {
             pipeline->bindTexture(cubeUnit);
             pipeline->setVertexBuffer(&cube.m_vertices);
             pipeline->setIndexBuffer(&cube.m_indices);
-
             pipeline->bindTexture(cubeUnit);
-            pipeline->setModelMatrix(cubes[0]);
+            pipeline->setModelMatrix(cubeTransform.toMatrix());
             pipeline->drawIndex(RenderMode::fill);
-
-            pipeline->setModelMatrix(cubes[1]);
-            pipeline->drawIndex(RenderMode::fill);
-
-            pipeline->setModelMatrix(cubes[2]);
-            pipeline->drawIndex(RenderMode::fill);
-
             pipeline->unBindTexture(cubeUnit);
         }
 
         // render diablo model.
         {
             pipeline->bindTexture(diablo3);
-            pipeline->setModelMatrix(test.toMatrix() * diabloMatrix);
+            pipeline->setModelMatrix(diabloTransform.toMatrix());
             pipeline->setVertexBuffer(&diablo.m_vertices);
             pipeline->setIndexBuffer(&diablo.m_indices);
             pipeline->drawIndex(RenderMode::fill);
@@ -135,11 +145,38 @@ void RenderLoop::loop()
         // render floor.
         {
             pipeline->bindTexture(floorUnit);
-            pipeline->setModelMatrix(test.toMatrix());
+            pipeline->setModelMatrix(floorTransform.toMatrix());
             pipeline->setVertexBuffer(&floor.m_vertices);
             pipeline->setIndexBuffer(&floor.m_indices);
             pipeline->drawIndex(RenderMode::fill);
             pipeline->unBindTexture(floorUnit);
+        }
+
+        // render tree
+        {
+            pipeline->bindTexture(treeUnit);
+            pipeline->setModelMatrix(tree0Transform.toMatrix());
+            pipeline->setVertexBuffer(&tree.m_vertices);
+            pipeline->setIndexBuffer(&tree.m_indices);
+            pipeline->drawIndex(RenderMode::fill);
+
+            pipeline->bindTexture(lowPolygonTree);
+            pipeline->setModelMatrix(tree1Transform.toMatrix());
+            pipeline->setVertexBuffer(&tree1.m_vertices);
+            pipeline->setIndexBuffer(&tree1.m_indices);
+            pipeline->drawIndex(RenderMode::fill);
+            pipeline->unBindTexture(0);
+        }
+
+        // render player
+        {
+            pipeline->bindTexture(playerUnit);
+            pipeline->setModelMatrix(tPSCamera->getPlayerMatrix()
+                                     * player.setSizeToMatrix(1.0,1.0,1.0));
+            pipeline->setVertexBuffer(&player.m_vertices);
+            pipeline->setIndexBuffer(&player.m_indices);
+            pipeline->drawIndex(RenderMode::fill);
+            pipeline->unBindTexture(0);
         }
 
         pipeline->swapBuffer();
@@ -153,7 +190,7 @@ void RenderLoop::loop()
         angle += 45 * deltaFrameTime;
         angle = fmod(angle, 360.0);
         test.setRotationAxis(Vector3D(0,1,0), angle);
-        //rotat.setRotationY(angle);
+        diabloTransform.setRotation(test);
 
         // send the frame.
         emit frameOut(pipeline->output(), pipeline->getProfile().num_triangles,
@@ -165,9 +202,16 @@ void RenderLoop::loop()
 void RenderLoop::receiveKeyEvent(char key)
 {
     fpsCamera->onKeyPress(key);
+    tPSCamera->onKeyPress(key);
 }
 
-void RenderLoop::receiveMouseEvent(double deltaX, double deltaY)
+void RenderLoop::receiveMouseWheelEvent(double delta)
 {
-    fpsCamera->onMouseMove(deltaX, deltaY);
+    tPSCamera->onWheelMove(delta);
+}
+
+void RenderLoop::receiveMouseEvent(double deltaX, double deltaY, std::string button)
+{
+    fpsCamera->onMouseMove(deltaX, deltaY, button);
+    tPSCamera->onMouseMove(deltaX, deltaY, button);
 }

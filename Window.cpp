@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QThread>
 #include <QKeyEvent>
+#include <QWheelEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QDebug>
@@ -82,7 +83,20 @@ void Window::fpsTimeOut()
 
 void Window::mouseMoveEvent(QMouseEvent *event)
 {
-    if(!(event->buttons() & Qt::LeftButton))
+    //    if(!(event->buttons() & Qt::LeftButton))
+    //        firstMouseMove = true;
+    //    if(firstMouseMove)
+    //    {
+    //        firstMouseMove = false;
+    //        preMousePos = event->pos();
+    //    }
+    //    else
+    //    {
+    //        QPoint delta = event->pos() - preMousePos;
+    //        preMousePos = event->pos();
+    //        loop->receiveMouseEvent(delta.x(), delta.y(), 'L');
+    //    }
+    if(!(event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton))
         firstMouseMove = true;
     if(firstMouseMove)
     {
@@ -93,8 +107,12 @@ void Window::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint delta = event->pos() - preMousePos;
         preMousePos = event->pos();
-        loop->receiveMouseEvent(delta.x(), delta.y());
+        if(event->buttons() & Qt::LeftButton)
+            loop->receiveMouseEvent(delta.x(), delta.y(), "LEFT");
+        else if(event->buttons() & Qt::RightButton)
+            loop->receiveMouseEvent(delta.x(), delta.y(), "RIGHT");
     }
+
 }
 
 void Window::keyPressEvent(QKeyEvent *event)
@@ -114,4 +132,10 @@ void Window::keyPressEvent(QKeyEvent *event)
     case Qt::Key_E:
         loop->receiveKeyEvent('E');break;
     }
+}
+
+void Window::wheelEvent(QWheelEvent *event)
+{
+    double delta = event->delta();
+    loop->receiveMouseWheelEvent(delta);
 }
