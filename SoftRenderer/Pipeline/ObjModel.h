@@ -2,7 +2,7 @@
 #define OBJMODEL_H
 
 #include "Mesh.h"
-#include "Math/Matrix4x4.h"
+#include "../Math/Matrix4x4.h"
 
 /**
  * @projectName   SoftRenderer
@@ -16,15 +16,19 @@ namespace SoftRenderer
 class ObjModel : public Mesh
 {
 private:
-    Vector3D minPoint, maxPoint;
+    Vector3D minPoint, maxPoint;        // Bounding box.
+
 public:
+    // ctor/dtor.
     ObjModel(const std::string &path);
     virtual ~ObjModel();
 
+    // Size setting.
     Vector3D setSizeToVector(float sx, float sy, float sz) const;
     Matrix4x4 setSizeToMatrix(float sx, float sy, float sz) const;
 
 private:
+    // Obj file loader.
     void loadObjFile(const std::string &path);
 };
 

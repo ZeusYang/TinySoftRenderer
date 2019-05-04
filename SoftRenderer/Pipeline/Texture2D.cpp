@@ -1,11 +1,9 @@
 #include "Texture2D.h"
 
-#include <QDebug>
-#include <QString>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+// one divide 255
 #define INV_SCALE 0.003921568627451
 
 namespace SoftRenderer
@@ -111,7 +109,7 @@ bool Texture2D::loadImage(const std::string &path)
     m_pixelBuffer = stbi_load(path.c_str(), &m_width, &m_height, &m_channel, 0);
     if(m_pixelBuffer == nullptr)
     {
-        qDebug() << "Failed to load image->" << QString::fromStdString(path);
+        std::cout << "Failed to load image->" << path;
     }
     return  m_pixelBuffer != nullptr;
 }

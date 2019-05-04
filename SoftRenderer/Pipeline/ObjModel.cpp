@@ -1,6 +1,5 @@
 #include "ObjModel.h"
 
-#include <QDebug>
 #include <fstream>
 #include <sstream>
 
@@ -41,7 +40,7 @@ void ObjModel::loadObjFile(const std::string &path)
     in.open(path, ifstream::in);
     if(in.fail())
     {
-        cout << "Fail to load obj->" << path << endl;
+        std::cout << "Fail to load obj->" << path << endl;
     }
     string line;
     minPoint = Vector3D(+10000000000,+10000000000,+10000000000);

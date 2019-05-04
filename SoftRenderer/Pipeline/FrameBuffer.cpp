@@ -1,7 +1,5 @@
 #include "FrameBuffer.h"
 
-#include <QDebug>
-
 namespace SoftRenderer
 {
 
@@ -10,6 +8,13 @@ FrameBuffer::FrameBuffer(int width, int height)
 {
     m_depthBuffer.resize(m_width*m_height, 1.0f);
     m_colorBuffer.resize(m_width*m_height*m_channel, 255);
+}
+
+double FrameBuffer::getDepth(const unsigned int &x, const unsigned int &y) const
+{
+    if(x < 0 || x >= m_width || y < 0 || y >= m_height)
+        return 0.0f;
+    return m_depthBuffer[y*m_width+x];
 }
 
 void FrameBuffer::clearColorAndDepthBuffer(const Vector4D &color)
@@ -31,13 +36,6 @@ void FrameBuffer::clearColorAndDepthBuffer(const Vector4D &color)
             m_colorBuffer[row*m_width*m_channel+col*m_channel + 3] = alpha;
         }
     }
-}
-
-double FrameBuffer::getDepth(const unsigned int &x, const unsigned int &y) const
-{
-    if(x < 0 || x >= m_width || y < 0 || y >= m_height)
-        return 0.0f;
-    return m_depthBuffer[y*m_width+x];
 }
 
 void FrameBuffer::drawDepth(const unsigned int &x, const unsigned int &y, const double &value)

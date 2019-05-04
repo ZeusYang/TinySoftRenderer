@@ -31,22 +31,22 @@ SOURCES += \
     SoftRenderer/Math/Vector3D.cpp \
     SoftRenderer/Math/Vector4D.cpp \
     SoftRenderer/Math/Matrix4x4.cpp \
-    SoftRenderer/Mesh.cpp \
-    SoftRenderer/BaseShader.cpp \
-    SoftRenderer/FrameBuffer.cpp \
-    SoftRenderer/Pipeline.cpp \
-    SoftRenderer/SimpleShader.cpp \
     RenderLoop.cpp \
-    SoftRenderer/Texture2D.cpp \
-    SoftRenderer/ObjModel.cpp \
-    SoftRenderer/Light.cpp \
-    SoftRenderer/GouraudShader.cpp \
-    SoftRenderer/PhongShader.cpp \
-    SoftRenderer/Camera3D.cpp \
     SoftRenderer/Math/Quaternion.cpp \
-    SoftRenderer/FPSCamera.cpp \
-    SoftRenderer/TPSCamera.cpp \
-    SoftRenderer/Transform3D.cpp
+    SoftRenderer/Camera/Camera3D.cpp \
+    SoftRenderer/Camera/FPSCamera.cpp \
+    SoftRenderer/Camera/TPSCamera.cpp \
+    SoftRenderer/Camera/Transform3D.cpp \
+    SoftRenderer/Pipeline/FrameBuffer.cpp \
+    SoftRenderer/Pipeline/Light.cpp \
+    SoftRenderer/Pipeline/Mesh.cpp \
+    SoftRenderer/Pipeline/ObjModel.cpp \
+    SoftRenderer/Pipeline/Pipeline.cpp \
+    SoftRenderer/Pipeline/Texture2D.cpp \
+    SoftRenderer/Shader/BaseShader.cpp \
+    SoftRenderer/Shader/GouraudShader.cpp \
+    SoftRenderer/Shader/PhongShader.cpp \
+    SoftRenderer/Shader/SimpleShader.cpp
 
 HEADERS += \
         Window.h \
@@ -55,22 +55,22 @@ HEADERS += \
     SoftRenderer/Math/Vector3D.h \
     SoftRenderer/Math/Vector4D.h \
     SoftRenderer/Math/Matrix4x4.h \
-    SoftRenderer/Mesh.h \
-    SoftRenderer/BaseShader.h \
-    SoftRenderer/FrameBuffer.h \
-    SoftRenderer/Pipeline.h \
-    SoftRenderer/SimpleShader.h \
     RenderLoop.h \
-    SoftRenderer/Texture2D.h \
-    SoftRenderer/ObjModel.h \
-    SoftRenderer/Light.h \
-    SoftRenderer/GouraudShader.h \
-    SoftRenderer/PhongShader.h \
-    SoftRenderer/Camera3D.h \
     SoftRenderer/Math/Quaternion.h \
-    SoftRenderer/FPSCamera.h \
-    SoftRenderer/TPSCamera.h \
-    SoftRenderer/Transform3D.h
+    SoftRenderer/Camera/Camera3D.h \
+    SoftRenderer/Camera/FPSCamera.h \
+    SoftRenderer/Camera/TPSCamera.h \
+    SoftRenderer/Camera/Transform3D.h \
+    SoftRenderer/Pipeline/FrameBuffer.h \
+    SoftRenderer/Pipeline/Light.h \
+    SoftRenderer/Pipeline/Mesh.h \
+    SoftRenderer/Pipeline/ObjModel.h \
+    SoftRenderer/Pipeline/Pipeline.h \
+    SoftRenderer/Pipeline/Texture2D.h \
+    SoftRenderer/Shader/BaseShader.h \
+    SoftRenderer/Shader/GouraudShader.h \
+    SoftRenderer/Shader/PhongShader.h \
+    SoftRenderer/Shader/SimpleShader.h
 
 FORMS += \
         Window.ui

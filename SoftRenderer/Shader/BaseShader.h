@@ -1,8 +1,8 @@
 #ifndef BASESHADER_H
 #define BASESHADER_H
 
-#include "Mesh.h"
-#include "Math/Matrix4x4.h"
+#include "../Pipeline/Mesh.h"
+#include "../Math/Matrix4x4.h"
 
 /**
  * @projectName   SoftRenderer
@@ -22,8 +22,11 @@ public:
     BaseShader() = default;
     virtual ~BaseShader() = default;
 
+    // Shader stage.
     virtual VertexOut vertexShader(const Vertex &in) = 0;
     virtual Vector4D fragmentShader(const VertexOut &in) = 0;
+
+    // Shader setting.
     virtual void bindShaderUnit(Texture2D *unit) = 0;
     virtual void setModelMatrix(const Matrix4x4 &world) = 0;
     virtual void setViewMatrix(const Matrix4x4 &view) = 0;

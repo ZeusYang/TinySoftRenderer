@@ -1,7 +1,5 @@
 #include "TPSCamera.h"
 
-#include <QDebug>
-
 namespace SoftRenderer
 {
 
@@ -74,31 +72,11 @@ void TPSCamera::onMouseMove(double deltaX, double deltaY, std::string button)
     }
 }
 
-Vector3D TPSCamera::forward() const
-{
-    // must update before calling.
-    return m_rotation * LocalForward;
-}
-
-Vector3D TPSCamera::up() const
-{
-    // must update before calling.
-    return m_rotation * LocalUp;
-}
-
-Vector3D TPSCamera::right() const
-{
-    // must update before calling.
-    return m_rotation * LocalRight;
-}
-
 void TPSCamera::update()
 {
     if(m_dirty)
     {
         m_dirty = false;
-
-        // calculate position.
         Vector3D target = m_player.translation();
         float height = m_distance * sin(radians(m_pitch));
         float horizon = m_distance * cos(radians(m_pitch));
@@ -108,8 +86,6 @@ void TPSCamera::update()
         m_cameraPos.x = target.x + horizon * sin(radians(m_yaw));
         m_cameraPos.z = target.z + horizon * cos(radians(m_yaw));
         m_viewMatrix.setLookAt(m_cameraPos, m_player.translation(), LocalUp);
-
-
     }
 }
 

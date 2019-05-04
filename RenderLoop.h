@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-#include "SoftRenderer/Pipeline.h"
-#include "SoftRenderer/FPSCamera.h"
-#include "SoftRenderer/TPSCamera.h"
+#include "SoftRenderer/Pipeline/Pipeline.h"
+#include "SoftRenderer/Camera/FPSCamera.h"
+#include "SoftRenderer/Camera/TPSCamera.h"
 
 class RenderLoop : public QObject
 {

@@ -1,10 +1,9 @@
 #ifndef SIMPLESHADER_H
 #define SIMPLESHADER_H
 
-#include "Light.h"
 #include "BaseShader.h"
-#include "Math/Matrix4x4.h"
-
+#include "../Pipeline/Light.h"
+#include "../Math/Matrix4x4.h"
 /**
  * @projectName   SoftRenderer
  * @brief         A simple shader.
@@ -17,17 +16,21 @@ namespace SoftRenderer
 class SimpleShader : public BaseShader
 {
 private:
-    const Texture2D *m_unit;
-    Matrix4x4 m_modelMatrix;
-    Matrix4x4 m_viewMatrix;
-    Matrix4x4 m_projectMatrix;
+    const Texture2D *m_unit;        // Texture unit.
+    Matrix4x4 m_modelMatrix;        // Model matrix.
+    Matrix4x4 m_viewMatrix;         // View matrix.
+    Matrix4x4 m_projectMatrix;      // Projection matrix.
 
 public:
+    // ctor/dtor.
     SimpleShader();
     virtual ~SimpleShader() = default;
 
+    // Shader stage.
     virtual VertexOut vertexShader(const Vertex &in);
     virtual Vector4D fragmentShader(const VertexOut &in);
+
+    // Shader setting.
     virtual void bindShaderUnit(Texture2D *unit){m_unit = unit;}
     virtual void setModelMatrix(const Matrix4x4 &world){m_modelMatrix = world;}
     virtual void setViewMatrix(const Matrix4x4 &view){m_viewMatrix = view;}

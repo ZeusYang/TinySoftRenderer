@@ -44,7 +44,6 @@ Window::~Window()
     loop->stopIt();
     loopThread->quit();
     loopThread->wait();
-    //if(loop)delete loop;
     if(canvas)delete canvas;
     if(loopThread)delete loopThread;
     loop = nullptr;
@@ -83,6 +82,8 @@ void Window::fpsTimeOut()
 
 void Window::mouseMoveEvent(QMouseEvent *event)
 {
+
+    // FPS camera.
     //    if(!(event->buttons() & Qt::LeftButton))
     //        firstMouseMove = true;
     //    if(firstMouseMove)
@@ -96,6 +97,8 @@ void Window::mouseMoveEvent(QMouseEvent *event)
     //        preMousePos = event->pos();
     //        loop->receiveMouseEvent(delta.x(), delta.y(), 'L');
     //    }
+
+    // TPS camera.
     if(!(event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton))
         firstMouseMove = true;
     if(firstMouseMove)

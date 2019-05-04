@@ -51,22 +51,22 @@ SOURCES       = ..\main.cpp \
 		..\SoftRenderer\Math\Vector3D.cpp \
 		..\SoftRenderer\Math\Vector4D.cpp \
 		..\SoftRenderer\Math\Matrix4x4.cpp \
-		..\SoftRenderer\Mesh.cpp \
-		..\SoftRenderer\BaseShader.cpp \
-		..\SoftRenderer\FrameBuffer.cpp \
-		..\SoftRenderer\Pipeline.cpp \
-		..\SoftRenderer\SimpleShader.cpp \
 		..\RenderLoop.cpp \
-		..\SoftRenderer\Texture2D.cpp \
-		..\SoftRenderer\ObjModel.cpp \
-		..\SoftRenderer\Light.cpp \
-		..\SoftRenderer\GouraudShader.cpp \
-		..\SoftRenderer\PhongShader.cpp \
-		..\SoftRenderer\Camera3D.cpp \
 		..\SoftRenderer\Math\Quaternion.cpp \
-		..\SoftRenderer\FPSCamera.cpp \
-		..\SoftRenderer\TPSCamera.cpp \
-		..\SoftRenderer\Transform3D.cpp debug\moc_Window.cpp \
+		..\SoftRenderer\Camera\Camera3D.cpp \
+		..\SoftRenderer\Camera\FPSCamera.cpp \
+		..\SoftRenderer\Camera\TPSCamera.cpp \
+		..\SoftRenderer\Camera\Transform3D.cpp \
+		..\SoftRenderer\Pipeline\FrameBuffer.cpp \
+		..\SoftRenderer\Pipeline\Light.cpp \
+		..\SoftRenderer\Pipeline\Mesh.cpp \
+		..\SoftRenderer\Pipeline\ObjModel.cpp \
+		..\SoftRenderer\Pipeline\Pipeline.cpp \
+		..\SoftRenderer\Pipeline\Texture2D.cpp \
+		..\SoftRenderer\Shader\BaseShader.cpp \
+		..\SoftRenderer\Shader\GouraudShader.cpp \
+		..\SoftRenderer\Shader\PhongShader.cpp \
+		..\SoftRenderer\Shader\SimpleShader.cpp debug\moc_Window.cpp \
 		debug\moc_RenderLoop.cpp
 OBJECTS       = debug\main.obj \
 		debug\Window.obj \
@@ -74,22 +74,22 @@ OBJECTS       = debug\main.obj \
 		debug\Vector3D.obj \
 		debug\Vector4D.obj \
 		debug\Matrix4x4.obj \
-		debug\Mesh.obj \
-		debug\BaseShader.obj \
-		debug\FrameBuffer.obj \
-		debug\Pipeline.obj \
-		debug\SimpleShader.obj \
 		debug\RenderLoop.obj \
-		debug\Texture2D.obj \
-		debug\ObjModel.obj \
-		debug\Light.obj \
-		debug\GouraudShader.obj \
-		debug\PhongShader.obj \
-		debug\Camera3D.obj \
 		debug\Quaternion.obj \
+		debug\Camera3D.obj \
 		debug\FPSCamera.obj \
 		debug\TPSCamera.obj \
 		debug\Transform3D.obj \
+		debug\FrameBuffer.obj \
+		debug\Light.obj \
+		debug\Mesh.obj \
+		debug\ObjModel.obj \
+		debug\Pipeline.obj \
+		debug\Texture2D.obj \
+		debug\BaseShader.obj \
+		debug\GouraudShader.obj \
+		debug\PhongShader.obj \
+		debug\SimpleShader.obj \
 		debug\moc_Window.obj \
 		debug\moc_RenderLoop.obj
 
@@ -99,43 +99,43 @@ DIST          =  ..\Window.h \
 		..\SoftRenderer\Math\Vector3D.h \
 		..\SoftRenderer\Math\Vector4D.h \
 		..\SoftRenderer\Math\Matrix4x4.h \
-		..\SoftRenderer\Mesh.h \
-		..\SoftRenderer\BaseShader.h \
-		..\SoftRenderer\FrameBuffer.h \
-		..\SoftRenderer\Pipeline.h \
-		..\SoftRenderer\SimpleShader.h \
 		..\RenderLoop.h \
-		..\SoftRenderer\Texture2D.h \
-		..\SoftRenderer\ObjModel.h \
-		..\SoftRenderer\Light.h \
-		..\SoftRenderer\GouraudShader.h \
-		..\SoftRenderer\PhongShader.h \
-		..\SoftRenderer\Camera3D.h \
 		..\SoftRenderer\Math\Quaternion.h \
-		..\SoftRenderer\FPSCamera.h \
-		..\SoftRenderer\TPSCamera.h \
-		..\SoftRenderer\Transform3D.h ..\main.cpp \
+		..\SoftRenderer\Camera\Camera3D.h \
+		..\SoftRenderer\Camera\FPSCamera.h \
+		..\SoftRenderer\Camera\TPSCamera.h \
+		..\SoftRenderer\Camera\Transform3D.h \
+		..\SoftRenderer\Pipeline\FrameBuffer.h \
+		..\SoftRenderer\Pipeline\Light.h \
+		..\SoftRenderer\Pipeline\Mesh.h \
+		..\SoftRenderer\Pipeline\ObjModel.h \
+		..\SoftRenderer\Pipeline\Pipeline.h \
+		..\SoftRenderer\Pipeline\Texture2D.h \
+		..\SoftRenderer\Shader\BaseShader.h \
+		..\SoftRenderer\Shader\GouraudShader.h \
+		..\SoftRenderer\Shader\PhongShader.h \
+		..\SoftRenderer\Shader\SimpleShader.h ..\main.cpp \
 		..\Window.cpp \
 		..\SoftRenderer\Math\Vector2D.cpp \
 		..\SoftRenderer\Math\Vector3D.cpp \
 		..\SoftRenderer\Math\Vector4D.cpp \
 		..\SoftRenderer\Math\Matrix4x4.cpp \
-		..\SoftRenderer\Mesh.cpp \
-		..\SoftRenderer\BaseShader.cpp \
-		..\SoftRenderer\FrameBuffer.cpp \
-		..\SoftRenderer\Pipeline.cpp \
-		..\SoftRenderer\SimpleShader.cpp \
 		..\RenderLoop.cpp \
-		..\SoftRenderer\Texture2D.cpp \
-		..\SoftRenderer\ObjModel.cpp \
-		..\SoftRenderer\Light.cpp \
-		..\SoftRenderer\GouraudShader.cpp \
-		..\SoftRenderer\PhongShader.cpp \
-		..\SoftRenderer\Camera3D.cpp \
 		..\SoftRenderer\Math\Quaternion.cpp \
-		..\SoftRenderer\FPSCamera.cpp \
-		..\SoftRenderer\TPSCamera.cpp \
-		..\SoftRenderer\Transform3D.cpp
+		..\SoftRenderer\Camera\Camera3D.cpp \
+		..\SoftRenderer\Camera\FPSCamera.cpp \
+		..\SoftRenderer\Camera\TPSCamera.cpp \
+		..\SoftRenderer\Camera\Transform3D.cpp \
+		..\SoftRenderer\Pipeline\FrameBuffer.cpp \
+		..\SoftRenderer\Pipeline\Light.cpp \
+		..\SoftRenderer\Pipeline\Mesh.cpp \
+		..\SoftRenderer\Pipeline\ObjModel.cpp \
+		..\SoftRenderer\Pipeline\Pipeline.cpp \
+		..\SoftRenderer\Pipeline\Texture2D.cpp \
+		..\SoftRenderer\Shader\BaseShader.cpp \
+		..\SoftRenderer\Shader\GouraudShader.cpp \
+		..\SoftRenderer\Shader\PhongShader.cpp \
+		..\SoftRenderer\Shader\SimpleShader.cpp
 QMAKE_TARGET  = SoftRenderer
 DESTDIR        = debug\ #avoid trailing-slash linebreak
 TARGET         = SoftRenderer.exe
@@ -144,6 +144,26 @@ DESTDIR_TARGET = debug\SoftRenderer.exe
 ####### Implicit rules
 
 .SUFFIXES: .c .cpp .cc .cxx
+
+{..\SoftRenderer\Camera}.cpp{debug\}.obj::
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Camera}.cc{debug\}.obj::
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Camera}.cxx{debug\}.obj::
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Camera}.c{debug\}.obj::
+	$(CC) -c $(CFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
 
 {debug}.cpp{debug\}.obj::
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
@@ -225,22 +245,42 @@ DESTDIR_TARGET = debug\SoftRenderer.exe
 	$<
 <<
 
-{..\SoftRenderer}.cpp{debug\}.obj::
+{..\SoftRenderer\Shader}.cpp{debug\}.obj::
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
 	$<
 <<
 
-{..\SoftRenderer}.cc{debug\}.obj::
+{..\SoftRenderer\Shader}.cc{debug\}.obj::
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
 	$<
 <<
 
-{..\SoftRenderer}.cxx{debug\}.obj::
+{..\SoftRenderer\Shader}.cxx{debug\}.obj::
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
 	$<
 <<
 
-{..\SoftRenderer}.c{debug\}.obj::
+{..\SoftRenderer\Shader}.c{debug\}.obj::
+	$(CC) -c $(CFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Pipeline}.cpp{debug\}.obj::
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Pipeline}.cc{debug\}.obj::
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Pipeline}.cxx{debug\}.obj::
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\ @<<
+	$<
+<<
+
+{..\SoftRenderer\Pipeline}.c{debug\}.obj::
 	$(CC) -c $(CFLAGS) $(INCPATH) -Fodebug\ @<<
 	$<
 <<
@@ -252,7 +292,7 @@ all: Makefile.Debug  $(DESTDIR_TARGET)
 
 $(DESTDIR_TARGET): ui_Window.h $(OBJECTS) 
 	$(LINKER) $(LFLAGS) /MANIFEST:embed /OUT:$(DESTDIR_TARGET) @<<
-debug\main.obj debug\Window.obj debug\Vector2D.obj debug\Vector3D.obj debug\Vector4D.obj debug\Matrix4x4.obj debug\Mesh.obj debug\BaseShader.obj debug\FrameBuffer.obj debug\Pipeline.obj debug\SimpleShader.obj debug\RenderLoop.obj debug\Texture2D.obj debug\ObjModel.obj debug\Light.obj debug\GouraudShader.obj debug\PhongShader.obj debug\Camera3D.obj debug\Quaternion.obj debug\FPSCamera.obj debug\TPSCamera.obj debug\Transform3D.obj debug\moc_Window.obj debug\moc_RenderLoop.obj
+debug\main.obj debug\Window.obj debug\Vector2D.obj debug\Vector3D.obj debug\Vector4D.obj debug\Matrix4x4.obj debug\RenderLoop.obj debug\Quaternion.obj debug\Camera3D.obj debug\FPSCamera.obj debug\TPSCamera.obj debug\Transform3D.obj debug\FrameBuffer.obj debug\Light.obj debug\Mesh.obj debug\ObjModel.obj debug\Pipeline.obj debug\Texture2D.obj debug\BaseShader.obj debug\GouraudShader.obj debug\PhongShader.obj debug\SimpleShader.obj debug\moc_Window.obj debug\moc_RenderLoop.obj
 $(LIBS)
 <<
 
@@ -262,10 +302,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) SoftRenderer.zip $(SOURCES) $(DIST) ..\SoftRenderer.pro D:\Qt\5.10.1\msvc2017_64\mkspecs\features\spec_pre.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\angle.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\windows-vulkan.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\msvc-desktop.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\qconfig.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3danimation.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3danimation_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dcore.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dcore_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dextras.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dextras_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dinput.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dinput_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dlogic.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dlogic_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquick.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquick_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3drender.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3drender_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_accessibility_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axbase.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axbase_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axcontainer.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axcontainer_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axserver.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axserver_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_bluetooth.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_bluetooth_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_bootstrap_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_charts.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_charts_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_concurrent.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_concurrent_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_core.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_core_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_datavisualization.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_datavisualization_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_dbus.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_dbus_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_designer.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_designer_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_designercomponents_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_edid_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_egl_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_fb_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gamepad.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gamepad_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gui.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gui_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_help.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_help_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_location.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_location_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimedia.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimedia_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_network.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_network_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_networkauth.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_networkauth_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_nfc.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_nfc_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_opengl.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_opengl_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_openglextensions.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_openglextensions_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_packetprotocol_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_positioning.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_positioning_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_printsupport.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_printsupport_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_purchasing.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_purchasing_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qml.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qml_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmldebug_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmldevtools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmltest.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmltest_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quick.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quick_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickparticles_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_repparser.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_repparser_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_script.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_script_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scripttools.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scripttools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scxml.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scxml_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sensors.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sensors_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialbus.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialbus_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialport.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialport_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sql.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sql_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_svg.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_svg_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_testlib.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_testlib_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_texttospeech.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_texttospeech_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_theme_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_uiplugin.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_uitools.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_uitools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_vulkan_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webchannel.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webchannel_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webengine.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webengine_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginecore.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginecore_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginecoreheaders_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_websockets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_websockets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webview.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webview_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_widgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_widgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_winextras.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_winextras_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xml.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xml_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_zlib_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qt_functions.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qt_config.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\win32-msvc\qmake.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\spec_post.prf .qmake.stash D:\Qt\5.10.1\msvc2017_64\mkspecs\features\exclusive_builds.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\msvc-version.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\toolchain.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\default_pre.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\win32\default_pre.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\resolve_config.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\exclusive_builds_post.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\default_post.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\build_pass.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\precompile_header.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\warn_on.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qt.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\resources.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\moc.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\win32\opengl.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\uic.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qmake_use.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\file_copies.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\win32\windows.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\testcase_targets.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\exceptions.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\yacc.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\lex.prf ..\SoftRenderer.pro D:\Qt\5.10.1\msvc2017_64\lib\qtmaind.prl D:\Qt\5.10.1\msvc2017_64\lib\Qt5Widgetsd.prl D:\Qt\5.10.1\msvc2017_64\lib\Qt5Guid.prl D:\Qt\5.10.1\msvc2017_64\lib\Qt5Cored.prl    D:\Qt\5.10.1\msvc2017_64\mkspecs\features\data\dummy.cpp ..\Window.h ..\SoftRenderer\Math\MathUtils.h ..\SoftRenderer\Math\Vector2D.h ..\SoftRenderer\Math\Vector3D.h ..\SoftRenderer\Math\Vector4D.h ..\SoftRenderer\Math\Matrix4x4.h ..\SoftRenderer\Mesh.h ..\SoftRenderer\BaseShader.h ..\SoftRenderer\FrameBuffer.h ..\SoftRenderer\Pipeline.h ..\SoftRenderer\SimpleShader.h ..\RenderLoop.h ..\SoftRenderer\Texture2D.h ..\SoftRenderer\ObjModel.h ..\SoftRenderer\Light.h ..\SoftRenderer\GouraudShader.h ..\SoftRenderer\PhongShader.h ..\SoftRenderer\Camera3D.h ..\SoftRenderer\Math\Quaternion.h ..\SoftRenderer\FPSCamera.h ..\SoftRenderer\TPSCamera.h ..\SoftRenderer\Transform3D.h  ..\main.cpp ..\Window.cpp ..\SoftRenderer\Math\Vector2D.cpp ..\SoftRenderer\Math\Vector3D.cpp ..\SoftRenderer\Math\Vector4D.cpp ..\SoftRenderer\Math\Matrix4x4.cpp ..\SoftRenderer\Mesh.cpp ..\SoftRenderer\BaseShader.cpp ..\SoftRenderer\FrameBuffer.cpp ..\SoftRenderer\Pipeline.cpp ..\SoftRenderer\SimpleShader.cpp ..\RenderLoop.cpp ..\SoftRenderer\Texture2D.cpp ..\SoftRenderer\ObjModel.cpp ..\SoftRenderer\Light.cpp ..\SoftRenderer\GouraudShader.cpp ..\SoftRenderer\PhongShader.cpp ..\SoftRenderer\Camera3D.cpp ..\SoftRenderer\Math\Quaternion.cpp ..\SoftRenderer\FPSCamera.cpp ..\SoftRenderer\TPSCamera.cpp ..\SoftRenderer\Transform3D.cpp ..\Window.ui    
+	$(ZIP) SoftRenderer.zip $(SOURCES) $(DIST) ..\SoftRenderer.pro D:\Qt\5.10.1\msvc2017_64\mkspecs\features\spec_pre.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\angle.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\windows-vulkan.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\msvc-desktop.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\qconfig.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3danimation.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3danimation_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dcore.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dcore_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dextras.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dextras_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dinput.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dinput_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dlogic.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dlogic_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquick.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquick_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3drender.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_3drender_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_accessibility_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axbase.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axbase_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axcontainer.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axcontainer_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axserver.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_axserver_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_bluetooth.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_bluetooth_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_bootstrap_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_charts.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_charts_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_concurrent.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_concurrent_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_core.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_core_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_datavisualization.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_datavisualization_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_dbus.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_dbus_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_designer.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_designer_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_designercomponents_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_edid_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_egl_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_fb_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gamepad.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gamepad_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gui.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_gui_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_help.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_help_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_location.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_location_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimedia.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimedia_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_network.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_network_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_networkauth.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_networkauth_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_nfc.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_nfc_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_opengl.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_opengl_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_openglextensions.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_openglextensions_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_packetprotocol_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_positioning.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_positioning_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_printsupport.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_printsupport_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_purchasing.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_purchasing_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qml.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qml_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmldebug_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmldevtools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmltest.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qmltest_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quick.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quick_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickparticles_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_repparser.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_repparser_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_script.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_script_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scripttools.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scripttools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scxml.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_scxml_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sensors.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sensors_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialbus.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialbus_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialport.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_serialport_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sql.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_sql_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_svg.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_svg_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_testlib.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_testlib_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_texttospeech.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_texttospeech_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_theme_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_uiplugin.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_uitools.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_uitools_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_vulkan_support_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webchannel.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webchannel_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webengine.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webengine_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginecore.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginecore_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginecoreheaders_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_websockets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_websockets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webview.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_webview_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_widgets.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_widgets_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_winextras.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_winextras_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xml.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xml_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\modules\qt_lib_zlib_private.pri D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qt_functions.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qt_config.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\win32-msvc\qmake.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\spec_post.prf .qmake.stash D:\Qt\5.10.1\msvc2017_64\mkspecs\features\exclusive_builds.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\common\msvc-version.conf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\toolchain.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\default_pre.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\win32\default_pre.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\resolve_config.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\exclusive_builds_post.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\default_post.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\build_pass.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\precompile_header.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\warn_on.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qt.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\resources.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\moc.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\win32\opengl.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\uic.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\qmake_use.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\file_copies.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\win32\windows.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\testcase_targets.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\exceptions.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\yacc.prf D:\Qt\5.10.1\msvc2017_64\mkspecs\features\lex.prf ..\SoftRenderer.pro D:\Qt\5.10.1\msvc2017_64\lib\qtmaind.prl D:\Qt\5.10.1\msvc2017_64\lib\Qt5Widgetsd.prl D:\Qt\5.10.1\msvc2017_64\lib\Qt5Guid.prl D:\Qt\5.10.1\msvc2017_64\lib\Qt5Cored.prl    D:\Qt\5.10.1\msvc2017_64\mkspecs\features\data\dummy.cpp ..\Window.h ..\SoftRenderer\Math\MathUtils.h ..\SoftRenderer\Math\Vector2D.h ..\SoftRenderer\Math\Vector3D.h ..\SoftRenderer\Math\Vector4D.h ..\SoftRenderer\Math\Matrix4x4.h ..\RenderLoop.h ..\SoftRenderer\Math\Quaternion.h ..\SoftRenderer\Camera\Camera3D.h ..\SoftRenderer\Camera\FPSCamera.h ..\SoftRenderer\Camera\TPSCamera.h ..\SoftRenderer\Camera\Transform3D.h ..\SoftRenderer\Pipeline\FrameBuffer.h ..\SoftRenderer\Pipeline\Light.h ..\SoftRenderer\Pipeline\Mesh.h ..\SoftRenderer\Pipeline\ObjModel.h ..\SoftRenderer\Pipeline\Pipeline.h ..\SoftRenderer\Pipeline\Texture2D.h ..\SoftRenderer\Shader\BaseShader.h ..\SoftRenderer\Shader\GouraudShader.h ..\SoftRenderer\Shader\PhongShader.h ..\SoftRenderer\Shader\SimpleShader.h  ..\main.cpp ..\Window.cpp ..\SoftRenderer\Math\Vector2D.cpp ..\SoftRenderer\Math\Vector3D.cpp ..\SoftRenderer\Math\Vector4D.cpp ..\SoftRenderer\Math\Matrix4x4.cpp ..\RenderLoop.cpp ..\SoftRenderer\Math\Quaternion.cpp ..\SoftRenderer\Camera\Camera3D.cpp ..\SoftRenderer\Camera\FPSCamera.cpp ..\SoftRenderer\Camera\TPSCamera.cpp ..\SoftRenderer\Camera\Transform3D.cpp ..\SoftRenderer\Pipeline\FrameBuffer.cpp ..\SoftRenderer\Pipeline\Light.cpp ..\SoftRenderer\Pipeline\Mesh.cpp ..\SoftRenderer\Pipeline\ObjModel.cpp ..\SoftRenderer\Pipeline\Pipeline.cpp ..\SoftRenderer\Pipeline\Texture2D.cpp ..\SoftRenderer\Shader\BaseShader.cpp ..\SoftRenderer\Shader\GouraudShader.cpp ..\SoftRenderer\Shader\PhongShader.cpp ..\SoftRenderer\Shader\SimpleShader.cpp ..\Window.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\main.obj debug\Window.obj debug\Vector2D.obj debug\Vector3D.obj debug\Vector4D.obj debug\Matrix4x4.obj debug\Mesh.obj debug\BaseShader.obj debug\FrameBuffer.obj debug\Pipeline.obj debug\SimpleShader.obj debug\RenderLoop.obj debug\Texture2D.obj debug\ObjModel.obj debug\Light.obj debug\GouraudShader.obj debug\PhongShader.obj debug\Camera3D.obj debug\Quaternion.obj debug\FPSCamera.obj debug\TPSCamera.obj debug\Transform3D.obj debug\moc_Window.obj debug\moc_RenderLoop.obj
+	-$(DEL_FILE) debug\main.obj debug\Window.obj debug\Vector2D.obj debug\Vector3D.obj debug\Vector4D.obj debug\Matrix4x4.obj debug\RenderLoop.obj debug\Quaternion.obj debug\Camera3D.obj debug\FPSCamera.obj debug\TPSCamera.obj debug\Transform3D.obj debug\FrameBuffer.obj debug\Light.obj debug\Mesh.obj debug\ObjModel.obj debug\Pipeline.obj debug\Texture2D.obj debug\BaseShader.obj debug\GouraudShader.obj debug\PhongShader.obj debug\SimpleShader.obj debug\moc_Window.obj debug\moc_RenderLoop.obj
 	-$(DEL_FILE) debug\SoftRenderer.exp debug\SoftRenderer.vc.pdb debug\SoftRenderer.ilk debug\SoftRenderer.idb
 
 distclean: clean 
@@ -452,18 +492,20 @@ debug\moc_RenderLoop.cpp: D:\Qt\5.10.1\msvc2017_64\include\QtCore\QObject \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		..\SoftRenderer\Pipeline.h \
-		..\SoftRenderer\Camera3D.h \
-		..\SoftRenderer\Math\Matrix4x4.h \
-		..\SoftRenderer\Math\MathUtils.h \
+		..\SoftRenderer\Pipeline\Pipeline.h \
+		..\SoftRenderer\Pipeline\FrameBuffer.h \
 		..\SoftRenderer\Math\Vector4D.h \
+		..\SoftRenderer\Math\MathUtils.h \
 		..\SoftRenderer\Math\Vector3D.h \
-		..\SoftRenderer\BaseShader.h \
-		..\SoftRenderer\Mesh.h \
+		..\SoftRenderer\Shader\BaseShader.h \
+		..\SoftRenderer\Pipeline\Mesh.h \
 		..\SoftRenderer\Math\Vector2D.h \
-		..\SoftRenderer\FrameBuffer.h \
-		..\SoftRenderer\FPSCamera.h \
+		..\SoftRenderer\Math\Matrix4x4.h \
+		..\SoftRenderer\Camera\FPSCamera.h \
+		..\SoftRenderer\Camera\Camera3D.h \
 		..\SoftRenderer\Math\Quaternion.h \
+		..\SoftRenderer\Camera\TPSCamera.h \
+		..\SoftRenderer\Camera\Transform3D.h \
 		..\RenderLoop.h \
 		debug\moc_predefs.h \
 		D:\Qt\5.10.1\msvc2017_64\bin\moc.exe
@@ -747,6 +789,7 @@ debug\Window.obj: ..\Window.cpp ../Window.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QThread \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qthread.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtGui\QKeyEvent \
+		D:\Qt\5.10.1\msvc2017_64\include\QtGui\QWheelEvent \
 		D:\Qt\5.10.1\msvc2017_64\include\QtGui\QMouseEvent \
 		D:\Qt\5.10.1\msvc2017_64\include\QtGui\QPainter \
 		D:\Qt\5.10.1\msvc2017_64\include\QtGui\qpainter.h \
@@ -755,18 +798,20 @@ debug\Window.obj: ..\Window.cpp ../Window.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
 		../RenderLoop.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QObject \
-		../SoftRenderer/Pipeline.h \
-		../SoftRenderer/Camera3D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Pipeline/Pipeline.h \
+		../SoftRenderer/Pipeline/FrameBuffer.h \
 		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/MathUtils.h \
 		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
+		../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
 		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/FrameBuffer.h \
-		../SoftRenderer/FPSCamera.h \
-		../SoftRenderer/Math/Quaternion.h
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Camera/FPSCamera.h \
+		../SoftRenderer/Camera/Camera3D.h \
+		../SoftRenderer/Math/Quaternion.h \
+		../SoftRenderer/Camera/TPSCamera.h \
+		../SoftRenderer/Camera/Transform3D.h
 
 debug\Vector2D.obj: ..\SoftRenderer\Math\Vector2D.cpp ../SoftRenderer/Math/Vector2D.h \
 		../SoftRenderer/Math/MathUtils.h
@@ -783,244 +828,6 @@ debug\Matrix4x4.obj: ..\SoftRenderer\Math\Matrix4x4.cpp ../SoftRenderer/Math/Mat
 		../SoftRenderer/Math/MathUtils.h \
 		../SoftRenderer/Math/Vector4D.h \
 		../SoftRenderer/Math/Vector3D.h
-
-debug\Mesh.obj: ..\SoftRenderer\Mesh.cpp ../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/Vector4D.h
-
-debug\BaseShader.obj: ..\SoftRenderer\BaseShader.cpp ../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Matrix4x4.h
-
-debug\FrameBuffer.obj: ..\SoftRenderer\FrameBuffer.cpp ../SoftRenderer/FrameBuffer.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector3D.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h
-
-debug\Pipeline.obj: ..\SoftRenderer\Pipeline.cpp ../SoftRenderer/Pipeline.h \
-		../SoftRenderer/Camera3D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/FrameBuffer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
-		../SoftRenderer/Light.h \
-		../SoftRenderer/SimpleShader.h \
-		../SoftRenderer/Texture2D.h \
-		../SoftRenderer/GouraudShader.h \
-		../SoftRenderer/PhongShader.h
-
-debug\SimpleShader.obj: ..\SoftRenderer\SimpleShader.cpp ../SoftRenderer/SimpleShader.h \
-		../SoftRenderer/Light.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
-		../SoftRenderer/Texture2D.h
 
 debug\RenderLoop.obj: ..\RenderLoop.cpp ../RenderLoop.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QObject \
@@ -1073,18 +880,20 @@ debug\RenderLoop.obj: ..\RenderLoop.cpp ../RenderLoop.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		../SoftRenderer/Pipeline.h \
-		../SoftRenderer/Camera3D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Pipeline/Pipeline.h \
+		../SoftRenderer/Pipeline/FrameBuffer.h \
 		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/MathUtils.h \
 		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
+		../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
 		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/FrameBuffer.h \
-		../SoftRenderer/FPSCamera.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Camera/FPSCamera.h \
+		../SoftRenderer/Camera/Camera3D.h \
 		../SoftRenderer/Math/Quaternion.h \
+		../SoftRenderer/Camera/TPSCamera.h \
+		../SoftRenderer/Camera/Transform3D.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
@@ -1100,313 +909,8 @@ debug\RenderLoop.obj: ..\RenderLoop.cpp ../RenderLoop.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
 		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
-		../SoftRenderer/Transform3D.h \
-		../SoftRenderer/Light.h \
-		../SoftRenderer/ObjModel.h
-
-debug\Texture2D.obj: ..\SoftRenderer\Texture2D.cpp ../SoftRenderer/Texture2D.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Vector3D.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QString \
-		..\include\stb_image.h
-
-debug\ObjModel.obj: ..\SoftRenderer\ObjModel.cpp ../SoftRenderer/ObjModel.h \
-		../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h
-
-debug\Light.obj: ..\SoftRenderer\Light.cpp ../SoftRenderer/Light.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h
-
-debug\GouraudShader.obj: ..\SoftRenderer\GouraudShader.cpp ../SoftRenderer/GouraudShader.h \
-		../SoftRenderer/Light.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
-		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
-		../SoftRenderer/Texture2D.h
-
-debug\PhongShader.obj: ..\SoftRenderer\PhongShader.cpp ../SoftRenderer/PhongShader.h \
-		../SoftRenderer/BaseShader.h \
-		../SoftRenderer/Mesh.h \
-		../SoftRenderer/Math/Vector2D.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector3D.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		../SoftRenderer/Light.h \
-		../SoftRenderer/Texture2D.h
-
-debug\Camera3D.obj: ..\SoftRenderer\Camera3D.cpp ../SoftRenderer/Camera3D.h \
-		../SoftRenderer/Math/Matrix4x4.h \
-		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Vector4D.h \
-		../SoftRenderer/Math/Vector3D.h
+		../SoftRenderer/Pipeline/Light.h \
+		../SoftRenderer/Pipeline/ObjModel.h
 
 debug\Quaternion.obj: ..\SoftRenderer\Math\Quaternion.cpp ../SoftRenderer/Math/Quaternion.h \
 		../SoftRenderer/Math/Vector3D.h \
@@ -1414,28 +918,249 @@ debug\Quaternion.obj: ..\SoftRenderer\Math\Quaternion.cpp ../SoftRenderer/Math/Q
 		../SoftRenderer/Math/Matrix4x4.h \
 		../SoftRenderer/Math/Vector4D.h
 
-debug\FPSCamera.obj: ..\SoftRenderer\FPSCamera.cpp ../SoftRenderer/FPSCamera.h \
-		../SoftRenderer/Camera3D.h \
+debug\Camera3D.obj: ..\SoftRenderer\Camera\Camera3D.cpp ../SoftRenderer/Camera/Camera3D.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Vector3D.h
+
+debug\FPSCamera.obj: ..\SoftRenderer\Camera\FPSCamera.cpp ../SoftRenderer/Camera/FPSCamera.h \
+		../SoftRenderer/Camera/Camera3D.h \
 		../SoftRenderer/Math/Matrix4x4.h \
 		../SoftRenderer/Math/MathUtils.h \
 		../SoftRenderer/Math/Vector4D.h \
 		../SoftRenderer/Math/Vector3D.h \
 		../SoftRenderer/Math/Quaternion.h
 
-debug\TPSCamera.obj: ..\SoftRenderer\TPSCamera.cpp ../SoftRenderer/TPSCamera.h \
+debug\TPSCamera.obj: ..\SoftRenderer\Camera\TPSCamera.cpp ../SoftRenderer/Camera/TPSCamera.h \
+		../SoftRenderer/Camera/Camera3D.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Camera/Transform3D.h \
+		../SoftRenderer/Math/Quaternion.h
+
+debug\Transform3D.obj: ..\SoftRenderer\Camera\Transform3D.cpp ../SoftRenderer/Camera/Transform3D.h \
 		../SoftRenderer/Math/Quaternion.h \
 		../SoftRenderer/Math/Vector3D.h \
 		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Camera3D.h \
 		../SoftRenderer/Math/Matrix4x4.h \
 		../SoftRenderer/Math/Vector4D.h
 
-debug\Transform3D.obj: ..\SoftRenderer\Transform3D.cpp ../SoftRenderer/Transform3D.h \
-		../SoftRenderer/Math/Quaternion.h \
-		../SoftRenderer/Math/Vector3D.h \
+debug\FrameBuffer.obj: ..\SoftRenderer\Pipeline\FrameBuffer.cpp ../SoftRenderer/Pipeline/FrameBuffer.h \
+		../SoftRenderer/Math/Vector4D.h \
 		../SoftRenderer/Math/MathUtils.h \
-		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Math/Vector3D.h
+
+debug\Light.obj: ..\SoftRenderer\Pipeline\Light.cpp ../SoftRenderer/Pipeline/Light.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Math/MathUtils.h
+
+debug\Mesh.obj: ..\SoftRenderer\Pipeline\Mesh.cpp ../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
 		../SoftRenderer/Math/Vector4D.h
+
+debug\ObjModel.obj: ..\SoftRenderer\Pipeline\ObjModel.cpp ../SoftRenderer/Pipeline/ObjModel.h \
+		../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Matrix4x4.h
+
+debug\Pipeline.obj: ..\SoftRenderer\Pipeline\Pipeline.cpp ../SoftRenderer/Pipeline/Pipeline.h \
+		../SoftRenderer/Pipeline/FrameBuffer.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Pipeline/Light.h \
+		../SoftRenderer/Pipeline/Texture2D.h \
+		../SoftRenderer/Shader/SimpleShader.h \
+		../SoftRenderer/Shader/GouraudShader.h \
+		../SoftRenderer/Shader/PhongShader.h
+
+debug\Texture2D.obj: ..\SoftRenderer\Pipeline\Texture2D.cpp ../SoftRenderer/Pipeline/Texture2D.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Vector3D.h \
+		..\include\stb_image.h
+
+debug\BaseShader.obj: ..\SoftRenderer\Shader\BaseShader.cpp ../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Matrix4x4.h
+
+debug\GouraudShader.obj: ..\SoftRenderer\Shader\GouraudShader.cpp ../SoftRenderer/Shader/GouraudShader.h \
+		../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Pipeline/Light.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
+		../SoftRenderer/Pipeline/Texture2D.h
+
+debug\PhongShader.obj: ..\SoftRenderer\Shader\PhongShader.cpp ../SoftRenderer/Shader/PhongShader.h \
+		../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Pipeline/Light.h \
+		../SoftRenderer/Pipeline/Texture2D.h
+
+debug\SimpleShader.obj: ..\SoftRenderer\Shader\SimpleShader.cpp ../SoftRenderer/Shader/SimpleShader.h \
+		../SoftRenderer/Shader/BaseShader.h \
+		../SoftRenderer/Pipeline/Mesh.h \
+		../SoftRenderer/Math/Vector2D.h \
+		../SoftRenderer/Math/MathUtils.h \
+		../SoftRenderer/Math/Vector3D.h \
+		../SoftRenderer/Math/Vector4D.h \
+		../SoftRenderer/Math/Matrix4x4.h \
+		../SoftRenderer/Pipeline/Light.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\QDebug \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qdebug.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qalgorithms.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobal.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qconfig.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtcore-config.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsystemdetection.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qprocessordetection.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcompilerdetection.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtypeinfo.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsysinfo.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlogging.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qflags.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbasicatomic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qgenericatomic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_cxx11.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qatomic_msvc.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qglobalstatic.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmutex.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnumeric.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qversiontagging.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhash.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qchar.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiterator.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlist.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qrefcount.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qarraydata.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qhashfunctions.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstring.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearray.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qnamespace.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringliteral.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringalgorithms.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringview.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringbuilder.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpair.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qbytearraylist.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringlist.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qregexp.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qstringmatcher.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmap.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qtextstream.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qiodevice.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcoreevent.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qscopedpointer.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qmetatype.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvarlengtharray.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontainerfwd.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qobject_impl.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qlocale.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvariant.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qshareddata.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qvector.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qpoint.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qset.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qcontiguouscache.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer.h \
+		D:\Qt\5.10.1\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
+		../SoftRenderer/Pipeline/Texture2D.h
 
 debug\moc_Window.obj: debug\moc_Window.cpp 
 

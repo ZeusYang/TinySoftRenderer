@@ -1,7 +1,6 @@
 #include "Light.h"
 
-#include "Math/MathUtils.h"
-#include <QDebug>
+#include "../Math/MathUtils.h"
 
 namespace SoftRenderer
 {

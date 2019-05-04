@@ -17,31 +17,29 @@ namespace SoftRenderer
 class TPSCamera : public Camera3D
 {
 private:
-    mutable bool m_dirty;
-    bool first = true;
-    Vector3D m_cameraPos;
-    Quaternion m_rotation;
-    double m_yaw, m_pitch, m_distance;
-    Transform3D m_player;
-    Matrix4x4 m_viewMatrix;
+    mutable bool m_dirty;               // Should update or not.
+    Vector3D m_cameraPos;               // Camera's position.
+    Transform3D m_player;               // Player's transformation.
+    Matrix4x4 m_viewMatrix;             // View matrix.
+    double m_yaw, m_pitch, m_distance;  // yaw, pitch and distance to player's space.
 
 public:
+    // ctor/dtor.
     TPSCamera(Vector3D target);
     virtual ~TPSCamera() = default;
 
+    // Getter.
     Matrix4x4 getPlayerMatrix();
-
-    virtual Vector3D getPosition() {update();return m_cameraPos;}
     virtual Matrix4x4 getViewMatrix();
+    virtual Vector3D getPosition() {update();return m_cameraPos;}
+
+    // Key/Mouse reaction.
     virtual void onKeyPress(char key);
     virtual void onWheelMove(double delta);
     virtual void onMouseMove(double deltaX, double deltaY, std::string button);
 
-    Vector3D forward() const;
-    Vector3D up() const;
-    Vector3D right() const;
-
 private:
+    // Update view matrix.
     void update();
 };
 

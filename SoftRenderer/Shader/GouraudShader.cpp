@@ -1,7 +1,7 @@
 #include "GouraudShader.h"
 
 #include <QDebug>
-#include "Texture2D.h"
+#include "../Pipeline/Texture2D.h"
 
 namespace SoftRenderer
 {
@@ -40,9 +40,6 @@ VertexOut GouraudShader::vertexShader(const Vertex &in)
                           _amb,
                           _diff,
                           _spec);
-//        result.color.x = (_amb.x + _diff.x + _spec.x);
-//        result.color.y = (_amb.y + _diff.y + _spec.y);
-//        result.color.z = (_amb.z + _diff.z + _spec.z);
 
         result.color.x *= (_amb.x + _diff.x + _spec.x);
         result.color.y *= (_amb.y + _diff.y + _spec.y);
@@ -50,7 +47,7 @@ VertexOut GouraudShader::vertexShader(const Vertex &in)
         result.color.w = 1.0f;
     }
 
-    // oneDivZ to correct mapping.
+    // oneDivZ to correct lerp.
     result.oneDivZ = 1.0 / result.posH.w;
     result.posTrans *= result.oneDivZ;
     result.texcoord *= result.oneDivZ;

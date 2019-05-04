@@ -3,11 +3,11 @@
 #include <QDebug>
 
 #include <time.h>
-#include "SoftRenderer/Transform3D.h"
+#include "SoftRenderer/Camera/Transform3D.h"
 #include "SoftRenderer/Math/Quaternion.h"
-#include "SoftRenderer/Light.h"
-#include "SoftRenderer/Mesh.h"
-#include "SoftRenderer/ObjModel.h"
+#include "SoftRenderer/Pipeline/Light.h"
+#include "SoftRenderer/Pipeline/Mesh.h"
+#include "SoftRenderer/Pipeline/ObjModel.h"
 
 using namespace SoftRenderer;
 
@@ -27,16 +27,18 @@ RenderLoop::~RenderLoop()
     if(pipeline) delete pipeline;
     if(fpsCamera) delete fpsCamera;
     if(tPSCamera) delete tPSCamera;
+    pipeline = nullptr;
     fpsCamera = nullptr;
     tPSCamera = nullptr;
-    pipeline = nullptr;
 }
 
 void RenderLoop::loop()
 {
-    // pipeline
+    // pipeline initalization.
     pipeline->initialize();
-    pipeline->setShaderMode(ShadingMode::Phong);
+    pipeline->setShadingMode(ShadingMode::Phong);
+
+    // textures loading.
     unsigned int cubeUnit = pipeline->loadTexture("./res/cube.jpg");
     unsigned int floorUnit = pipeline->loadTexture("./res/floor.jpg");
     unsigned int treeUnit = pipeline->loadTexture("./res/tree.png");
@@ -44,14 +46,16 @@ void RenderLoop::loop()
     unsigned int lowPolygonTree = pipeline->loadTexture("./res/lowPolyTree.png");
     unsigned int playerUnit = pipeline->loadTexture("./res/player.png");
 
-    // mesh
+    // mesh loading.
+    Mesh cube, floor;
+    cube.asBox(1.0,1.0,1.0);
+    floor.asFloor(15.3,-1.5f);
     ObjModel player("./res/player.obj");
     ObjModel diablo("./res/diablo3_pose.obj");
     ObjModel tree("./res/tree.obj");
     ObjModel tree1("./res/lowPolyTree.obj");
-    Mesh cube, floor;
-    cube.asBox(1.0,1.0,1.0);
-    floor.asFloor(15.3,-1.5f);
+
+    // material setting.
     Material material;
     material.setMaterial(Vector3D(0.1,0.1,0.1),
                          Vector3D(0.5,0.5,0.5),
@@ -79,48 +83,46 @@ void RenderLoop::loop()
                 Vector3D(0.0,3.0,0.0),
                 Vector3D(1.0f,0.07f,0.017f));
     // spot light.
-    pipeline->setSpotLight(
-                Vector3D(0.1,0.1,0.1),
-                Vector3D(0.9,0.1,0.1),
-                Vector3D(0.9,0.1,0.1),
-                40.0f,
-                Vector3D(0.0,5.0,0.0),
-                Vector3D(0.0,-3.0,0.0),
-                Vector3D(1.0f,0.07f,0.017f));
+//    pipeline->setSpotLight(
+//                Vector3D(0.1,0.1,0.1),
+//                Vector3D(0.9,0.1,0.1),
+//                Vector3D(0.9,0.1,0.1),
+//                40.0f,
+//                Vector3D(0.0,5.0,0.0),
+//                Vector3D(0.0,-3.0,0.0),
+//                Vector3D(1.0f,0.07f,0.017f));
 
     // transformation.
     double angle = 0.0;
     Quaternion test;
-    Transform3D diabloTransform, floorTransform, cubeTransform;
-    Transform3D tree0Transform, tree1Transform, playerTransform;
+    Transform3D diabloTransform, floorTransform;
+    Transform3D tree0Transform, tree1Transform, cubeTransform;
     diabloTransform.setScale(diablo.setSizeToVector(2.3, 2.3, 2.3));
     cubeTransform.setTranslation(Vector3D(3.0f,-1.0f,+2.0f));
     tree0Transform.setScale(tree.setSizeToVector(2.0,2.0,2.0));
     tree0Transform.setTranslation(Vector3D(-4,-1.5f,-4));
     tree1Transform.setScale(tree.setSizeToVector(0.15,0.15,0.15));
     tree1Transform.setTranslation(Vector3D(-4,-1.5f,+4));
-    playerTransform.setScale(player.setSizeToVector(1.0,1.0,1.0));
-    playerTransform.setTranslation(Vector3D(+4,-1.0, +4));
-
-    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 40.0f);
 
     // calculate time stamp.
     fps = 0;
     clock_t start, finish;
     pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
-
+    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 40.0f);
+    pipeline->setPolygonMode(PolygonMode::Fill);
+    pipeline->setGeometryCliping(true);
+    pipeline->setBackFaceCulling(true);
     // render loop.
     while(!stoped)
     {
         start = clock();
-
         pipeline->beginFrame();
 
-        //pipeline->clearBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
-        pipeline->clearBuffer(Vector4D(0.0,0.0,0.0,1.0f));
+        //pipeline->clearFrameBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
+        pipeline->clearFrameBuffer(Vector4D(0.0,0.0,0.0,1.0f));
 
-        //pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
         pipeline->setViewMatrix(tPSCamera->getPosition(), tPSCamera->getViewMatrix());
+
         // render cube.
         {
             pipeline->bindTexture(cubeUnit);
@@ -128,7 +130,7 @@ void RenderLoop::loop()
             pipeline->setIndexBuffer(&cube.m_indices);
             pipeline->bindTexture(cubeUnit);
             pipeline->setModelMatrix(cubeTransform.toMatrix());
-            pipeline->drawIndex(RenderMode::fill);
+            pipeline->drawObjectMesh();
             pipeline->unBindTexture(cubeUnit);
         }
 
@@ -138,7 +140,7 @@ void RenderLoop::loop()
             pipeline->setModelMatrix(diabloTransform.toMatrix());
             pipeline->setVertexBuffer(&diablo.m_vertices);
             pipeline->setIndexBuffer(&diablo.m_indices);
-            pipeline->drawIndex(RenderMode::fill);
+            pipeline->drawObjectMesh();
             pipeline->unBindTexture(diablo3);
         }
 
@@ -148,7 +150,7 @@ void RenderLoop::loop()
             pipeline->setModelMatrix(floorTransform.toMatrix());
             pipeline->setVertexBuffer(&floor.m_vertices);
             pipeline->setIndexBuffer(&floor.m_indices);
-            pipeline->drawIndex(RenderMode::fill);
+            pipeline->drawObjectMesh();
             pipeline->unBindTexture(floorUnit);
         }
 
@@ -158,13 +160,13 @@ void RenderLoop::loop()
             pipeline->setModelMatrix(tree0Transform.toMatrix());
             pipeline->setVertexBuffer(&tree.m_vertices);
             pipeline->setIndexBuffer(&tree.m_indices);
-            pipeline->drawIndex(RenderMode::fill);
+            pipeline->drawObjectMesh();
 
             pipeline->bindTexture(lowPolygonTree);
             pipeline->setModelMatrix(tree1Transform.toMatrix());
             pipeline->setVertexBuffer(&tree1.m_vertices);
             pipeline->setIndexBuffer(&tree1.m_indices);
-            pipeline->drawIndex(RenderMode::fill);
+            pipeline->drawObjectMesh();
             pipeline->unBindTexture(0);
         }
 
@@ -175,12 +177,11 @@ void RenderLoop::loop()
                                      * player.setSizeToMatrix(1.0,1.0,1.0));
             pipeline->setVertexBuffer(&player.m_vertices);
             pipeline->setIndexBuffer(&player.m_indices);
-            pipeline->drawIndex(RenderMode::fill);
+            pipeline->drawObjectMesh();
             pipeline->unBindTexture(0);
         }
 
-        pipeline->swapBuffer();
-
+        pipeline->swapFrameBuffer();
         pipeline->endFrame();
 
         finish = clock();
@@ -193,7 +194,8 @@ void RenderLoop::loop()
         diabloTransform.setRotation(test);
 
         // send the frame.
-        emit frameOut(pipeline->output(), pipeline->getProfile().num_triangles,
+        emit frameOut(pipeline->getFrameResult(),
+                      pipeline->getProfile().num_triangles,
                       pipeline->getProfile().num_vertices);
         ++ fps;
     }

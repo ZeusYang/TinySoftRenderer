@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "Texture2D.h"
+#include "../Pipeline/Texture2D.h"
 
 namespace SoftRenderer
 {
@@ -24,7 +24,7 @@ VertexOut SimpleShader::vertexShader(const Vertex &in)
     result.normal = in.normal;
     result.texcoord = in.texcoord;
 
-    // oneDivZ to correct mapping.
+    // oneDivZ to correct lerp.
     result.oneDivZ = 1.0 / result.posH.w;
     result.posTrans *= result.oneDivZ;
     result.texcoord *= result.oneDivZ;

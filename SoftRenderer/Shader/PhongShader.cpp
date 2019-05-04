@@ -1,7 +1,7 @@
 #include "PhongShader.h"
 
-#include "Light.h"
-#include "Texture2D.h"
+#include "../Pipeline/Light.h"
+#include "../Pipeline/Texture2D.h"
 
 namespace SoftRenderer
 {
@@ -26,7 +26,7 @@ VertexOut PhongShader::vertexShader(const Vertex &in)
     result.texcoord = in.texcoord;
     result.normal = m_invModelMatrix * Vector4D(in.normal);
 
-    // oneDivZ to correct mapping.
+    // oneDivZ to correct lerp.
     result.oneDivZ = 1.0 / result.posH.w;
     result.posTrans *= result.oneDivZ;
     result.texcoord *= result.oneDivZ;
@@ -57,9 +57,6 @@ Vector4D PhongShader::fragmentShader(const VertexOut &in)
         litColor.x *= (_amb.x + _diff.x + _spec.x);
         litColor.y *= (_amb.y + _diff.y + _spec.y);
         litColor.z *= (_amb.z + _diff.z + _spec.z);
-//        litColor.x = (_amb.x + _diff.x + _spec.x);
-//        litColor.y = (_amb.y + _diff.y + _spec.y);
-//        litColor.z = (_amb.z + _diff.z + _spec.z);
         litColor.w = 1.0f;
     }
     return litColor;
