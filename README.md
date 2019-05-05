@@ -11,7 +11,7 @@
 
 &emsp;&emsp;[软渲染器Soft Renderer：光照着色篇（完结）](https://yangwc.com/2019/05/05/SoftRenderer-Shading/)
 
-![directionalLight](https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.8/blog/SoftRenderer-Shading/directionalLight.gif)
+![directionalLight](https://github.com/ZeusYang/CDN-for-yangwc.com/blob/master/blog/SoftRenderer-Shading/directionalLight.gif)
 
 ![pointLight](https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.8/blog/SoftRenderer-Shading/pointLight.gif)
 
