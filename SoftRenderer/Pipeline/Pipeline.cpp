@@ -176,6 +176,13 @@ bool Pipeline::drawObjectMesh()
                 continue;
         }
 
+        //! perspective division.
+        {
+            perspectiveDivision(v1);
+            perspectiveDivision(v2);
+            perspectiveDivision(v3);
+        }
+
         //! geometry cliping.
         {
             if(m_config.m_geometryCliping)
@@ -189,13 +196,6 @@ bool Pipeline::drawObjectMesh()
                 if(m_config.m_polygonMode == PolygonMode::Fill && !triangleCliping(v1,v2,v3))
                     continue;
             }
-        }
-
-        //! perspective division.
-        {
-            perspectiveDivision(v1);
-            perspectiveDivision(v2);
-            perspectiveDivision(v3);
         }
 
         //! view port transformation.
@@ -300,7 +300,7 @@ bool Pipeline::lineCliping(const VertexOut &from, const VertexOut &to)
 {
     // Cohen-Sutherland algorithm.
     // return whether the line is totally outside or not.
-    float vMin = -from.posH.w, vMax = from.posH.w;
+    float vMin = -1.0, vMax = +1.0;
     float x1 = from.posH.x, y1 = from.posH.y;
     float x2 = to.posH.x, y2 = to.posH.y;
 
@@ -352,8 +352,8 @@ bool Pipeline::triangleCliping(const VertexOut &v1, const VertexOut &v2, const V
 {
     // true:not clip;
     // false: clip.
-    float vMin = -v1.posH.w;
-    float vMax = +v1.posH.w;
+    float vMin = -1.0;
+    float vMax = +1.0;
 
     // if the triangle is too far to see it, just return false.
     if(v1.posH.z > vMax && v2.posH.z > vMax && v3.posH.z > vMax)

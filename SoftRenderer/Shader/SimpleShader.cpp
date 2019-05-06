@@ -1,7 +1,5 @@
 #include "SimpleShader.h"
 
-#include <QDebug>
-
 #include "../Pipeline/Texture2D.h"
 
 namespace SoftRenderer

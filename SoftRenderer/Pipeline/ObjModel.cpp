@@ -102,7 +102,8 @@ void ObjModel::loadObjFile(const std::string &path)
                 data.normal = normals[index[2] - 1];
                 data.color = Vector4D(1.0,1.0,1.0,1.0);
                 m_indices.push_back(m_vertices.size());
-                m_vertices.push_back(data);            }
+                m_vertices.push_back(data);
+            }
         }
     }
     in.close();

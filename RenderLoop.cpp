@@ -108,10 +108,11 @@ void RenderLoop::loop()
     fps = 0;
     clock_t start, finish;
     pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
-    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.1f, 40.0f);
+    pipeline->setProjectMatrix(45.0f, static_cast<float>(width)/height,0.01f, 40.0f);
     pipeline->setPolygonMode(PolygonMode::Fill);
     pipeline->setGeometryCliping(true);
     pipeline->setBackFaceCulling(true);
+    pipeline->setDepthTesting(true);
     // render loop.
     while(!stoped)
     {
@@ -121,6 +122,7 @@ void RenderLoop::loop()
         //pipeline->clearFrameBuffer(Vector4D(0.502f,0.698f,0.800f,1.0f));
         pipeline->clearFrameBuffer(Vector4D(0.0,0.0,0.0,1.0f));
 
+        //pipeline->setViewMatrix(fpsCamera->getPosition(), fpsCamera->getViewMatrix());
         pipeline->setViewMatrix(tPSCamera->getPosition(), tPSCamera->getViewMatrix());
 
         // render cube.
