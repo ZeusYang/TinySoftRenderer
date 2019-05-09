@@ -50,9 +50,10 @@ void FrameBuffer::drawPixel(const unsigned int &x, const unsigned int &y, const 
 {
     if(x < 0 || x >= m_width || y < 0 || y >= m_height)
         return;
-    unsigned char red = static_cast<unsigned char>(255*color.x);
-    unsigned char green = static_cast<unsigned char>(255*color.y);
-    unsigned char blue = static_cast<unsigned char>(255*color.z);
+    // gamma correction.
+    unsigned char red = static_cast<unsigned char>(255*pow(color.x,1.0/2.2));
+    unsigned char green = static_cast<unsigned char>(255*pow(color.y,1.0/2.2));
+    unsigned char blue = static_cast<unsigned char>(255*pow(color.z,1.0/2.2));
     unsigned char alpha = static_cast<unsigned char>(255*color.w);
     unsigned int index = y*m_width*m_channel + x*m_channel;
     m_colorBuffer[index + 0] = red;
