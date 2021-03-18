@@ -25,7 +25,7 @@ The original intention of building such a 3D rendering system from scratch witho
 
 ### Built With
 
-This project was totally refactored based on previous naive version 2 years ago. Now, I utilizes the following third-party libraries to build this renderer. Please note that SDL2 is just for displaying the rendered results as well as handling mouse and key events.
+This project was totally refactored based on previous naive version I built 2 years ago. Now, I utilizes the following third-party libraries to build this renderer. Please note that SDL2 is just for displaying the rendered results as well as handling mouse and key events.
 * [SDL2](https://www.libsdl.org/)
 * [GLM](https://github.com/g-truc/glm)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
