@@ -3,13 +3,15 @@
     <img src="images/demo.png" alt="Logo" width="150" height="150">
   </a>
   <h3 align="center">TinySoftRenderer</h3>
+<p align="center">
+<img src="images/license.svg">
+</p>
   <p align="center">
     A tiny soft-renderer built from scratch using C++ 11
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://github.com/ZeusYang/TinySoftRenderer/blob/master/images/demo.gif">View Demo</a>
     <a href="https://github.com/ZeusYang/TinySoftRenderer/issues">Report Bug</a>
   </p>
-![MIT License](images/license.svg)
 
 
 
@@ -23,7 +25,7 @@ The original intention of building such a 3D rendering system from scratch witho
 
 ### Built With
 
-This project is totally refactored  This project utilizes the following third-party libraries. SDL2 is just for displaying the rendered results as well as handling mouse and key events.
+This project is totally refactored based on previous messy version 2 years ago. Now, I utilizes the following third-party libraries to build this renderer. Please note that SDL2 is just for displaying the rendered results as well as handling mouse and key events.
 * [SDL2](https://www.libsdl.org/)
 * [GLM](https://github.com/g-truc/glm)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
@@ -53,12 +55,12 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/ZeusYang/TinySoftRenderer.git
    ```
    
-3. Use cmake to build the project：
+2. Use cmake to build the project：
    
    ```
    cd build
