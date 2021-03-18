@@ -1,21 +1,109 @@
-# Soft-Renderer
-&emsp;&emsp;The original intention of building such a rendering pipeline from scratch without any graphics library is to get a deeper understanding of the current three-dimensional rendering process. Many theoretical things need practice to fully understand. These days, I have gained a lot from the tortuosity of building a soft renderer, which laid a solid foundation for the learning of Computer Graphics. At present, the soft rendering pipeline I have implemented already contains the basic functions of a traditional fixed pipeline, and I no longer plan to add more features such as transparent fusion, shadow and so on, because it is unnecessary.By the way, I just use Qt to display the pixel and use stb_image to load the images. The core code is not related to Qt at all.
+<p align="center">
+  <a href="https://github.com/ZeusYang/TinySoftRenderer">
+    <img src="images/demo.png" alt="Logo" width="150" height="150">
+  </a>
+  <h3 align="center">TinySoftRenderer</h3>
+  <p align="center">
+    A tiny soft-renderer built from scratch using C++ 11
+    <br />
+    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://github.com/ZeusYang/TinySoftRenderer/issues">Report Bug</a>
+  </p>
+![MIT License](images/license.svg)
 
-&emsp;&emsp;Here are my personal blogs(in Chinese) if you would like get some more details about how I built it from scratch.
 
-&emsp;&emsp;[软渲染器Soft Renderer：3D数学篇](https://yangwc.com/2019/05/01/SoftRenderer-Math/)
 
-&emsp;&emsp;[软渲染器Soft Renderer：光栅化篇](https://yangwc.com/2019/05/01/SoftRenderer-Rasterization/)
+## About The Project
 
-&emsp;&emsp;[软渲染器Soft Renderer：进击三维篇](https://yangwc.com/2019/05/02/SoftRenderer-3DPipeline/)
+The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. We all know that only when we implement these algorithms by ourself can we actually understand the principles behind what we observe. Computer graphics is a kind of rational romance as I see it!
 
-&emsp;&emsp;[软渲染器Soft Renderer：光照着色篇（完结）](https://yangwc.com/2019/05/05/SoftRenderer-Shading/)
+<img src="images/demo.gif" alt="Logo" width="100%">
 
-![directionalLight](https://github.com/ZeusYang/CDN-for-yangwc.com/blob/master/blog/SoftRenderer-Shading/directionalLight.gif)
 
-![pointLight](https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.8/blog/SoftRenderer-Shading/pointLight.gif)
 
-![spotlight](https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.8/blog/SoftRenderer-Shading/spotlight.gif)
+### Built With
 
-![ret3](https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.8/blog/SoftRenderer-Shading/ret3.gif)
+This project is totally refactored  This project utilizes the following third-party libraries. SDL2 is just for displaying the rendered results as well as handling mouse and key events.
+* [SDL2](https://www.libsdl.org/)
+* [GLM](https://github.com/g-truc/glm)
+* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
+* [stb_image](https://github.com/nothings/stb)
 
+
+
+## Getting Started
+
+I am trying to build it in a cross-platform manner. At present, I only tested building in both Windows 10 and Ubuntu 16.04.
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.  
+
+- [cmake](https://cmake.org/)：at least version 3.5
+
+* Microsoft visual studio 2017 or 2019 (for windows) 
+  
+* SDL2 (for ubuntu)：
+  
+  ```sh
+  sudo apt-get update
+  sudo apt-get install libsdl2-2.0
+  sudo apt-get install libsdl2-dev
+  ```
+
+### Installation
+
+2. Clone the repo
+   ```sh
+   git clone https://github.com/ZeusYang/TinySoftRenderer.git
+   ```
+   
+3. Use cmake to build the project：
+   
+   ```
+   cd build
+   cmake ..
+   make
+   ```
+   
+   or using cmake-gui is ok.
+
+
+
+## Usage
+
+Please check out `src/main.cpp` for more details. More examples are planned.
+
+
+
+## Features
+
+- Affine and perspective correct per vertex parameter interpolation.
+
+- Bresenham, Edge walking, Edge equation triangle rasterization
+- Blinn-Phong shading, point lights
+- Textureing, Bilinear Texture Filtering
+- Sutherland Hodgeman Homogeneous Cliping
+- Tangent Space Normal Mapping
+- Z-buffering
+
+
+
+## ToDo
+
+- Performance optimization
+- Mipmap texturing
+- MSAA
+- Alpha Blending
+
+
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+
+
+## Contact
+
+yangwc3@mail2.sysu.edu.cn

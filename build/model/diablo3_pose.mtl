@@ -1,0 +1,14 @@
+newmtl diablo3_pose
+	Ns 2.0000
+	Ni 1.5000
+	d 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0100 0.0100 0.0100
+	Kd 0.6000 0.6000 0.6000
+	Ks 0.8000 0.8000 0.8000
+	Ke 0.0000 0.0000 0.0000
+	map_Kd diablo3_pose_diffuse.png
+	map_Ks diablo3_pose_spec.png
+	map_Ke diablo3_pose_glow.png
+	map_bump diablo3_pose_nm.png
