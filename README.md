@@ -17,7 +17,7 @@
 
 ## About The Project
 
-The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. We all know that only when we implement these algorithms by ourself can we actually understand the principles behind what we observe. Computer graphics is a kind of rational romance as I see it!
+The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. We all know that only when we implement these algorithms by ourselves can we actually understand the principles behind what we observe. Computer graphics is a kind of rational romance as I see it!
 
 <img src="images/demo.gif" alt="Logo" width="100%">
 
@@ -25,7 +25,7 @@ The original intention of building such a 3D rendering system from scratch witho
 
 ### Built With
 
-This project is totally refactored based on previous messy version 2 years ago. Now, I utilizes the following third-party libraries to build this renderer. Please note that SDL2 is just for displaying the rendered results as well as handling mouse and key events.
+This project was totally refactored based on previous naive version 2 years ago. Now, I utilizes the following third-party libraries to build this renderer. Please note that SDL2 is just for displaying the rendered results as well as handling mouse and key events.
 * [SDL2](https://www.libsdl.org/)
 * [GLM](https://github.com/g-truc/glm)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
@@ -35,11 +35,11 @@ This project is totally refactored based on previous messy version 2 years ago. 
 
 ## Getting Started
 
-I am trying to build it in a cross-platform manner. At present, I only tested building in both Windows 10 and Ubuntu 16.04.
+I am trying to build it in a cross-platform manner. At present, I only tested building in both Windows 10 and Ubuntu 16.04 systems.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.  
+Please make sure your system is equipped with the following softwares.  
 
 - [cmake](https://cmake.org/)：at least version 3.5
 
