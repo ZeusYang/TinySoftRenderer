@@ -58,7 +58,7 @@ int main(int argc, char* args[])
 	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>("model/light_red.obj");
 	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>("model/light_green.obj");
 	TRDrawableMesh::ptr blueLightMesh = std::make_shared<TRDrawableMesh>("model/light_blue.obj");
-	renderer->addDrawableMesh({ diabloMesh , houseMesh, redLightMesh, greenLightMesh, blueLightMesh });
+	renderer->addDrawableMesh({ houseMesh, diabloMesh, redLightMesh, greenLightMesh, blueLightMesh });
 	redLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	greenLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	blueLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
@@ -87,9 +87,9 @@ int main(int argc, char* args[])
 	glm::mat4 blueLightModelMat = glm::translate(glm::mat4(1.0f), blueLightPos);
 	blueLightMesh->setModelMatrix(blueLightModelMat);
 
-	static glm::mat4 model_mat = glm::mat4(1.0f);
+	//static glm::mat4 model_mat = glm::mat4(1.0f);
 	//model_mat = glm::rotate(model_mat,  30.0f, glm::vec3(0, 1, 0));
-	renderer->setModelMatrix(model_mat);
+	//renderer->setModelMatrix(model_mat);
 
 	//Rendering loop
 	while (!winApp->shouldWindowClose())

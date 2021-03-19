@@ -1,6 +1,7 @@
 #include "TRShadingPipeline.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace TinyRenderer
 {
@@ -52,7 +53,6 @@ namespace TinyRenderer
 		//https://zhuanlan.zhihu.com/p/144331875
 		//We use pos.w to store 1/w
 		float one_div_w =  1.0f / v.cpos.w;
-		//v.pos.w = one_div_w;
 		v.pos = glm::vec4(v.pos.x * one_div_w, v.pos.y * one_div_w, v.pos.z * one_div_w, one_div_w);
 		v.tex = v.tex * one_div_w;
 		v.nor = v.nor * one_div_w;
@@ -65,7 +65,8 @@ namespace TinyRenderer
 		//https://zhuanlan.zhihu.com/p/144331875
 		//We use pos.w to store 1/w
 		float w = 1.0f / v.pos.w;
-		v.pos = v.pos * w;
+		//v.cpos.z *= w;
+		v.pos = glm::vec4(v.pos.x * w, v.pos.y * w, v.pos.z * w, v.pos.w);
 		v.tex = v.tex * w;
 		v.nor = v.nor * w;
 		v.col = v.col * w;
@@ -191,45 +192,52 @@ namespace TinyRenderer
 		bounding_max.x = std::min(std::max(v0.spos.x, std::max(v1.spos.x, v2.spos.x)), (int)screen_width - 1);
 		bounding_max.y = std::min(std::max(v0.spos.y, std::max(v1.spos.y, v2.spos.y)), (int)screene_height - 1);
 
-		glm::vec3 edge1(v1.spos.x - v0.spos.x, v1.spos.y - v0.spos.y, 0);
-		glm::vec3 edge2(v2.spos.x - v1.spos.x, v2.spos.y - v1.spos.y, 0);
-		glm::vec3 edge3(v0.spos.x - v2.spos.x, v0.spos.y - v2.spos.y, 0);
+		//Accelerated Half-Space Triangle Rasterization
+		//Refs:Mileff P, Neh¨¦z K, Dudra J. Accelerated half-space triangle rasterization[J].
+		//     Acta Polytechnica Hungarica, 2015, 12(7): 217-236. http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf
+		const glm::ivec2 &A = v0.spos;
+		const glm::ivec2 &B = v1.spos;
+		const glm::ivec2 &C = v2.spos;
 
+		const int I01 = A.y - B.y, I02 = B.y - C.y, I03 = C.y - A.y;
+		const int J01 = B.x - A.x, J02 = C.x - B.x, J03 = A.x - C.x;
+		const int K01 = A.x * B.y - A.y * B.x;
+		const int K02 = B.x * C.y - B.y * C.x;
+		const int K03 = C.x * A.y - C.y * A.x;
+
+		int F01 = I01 * bounding_min.x + J01 * bounding_min.y + K01;
+		int F02 = I02 * bounding_min.x + J02 * bounding_min.y + K02;
+		int F03 = I03 * bounding_min.x + J03 * bounding_min.y + K03;
+
+		//Degenerated to a line or a point
+		if (F01 + F02 + F03 == 0)
+			return;
+
+		const float one_div_delta = 1.0f / (F01 + F02 + F03);
+
+		//Top left fill rule
+		int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : -1);
+		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : -1);
+		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : -1);
+
+		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		for (int y = bounding_min.y; y <= bounding_max.y; ++y)
 		{
+			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
 			for (int x = bounding_min.x; x <= bounding_max.x; ++x)
 			{
-				glm::vec3 p(x, y, 0);
-				bool f1 = glm::cross(p - glm::vec3(v0.spos.x, v0.spos.y, 0), edge1).z >= 0;
-				bool f2 = glm::cross(p - glm::vec3(v1.spos.x, v1.spos.y, 0), edge2).z >= 0;
-				bool f3 = glm::cross(p - glm::vec3(v2.spos.x, v2.spos.y, 0), edge3).z >= 0;
-
-				//Inside the triangle
-				if (f1 && f2 && f3)
+				int E1 = Cx1, E2 = Cx2, E3 = Cx3;
+				//Counter-clockwise winding order
+				if ((E1 <= E1_t && E2 <= E2_t && E3 <= E3_t))
 				{
-					//Barycentric interpolation
-					//Refs: https://zhuanlan.zhihu.com/p/65495373
-					float u, v, w;
-					glm::vec3 s[2];
-					s[0] = glm::vec3(v2.spos.x - v0.spos.x, v1.spos.x - v0.spos.x, v0.spos.x - x);
-					s[1] = glm::vec3(v2.spos.y - v0.spos.y, v1.spos.y - v0.spos.y, v0.spos.y - y);
-					auto uf = glm::cross(s[0], s[1]);
-					//Dont forget that u[2] is integer. If it is zero then triangle ABC is degenerate
-					if (std::abs(uf[2]) > 1e-2)
-					{
-						u = 1.f - (uf.x + uf.y) / uf.z, v = uf.y / uf.z, w = uf.x / uf.z;
-					}
-					else
-					{
-						u = -1.f, v = 1.f, w = 1.f;
-					}
-
-					auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v0, v1, v2, glm::vec3(u, v, w));
+					glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
+					auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v0, v1, v2, uvw);
 					rasterized_point.spos = glm::ivec2(x, y);
-					
 					rasterized_points.push_back(rasterized_point);
 				}
+				Cx1 += I01; Cx2 += I02; Cx3 += I03;
 			}
+			Cy1 += J01; Cy2 += J02; Cy3 += J03;
 		}
 	}
 
@@ -469,6 +477,7 @@ namespace TinyRenderer
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
+		//fragColor = glm::vec4(0.5f * data.nor + 0.5f, 1.0f);
 	}
 
 	//----------------------------------------------TRPhongShadingPipeline----------------------------------------------
@@ -477,8 +486,8 @@ namespace TinyRenderer
 	{
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
 		glm::vec3 fragPos = glm::vec3(data.pos);
-		glm::vec3 normal = glm::normalize(data.nor);
-		//glm::vec3 normal = fetchFragmentNormal(data, data.tex);
+		//glm::vec3 normal = glm::normalize(data.nor);
+		glm::vec3 normal = fetchFragmentNormal(data, data.tex);
 
 		fragColor = glm::vec4(0.0f);
 
