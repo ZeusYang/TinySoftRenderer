@@ -236,7 +236,7 @@ namespace TinyRenderer
 							//Perspective correction after rasterization
 							TRShadingPipeline::VertexData::aftPrespCorrection(points);
 							if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-								m_backBuffer->readDepth(points.spos.x, points.spos.y) < points.cpos.z)
+								m_backBuffer->readDepth(points.spos.x, points.spos.y) <= points.cpos.z)
 							{
 								continue;
 							}

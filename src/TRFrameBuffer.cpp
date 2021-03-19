@@ -12,7 +12,7 @@ namespace TinyRenderer
 		m_colorBuffer.resize(m_width * m_height * m_channel, 255);
 	}
 
-	double TRFrameBuffer::readDepth(const unsigned int &x, const unsigned int &y) const
+	float TRFrameBuffer::readDepth(const unsigned int &x, const unsigned int &y) const
 	{
 		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 			return 0.0f;
@@ -39,7 +39,7 @@ namespace TinyRenderer
 		}
 	}
 
-	void TRFrameBuffer::writeDepth(const unsigned int &x, const unsigned int &y, const double &value)
+	void TRFrameBuffer::writeDepth(const unsigned int &x, const unsigned int &y, const float &value)
 	{
 		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 			return;

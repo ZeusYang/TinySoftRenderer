@@ -30,12 +30,12 @@ namespace TinyRenderer
 		int getHeight()const { return m_height; }
 		unsigned char *getColorBuffer() { return m_colorBuffer.data(); }
 
-		double readDepth(const unsigned int &x, const unsigned int &y) const;
-		void writeDepth(const unsigned int &x, const unsigned int &y, const double &value);
+		float readDepth(const unsigned int &x, const unsigned int &y) const;
+		void writeDepth(const unsigned int &x, const unsigned int &y, const float &value);
 		void writeColor(const unsigned int &x, const unsigned int &y, const glm::vec4 &color);
 
 	private:
-		std::vector<double> m_depthBuffer;          // Z-buffer
+		std::vector<float> m_depthBuffer;          // Z-buffer
 		std::vector<unsigned char> m_colorBuffer;   // Color buffer
 		unsigned int m_width, m_height, m_channel;  // Viewport
 	};
