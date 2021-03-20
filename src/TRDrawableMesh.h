@@ -45,7 +45,7 @@ namespace TinyRenderer
 		glm::vec3 kD = glm::vec3(1.0f);//Diffuse coefficient
 		glm::vec3 kS = glm::vec3(0.0f);//Specular coefficient
 		glm::vec3 kE = glm::vec3(0.0f);//Emission
-		float shininess;			   //Specular highlight exponment
+		float shininess = 1.0f;		   //Specular highlight exponment
 
 		//TBN matrix
 		glm::vec3 tangent;
