@@ -53,7 +53,7 @@ int main(int argc, char* args[])
 	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(45.0f, static_cast<float>(width) / height, 0.001f, 10.0f), 0.001f, 10.0f);
 
 	//Load the rendering data
-	TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>("model/diablo3_pose.obj");
+	TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>("model/diablo3_pose/diablo3_pose.obj");
 	TRDrawableMesh::ptr houseMesh = std::make_shared<TRDrawableMesh>("model/floor.obj");
 	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>("model/light_red.obj");
 	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>("model/light_green.obj");

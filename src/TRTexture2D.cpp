@@ -11,12 +11,12 @@ namespace TinyRenderer
 
 	TRTexture2D::TRTexture2D() : 
 		m_width(0), m_height(0), m_channel(0), m_pixels(nullptr), m_mipmap(false),
-		m_warp_mode(TRTextureWarpMode::TR_CLAMP_TO_EDGE),
+		m_warp_mode(TRTextureWarpMode::TR_REPEAT),
 		m_filtering_mode(TRTextureFilterMode::TR_NEAREST) {}
 	
 	TRTexture2D::TRTexture2D(bool generatedMipmap) : 
 		m_width(0), m_height(0), m_channel(0), m_pixels(nullptr), m_mipmap(generatedMipmap), 
-		m_warp_mode(TRTextureWarpMode::TR_CLAMP_TO_EDGE),
+		m_warp_mode(TRTextureWarpMode::TR_REPEAT),
 		m_filtering_mode(TRTextureFilterMode::TR_NEAREST) {}
 
 	TRTexture2D::~TRTexture2D() { freeLoadedImage(); }

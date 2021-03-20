@@ -29,7 +29,7 @@ namespace TinyRenderer
 
 		bool loadTextureFromFile(
 			const std::string &filepath,
-			TRTextureWarpMode warpMode = TRTextureWarpMode::TR_CLAMP_TO_EDGE,
+			TRTextureWarpMode warpMode = TRTextureWarpMode::TR_REPEAT,
 			TRTextureFilterMode filterMode = TRTextureFilterMode::TR_LINEAR);
 
 		//Sampling according to the given uv coordinate

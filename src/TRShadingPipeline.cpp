@@ -220,6 +220,7 @@ namespace TinyRenderer
 		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : -1);
 		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : -1);
 
+		//FIXME: there are still cracks
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		for (int y = bounding_min.y; y <= bounding_max.y; ++y)
 		{
@@ -486,8 +487,8 @@ namespace TinyRenderer
 	{
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
 		glm::vec3 fragPos = glm::vec3(data.pos);
-		//glm::vec3 normal = glm::normalize(data.nor);
-		glm::vec3 normal = fetchFragmentNormal(data, data.tex);
+		glm::vec3 normal = glm::normalize(data.nor);
+		//glm::vec3 normal = fetchFragmentNormal(data, data.tex);
 
 		fragColor = glm::vec4(0.0f);
 
