@@ -1,5 +1,7 @@
 #include "TRMathUtils.h"
 
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace TinyRenderer
 {
 	glm::mat4 TRMathUtils::calcViewPortMatrix(int width, int height)

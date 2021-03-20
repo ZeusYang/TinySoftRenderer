@@ -150,6 +150,18 @@ namespace TinyRenderer
 
 	};
 
+	class TRDoNothingShadingPipeline : public TRShadingPipeline
+	{
+	public:
+
+		typedef std::shared_ptr<TRDoNothingShadingPipeline> ptr;
+
+		virtual ~TRDoNothingShadingPipeline() = default;
+
+		virtual void vertexShader(VertexData &vertex) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+	};
+
 	class TRPhongShadingPipeline final : public TRDefaultShadingPipeline
 	{
 	public:

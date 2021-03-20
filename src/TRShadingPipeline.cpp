@@ -184,6 +184,7 @@ namespace TinyRenderer
 		const unsigned int &screene_height,
 		std::vector<VertexData> &rasterized_points)
 	{
+		VertexData v[] = { v0, v1, v2 };
 		//Edge-equations rasterization algorithm
 		glm::ivec2 bounding_min;
 		glm::ivec2 bounding_max;
@@ -192,12 +193,25 @@ namespace TinyRenderer
 		bounding_max.x = std::min(std::max(v0.spos.x, std::max(v1.spos.x, v2.spos.x)), (int)screen_width - 1);
 		bounding_max.y = std::min(std::max(v0.spos.y, std::max(v1.spos.y, v2.spos.y)), (int)screene_height - 1);
 
+		//Adjust the order
+		{
+			int orient = 0;
+			auto e1 = v1.spos - v0.spos;
+			auto e2 = v2.spos - v0.spos;
+			orient = e1.x * e2.y - e1.y * e2.x;
+			if (orient > 0)
+			{
+				std::swap(v[1], v[2]);
+			}
+		}
+
 		//Accelerated Half-Space Triangle Rasterization
 		//Refs:Mileff P, Neh¨¦z K, Dudra J. Accelerated half-space triangle rasterization[J].
 		//     Acta Polytechnica Hungarica, 2015, 12(7): 217-236. http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf
-		const glm::ivec2 &A = v0.spos;
-		const glm::ivec2 &B = v1.spos;
-		const glm::ivec2 &C = v2.spos;
+
+		const glm::ivec2 &A = v[0].spos;
+		const glm::ivec2 &B = v[1].spos;
+		const glm::ivec2 &C = v[2].spos;
 
 		const int I01 = A.y - B.y, I02 = B.y - C.y, I03 = C.y - A.y;
 		const int J01 = B.x - A.x, J02 = C.x - B.x, J03 = A.x - C.x;
@@ -211,14 +225,16 @@ namespace TinyRenderer
 
 		//Degenerated to a line or a point
 		if (F01 + F02 + F03 == 0)
+		{
 			return;
+		}
 
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
 
 		//Top left fill rule
-		int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : -1);
-		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : -1);
-		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : -1);
+		int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : 0);
+		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : 0);
+		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : 0);
 
 		//FIXME: there are still cracks
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
@@ -227,12 +243,12 @@ namespace TinyRenderer
 			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
 			for (int x = bounding_min.x; x <= bounding_max.x; ++x)
 			{
-				int E1 = Cx1, E2 = Cx2, E3 = Cx3;
+				int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
 				//Counter-clockwise winding order
-				if ((E1 <= E1_t && E2 <= E2_t && E3 <= E3_t))
+				if (E1 <= 0 && E2 <= 0 && E3 <= 0)
 				{
 					glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
-					auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v0, v1, v2, uvw);
+					auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
 					rasterized_point.spos = glm::ivec2(x, y);
 					rasterized_points.push_back(rasterized_point);
 				}
@@ -240,6 +256,7 @@ namespace TinyRenderer
 			}
 			Cy1 += J01; Cy2 += J02; Cy3 += J03;
 		}
+
 	}
 
 	void TRShadingPipeline::rasterize_wire_aux(
@@ -479,6 +496,20 @@ namespace TinyRenderer
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
 		//fragColor = glm::vec4(0.5f * data.nor + 0.5f, 1.0f);
+	}
+
+	//----------------------------------------------TRNoTransformNoShadingPipeline----------------------------------------------
+
+	void TRDoNothingShadingPipeline::vertexShader(VertexData &vertex)
+	{
+		//do nothing at all
+		vertex.cpos = vertex.pos;
+	}
+
+	void TRDoNothingShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	{
+		//Just return the color.
+		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
 	}
 
 	//----------------------------------------------TRPhongShadingPipeline----------------------------------------------
