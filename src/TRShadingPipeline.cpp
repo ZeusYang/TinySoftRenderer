@@ -542,6 +542,7 @@ namespace TinyRenderer
 
 		glm::vec3 normal = glm::normalize(glm::vec3(TRShadingPipeline::getTexture2D(m_normal_tex_id)->sample(uv)) * 2.0f - glm::vec3(1.0f));
 		normal = glm::normalize(data.TBN * normal);
+		return normal;
 	}
 
 	void TRPhongShadingPipeline::fetchFragmentColor(glm::vec3 &amb, glm::vec3 &diff, glm::vec3 &spe, const glm::vec2 &uv) const
