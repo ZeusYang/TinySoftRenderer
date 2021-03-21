@@ -170,15 +170,6 @@ namespace TinyRenderer
 						m_shader_handler->vertexShader(v[2]);
 					}
 
-					//Backface culling
-					{
-						if (shouldCullingFace(v[0].cpos, v[1].cpos, v[2].cpos, cullfaceMode))
-						{
-							++m_clip_cull_profile.m_num_culled_triangles;
-							continue;
-						}
-					}
-
 					//Homogeneous space cliping
 					{
 						clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
@@ -206,6 +197,15 @@ namespace TinyRenderer
 							clipped_vertices[0],
 							clipped_vertices[i + 1],
 							clipped_vertices[i + 2] };
+
+					//Backface culling
+					{
+						if (shouldCullingFace(vert[0].cpos, vert[1].cpos, vert[2].cpos, cullfaceMode))
+						{
+							++m_clip_cull_profile.m_num_culled_triangles;
+							continue;
+						}
+					}
 
 					//Rasterization stage
 					{
@@ -283,17 +283,16 @@ namespace TinyRenderer
 		const TRShadingPipeline::VertexData &v1,
 		const TRShadingPipeline::VertexData &v2) const
 	{
-		return { v0, v1, v2 };
 		//Clipping in the homogeneous clipping space
 		//Refs:
 		//https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf
 		//https://fabiensanglard.net/polygon_codec/
 
 		//Optimization: complete outside or complete inside
-		//Note: in the following situation, we could return the answer without complicate cliping
-		//      this optimization should be very important.
+		//Note: in the following situation, we could return the answer without complicate cliping,
+		//      and this optimization should be very important.
 		{
-			//Outside
+			//Totally outside
 			if (v0.cpos.w < m_frustum_near_far.x && v1.cpos.w < m_frustum_near_far.x && v2.cpos.w < m_frustum_near_far.x)
 				return{};
 			if (v0.cpos.w > m_frustum_near_far.y && v1.cpos.w > m_frustum_near_far.y && v2.cpos.w > m_frustum_near_far.y)
@@ -310,7 +309,7 @@ namespace TinyRenderer
 				return{};
 			if (v0.cpos.z <-v0.cpos.w && v1.cpos.z <-v1.cpos.w && v2.cpos.z <-v2.cpos.w)
 				return{};
-			//Inside
+			//Totally inside
 			if (isPointInsideInClipingFrustum(v0.cpos)
 				&& isPointInsideInClipingFrustum(v1.cpos)
 				&& isPointInsideInClipingFrustum(v2.cpos))
@@ -417,6 +416,7 @@ namespace TinyRenderer
 		if (mode == TRCullFaceMode::TR_CULL_DISABLE)
 			return false;
 
+		//FIXME: cull the wrong faces in exterme case
 		//Back face culling in the ndc space
 		glm::vec3 edge1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
 		glm::vec3 edge2(v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);

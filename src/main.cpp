@@ -67,8 +67,7 @@ int main(int argc, char* args[])
 	winApp->readyToStart();
 
 	//Phong lighting
-	renderer->setShaderPipeline(std::make_shared<TRPhongShadingPipeline>());
-	//renderer->setShaderPipeline(std::make_shared<TRDoNothingShadingPipeline>());
+	//renderer->setShaderPipeline(std::make_shared<TRPhongShadingPipeline>());
 
 	glm::vec3 redLightPos = glm::vec3(0.0f, -0.05f, 1.2f);
 	glm::vec3 greenLightPos = glm::vec3(0.87f, -0.05f, -0.87f);

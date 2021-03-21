@@ -225,9 +225,7 @@ namespace TinyRenderer
 
 		//Degenerated to a line or a point
 		if (F01 + F02 + F03 == 0)
-		{
 			return;
-		}
 
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
 
@@ -236,7 +234,6 @@ namespace TinyRenderer
 		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : 0);
 		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : 0);
 
-		//FIXME: there are still cracks
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		for (int y = bounding_min.y; y <= bounding_max.y; ++y)
 		{
@@ -495,7 +492,6 @@ namespace TinyRenderer
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
-		//fragColor = glm::vec4(0.5f * data.nor + 0.5f, 1.0f);
 	}
 
 	//----------------------------------------------TRNoTransformNoShadingPipeline----------------------------------------------
