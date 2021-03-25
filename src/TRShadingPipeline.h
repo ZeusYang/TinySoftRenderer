@@ -72,14 +72,7 @@ namespace TinyRenderer
 			const unsigned int &screen_width,
 			const unsigned int &screene_height, 
 			std::vector<VertexData> &rasterized_points);
-		static void rasterize_fill_edge_walking(
-			const VertexData &v0,
-			const VertexData &v1,
-			const VertexData &v2,
-			const unsigned int &screen_width,
-			const unsigned int &screene_height,
-			std::vector<VertexData> &rasterized_points);
-		static void rasterize_fill_edge_equations(
+		static void rasterize_fill_edge_function(
 			const VertexData &v0,
 			const VertexData &v1,
 			const VertexData &v2,
@@ -100,13 +93,6 @@ namespace TinyRenderer
 		static void rasterize_wire_aux(
 			const VertexData &begin,
 			const VertexData &end,
-			const unsigned int &screen_width,
-			const unsigned int &screene_height,
-			std::vector<VertexData> &rasterized_points);
-		static void rasterize_fill_edge_walking_aux(
-			const VertexData &v0,
-			const VertexData &v1,
-			const VertexData &v2,
 			const unsigned int &screen_width,
 			const unsigned int &screene_height,
 			std::vector<VertexData> &rasterized_points);

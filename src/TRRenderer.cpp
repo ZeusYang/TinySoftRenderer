@@ -198,15 +198,6 @@ namespace TinyRenderer
 							clipped_vertices[i + 1],
 							clipped_vertices[i + 2] };
 
-					//Backface culling
-					{
-						if (shouldCullingFace(vert[0].cpos, vert[1].cpos, vert[2].cpos, cullfaceMode))
-						{
-							++m_clip_cull_profile.m_num_culled_triangles;
-							continue;
-						}
-					}
-
 					//Rasterization stage
 					{
 						//Transform to screen space & Rasterization
@@ -215,10 +206,19 @@ namespace TinyRenderer
 							vert[1].spos = glm::ivec2(m_viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
 							vert[2].spos = glm::ivec2(m_viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
 
+							//Backface culling
+							{
+								if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, cullfaceMode))
+								{
+									++m_clip_cull_profile.m_num_culled_triangles;
+									continue;
+								}
+							}
+
 							switch (polygonMode)
 							{
 								case TRPolygonMode::TR_TRIANGLE_FILL:
-									m_shader_handler->rasterize_fill_edge_equations(vert[0], vert[1], vert[2],
+									m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
 										m_backBuffer->getWidth(), m_backBuffer->getHeight(), rasterized_points);
 									break;
 								case TRPolygonMode::TR_TRIANGLE_WIRE:
@@ -411,20 +411,17 @@ namespace TinyRenderer
 		return inside_polygon;
 	}
 
-	bool TRRenderer::shouldCullingFace(const glm::vec4 &v0, const glm::vec4 &v1, const glm::vec4 &v2, TRCullFaceMode mode) const
+	bool TRRenderer::isBackFacing(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode) const
 	{
 		if (mode == TRCullFaceMode::TR_CULL_DISABLE)
 			return false;
 
-		//FIXME: cull the wrong faces in exterme case
-		//Back face culling in the ndc space
-		glm::vec3 edge1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
-		glm::vec3 edge2(v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
+		auto e1 = v1 - v0;
+		auto e2 = v2 - v0;
 
-		glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
-		glm::vec3 view = glm::vec3(0, 0, 1);
+		int orient = e1.x * e2.y - e1.y * e2.x;
 
-		return (mode == TRCullFaceMode::TR_CULL_BACK) ? glm::dot(normal, view) < 0 : glm::dot(normal, view) > 0;
+		return (mode == TRCullFaceMode::TR_CULL_BACK) ? (orient > 0) : (orient < 0);
 	}
 
 }

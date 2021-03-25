@@ -70,7 +70,7 @@ namespace TinyRenderer
 		}
 
 		//Back face culling
-		bool shouldCullingFace(const glm::vec4 &v0, const glm::vec4 &v1, const glm::vec4 &v2, TRCullFaceMode mode) const;
+		bool isBackFacing(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode) const;
 
 	private:
 
