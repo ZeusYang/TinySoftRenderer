@@ -146,9 +146,9 @@ namespace TinyRenderer
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
 
 		//Top left fill rule
-		int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : 0);
-		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : 0);
-		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : 0);
+		int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : -1);
+		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : -1);
+		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : -1);
 
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		for (int y = bounding_min.y; y <= bounding_max.y; ++y)

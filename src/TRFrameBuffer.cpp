@@ -58,9 +58,9 @@ namespace TinyRenderer
 		{
 			//constexpr float gamma = 1.0f / 2.2;
 			glm::vec3 hdrColor(color);
-			mapped.x = 1.0f - std::exp(-hdrColor.x * 2.2);
-			mapped.y = 1.0f - std::exp(-hdrColor.y * 2.2);
-			mapped.z = 1.0f - std::exp(-hdrColor.z * 2.2);
+			mapped.x = 1.0f - glm::exp(-hdrColor.x * 2.2f);
+			mapped.y = 1.0f - glm::exp(-hdrColor.y * 2.2f);
+			mapped.z = 1.0f - glm::exp(-hdrColor.z * 2.2f);
 		}
 
 		// Clamping in case overflow
