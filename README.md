@@ -81,10 +81,10 @@ Please check out `src/main.cpp` for more details. More examples are planned.
 ## Features
 
 - Affine and perspective correct per vertex parameter interpolation.
-
 - Bresenham, Edge equation triangle rasterization
 - Blinn-Phong shading, point lights
 - Textureing, Bilinear Texture Filtering
+- Tiling and morton curve layout for texture
 - Sutherland Hodgeman Homogeneous Cliping
 - Tangent Space Normal Mapping
 - Z-buffering
