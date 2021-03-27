@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 
 #include "TRShadingState.h"
+#include "TRTextureHolder.h"
 
 namespace TinyRenderer
 {
@@ -17,15 +18,14 @@ namespace TinyRenderer
 
 		TRTexture2D();
 		TRTexture2D(bool generatedMipmap);
-		~TRTexture2D();
+		~TRTexture2D() = default;
+
+		int getWidth() const { return m_width; }
+		int getHeight() const { return m_height; }
 
 		//Sampling options setting
 		void setWarpingMode(TRTextureWarpMode mode);
 		void setFilteringMode(TRTextureFilterMode mode);
-
-		int getWidth() const { return m_width; }
-		int getHeight() const { return m_height; }
-		int getChannel() const { return m_channel; }
 
 		bool loadTextureFromFile(
 			const std::string &filepath,
@@ -37,12 +37,18 @@ namespace TinyRenderer
 
 	private:
 		//Auxiliary functions
-		void readPixel(int u, int v, unsigned char &r, unsigned char &g, unsigned char &b, unsigned char &a) const;
-		void freeLoadedImage();
+		void readPixel(
+			const std::uint16_t &u,
+			const std::uint16_t &v, 
+			unsigned char &r, 
+			unsigned char &g, 
+			unsigned char &b, 
+			unsigned char &a) const;
 
 	private:
 		int m_width, m_height, m_channel;
-		unsigned char *m_pixels;
+		TRTextureHolder::ptr m_texHolder;
+
 		bool m_mipmap = false;
 
 		TRTextureWarpMode m_warp_mode;
