@@ -26,6 +26,7 @@ THE SOFTWARE.*/
 #include "TRWindowsApp.h"
 #include "TRRenderer.h"
 #include "TRMathUtils.h"
+#include "TRShaderProgram.h"
 
 #include <iostream>
 
@@ -63,11 +64,19 @@ int main(int argc, char* args[])
 	greenLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	blueLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 
-	//renderer->addDrawableMesh(std::make_shared<TRDrawableMesh>("model/cube.obj"));
 	winApp->readyToStart();
 
+	//Simple shading
+	//renderer->setShaderPipeline(std::make_shared<TR3DShadingPipeline>());
+
+	//Simple texture
+	//renderer->setShaderPipeline(std::make_shared<TRTextureShadingPipeline>());
+
 	//Phong lighting
-	renderer->setShaderPipeline(std::make_shared<TRPhongShadingPipeline>());
+	//renderer->setShaderPipeline(std::make_shared<TRPhongShadingPipeline>());
+	
+	//Blinn-Phong lighting
+	renderer->setShaderPipeline(std::make_shared<TRBlinnPhongShadingPipeline>());
 
 	glm::vec3 redLightPos = glm::vec3(0.0f, -0.05f, 1.2f);
 	glm::vec3 greenLightPos = glm::vec3(0.87f, -0.05f, -0.87f);

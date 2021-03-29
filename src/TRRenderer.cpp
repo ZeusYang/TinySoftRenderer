@@ -3,6 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "TRShadingPipeline.h"
+#include "TRShaderProgram.h"
 #include "TRMathUtils.h"
 
 #include <cmath>
@@ -100,7 +101,7 @@ namespace TinyRenderer
 	{
 		if (m_shader_handler == nullptr)
 		{
-			m_shader_handler = std::make_shared<TRDefaultShadingPipeline>();
+			m_shader_handler = std::make_shared<TR3DShadingPipeline>();
 		}
 		
 		//Load the matrices

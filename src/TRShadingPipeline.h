@@ -86,6 +86,7 @@ namespace TinyRenderer
 		static int addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color);
 		static TRPointLight &getPointLight(int index);
 		static void setViewerPos(const glm::vec3 &viewer) { m_viewer_pos = viewer; }
+		static glm::vec4 texture2D(const unsigned int &id, const glm::vec2 &uv);
 
 	protected:
 
@@ -121,45 +122,6 @@ namespace TinyRenderer
 
 		glm::vec3 m_tangent;
 		glm::vec3 m_bitangent;
-	};
-
-	class TRDefaultShadingPipeline : public TRShadingPipeline
-	{
-	public:
-
-		typedef std::shared_ptr<TRDefaultShadingPipeline> ptr;
-
-		virtual ~TRDefaultShadingPipeline() = default;
-
-		virtual void vertexShader(VertexData &vertex) override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
-
-	};
-
-	class TRDoNothingShadingPipeline : public TRShadingPipeline
-	{
-	public:
-
-		typedef std::shared_ptr<TRDoNothingShadingPipeline> ptr;
-
-		virtual ~TRDoNothingShadingPipeline() = default;
-
-		virtual void vertexShader(VertexData &vertex) override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
-	};
-
-	class TRPhongShadingPipeline final : public TRDefaultShadingPipeline
-	{
-	public:
-		typedef std::shared_ptr<TRPhongShadingPipeline> ptr;
-
-		virtual ~TRPhongShadingPipeline() = default;
-
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
-
-	private:
-		glm::vec3 fetchFragmentNormal(const VertexData &data, const glm::vec2 &uv) const;
-		void fetchFragmentColor(glm::vec3 &amb, glm::vec3 &diff, glm::vec3 &spec, const glm::vec2 &uv) const;
 	};
 }
 

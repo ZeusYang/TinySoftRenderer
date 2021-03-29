@@ -52,22 +52,11 @@ namespace TinyRenderer
 		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 			return;
 
-		//Tone mapping: HDR -> LDR
-		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
-		glm::vec3 mapped = glm::vec3(color);
-		{
-			//constexpr float gamma = 1.0f / 2.2;
-			glm::vec3 hdrColor(color);
-			mapped.x = 1.0f - glm::exp(-hdrColor.x * 2.2f);
-			mapped.y = 1.0f - glm::exp(-hdrColor.y * 2.2f);
-			mapped.z = 1.0f - glm::exp(-hdrColor.z * 2.2f);
-		}
-
 		// Clamping in case overflow
-		unsigned char red = static_cast<unsigned char>(mapped.x * 255);
-		unsigned char green = static_cast<unsigned char>(mapped.y * 255);
-		unsigned char blue = static_cast<unsigned char>(mapped.z * 255);
-		unsigned char alpha = static_cast<unsigned char>(std::min(255 * color.w, 255.0f));
+		unsigned char red = static_cast<unsigned char>(color.x * 255);
+		unsigned char green = static_cast<unsigned char>(color.y * 255);
+		unsigned char blue = static_cast<unsigned char>(color.z * 255);
+		unsigned char alpha = static_cast<unsigned char>(glm::min(255 * color.w, 255.0f));
 		unsigned int index = y * m_width*m_channel + x * m_channel;
 		m_colorBuffer[index + 0] = red;
 		m_colorBuffer[index + 1] = green;
