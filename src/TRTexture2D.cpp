@@ -184,21 +184,21 @@ namespace TinyRenderer
 		
 		//p0
 		texture.readPixel(ix, iy, r, g, b, a);
-		glm::vec4 p0(r * denom, g * denom, b * denom, a *denom);
+		glm::vec4 p0(r, g, b, a);
 
 		//p1
 		texture.readPixel((ix + 1 >= w) ? ix : (ix + 1), iy, r, g, b, a);
-		glm::vec4 p1(r * denom, g * denom, b * denom, a *denom);
+		glm::vec4 p1(r, g, b, a);
 
 		//p2
 		texture.readPixel(ix, (iy + 1 >= h) ? iy : (iy + 1), r, g, b, a);
-		glm::vec4 p2(r * denom, g * denom, b * denom, a *denom);
+		glm::vec4 p2(r, g, b, a);
 
 		//p3
 		texture.readPixel((ix + 1 >= w) ? ix : (ix + 1), (iy + 1 >= h) ? iy : (iy + 1), r, g, b, a);
-		glm::vec4 p3(r * denom, g * denom, b * denom, a *denom);
+		glm::vec4 p3(r, g, b, a);
 
-		return (1.0f - frac_x) * (1.0f - frac_y) * p0 + frac_x * (1.0f - frac_y) * p1 +
-			   (1.0f - frac_x) * frac_y * p2 + frac_x * frac_y * p3;
+		return ((1.0f - frac_x) * (1.0f - frac_y) * p0 + frac_x * (1.0f - frac_y) * p1 +
+			   (1.0f - frac_x) * frac_y * p2 + frac_x * frac_y * p3) * denom;
 	}
 }

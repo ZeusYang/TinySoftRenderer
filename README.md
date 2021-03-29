@@ -82,8 +82,8 @@ Please check out `src/main.cpp` for more details. More examples are planned.
 
 - Affine and perspective correct per vertex parameter interpolation.
 - Bresenham, Edge equation triangle rasterization
-- Blinn-Phong shading, point lights
-- Textureing, Bilinear Texture Filtering
+- Phong/Blinn-Phong shading, point lights
+- Textureing, Nearest texture sampling, Bilinear texture sampling
 - Tiling and morton curve layout for texture
 - Sutherland Hodgeman Homogeneous Cliping
 - Tangent Space Normal Mapping

@@ -293,6 +293,13 @@ namespace TinyRenderer
 		//Note: in the following situation, we could return the answer without complicate cliping,
 		//      and this optimization should be very important.
 		{
+			//Totally inside
+			if (isPointInsideInClipingFrustum(v0.cpos)
+				&& isPointInsideInClipingFrustum(v1.cpos)
+				&& isPointInsideInClipingFrustum(v2.cpos))
+			{
+				return { v0,v1,v2 };
+			}
 			//Totally outside
 			if (v0.cpos.w < m_frustum_near_far.x && v1.cpos.w < m_frustum_near_far.x && v2.cpos.w < m_frustum_near_far.x)
 				return{};
@@ -310,13 +317,6 @@ namespace TinyRenderer
 				return{};
 			if (v0.cpos.z <-v0.cpos.w && v1.cpos.z <-v1.cpos.w && v2.cpos.z <-v2.cpos.w)
 				return{};
-			//Totally inside
-			if (isPointInsideInClipingFrustum(v0.cpos)
-				&& isPointInsideInClipingFrustum(v1.cpos)
-				&& isPointInsideInClipingFrustum(v2.cpos))
-			{
-				return { v0,v1,v2 };
-			}
 		}
 
 		std::vector<TRShadingPipeline::VertexData> inside_vertices;
