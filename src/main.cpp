@@ -78,6 +78,9 @@ int main(int argc, char* args[])
 	//Blinn-Phong lighting
 	renderer->setShaderPipeline(std::make_shared<TRBlinnPhongShadingPipeline>());
 
+	//Blinn-Phong lighting using normal mapping
+	//renderer->setShaderPipeline(std::make_shared<TRBlinnPhongNormalMapShadingPipeline>());
+
 	glm::vec3 redLightPos = glm::vec3(0.0f, -0.05f, 1.2f);
 	glm::vec3 greenLightPos = glm::vec3(0.87f, -0.05f, -0.87f);
 	glm::vec3 blueLightPos = glm::vec3(-0.83f, -0.05f, -0.83f);

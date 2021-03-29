@@ -60,6 +60,17 @@ namespace TinyRenderer
 
 		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
 	};
+
+	class TRBlinnPhongNormalMapShadingPipeline final : public TR3DShadingPipeline
+	{
+	public:
+		typedef std::shared_ptr<TRBlinnPhongNormalMapShadingPipeline> ptr;
+
+		virtual ~TRBlinnPhongNormalMapShadingPipeline() = default;
+
+		virtual void vertexShader(VertexData &vertex) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+	};
 }
 
 #endif
