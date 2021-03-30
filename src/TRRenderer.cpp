@@ -112,6 +112,7 @@ namespace TinyRenderer
 		//Draw a mesh step by step
 		m_clip_cull_profile.m_num_cliped_triangles = 0;
 		m_clip_cull_profile.m_num_culled_triangles = 0;
+		//std::vector<TRShadingPipeline::VertexData> rasterized_points;tbb::concurrent_vector<VertexData>
 		std::vector<TRShadingPipeline::VertexData> rasterized_points;
 		rasterized_points.reserve(m_backBuffer->getWidth() * m_backBuffer->getHeight());
 		for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
@@ -250,23 +251,6 @@ namespace TinyRenderer
 							}
 						}
 						);
-						//for (auto &points : rasterized_points)
-						//{
-						//	//Perspective correction after rasterization
-						//	TRShadingPipeline::VertexData::aftPrespCorrection(points);
-						//	if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-						//		m_backBuffer->readDepth(points.spos.x, points.spos.y) <= points.cpos.z)
-						//	{
-						//		continue;
-						//	}
-						//	glm::vec4 fragColor;
-						//	m_shader_handler->fragmentShader(points, fragColor);
-						//	m_backBuffer->writeColor(points.spos.x, points.spos.y, fragColor);
-						//	if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-						//	{
-						//		m_backBuffer->writeDepth(points.spos.x, points.spos.y, points.cpos.z);
-						//	}
-						//}
 					}
 
 					rasterized_points.clear();

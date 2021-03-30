@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 
 #include "TRTexture2D.h"
+#include "TRParallelWrapper.h"
 
 namespace TinyRenderer
 {
@@ -25,6 +26,9 @@ namespace TinyRenderer
 			glm::vec4 cpos; //Clip space position
 			glm::ivec2 spos;//Screen space position
 			glm::mat3 TBN;  //Tangent, bitangent, normal matrix
+
+			VertexData() = default;
+			VertexData(const glm::ivec2 &screen_pos) : spos(screen_pos) {} 
 
 			//Linear interpolation
 			static VertexData lerp(const VertexData &v0, const VertexData &v1, float frac);

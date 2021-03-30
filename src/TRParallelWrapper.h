@@ -6,6 +6,7 @@
 #include <functional>
 
 #include "tbb/parallel_for.h"
+#include "tbb/concurrent_vector.h"
 
 namespace TinyRenderer
 {

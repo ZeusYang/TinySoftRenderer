@@ -159,7 +159,7 @@ namespace TinyRenderer
 			r, g, b, a);
 
 		constexpr float denom = 1.0f / 255.0f;
-		return glm::vec4(r * denom, g * denom, b * denom, a * denom);
+		return glm::vec4(r, g, b, a) * denom;
 	}
 
 	glm::vec4 TRTexture2DSampler::textureSampling_bilinear(const TRTexture2D &texture, glm::vec2 uv)

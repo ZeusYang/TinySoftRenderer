@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include "TRParallelWrapper.h"
+
 namespace TinyRenderer
 {
 	TRWindowsApp::ptr TRWindowsApp::m_instance = nullptr;
@@ -128,15 +130,15 @@ namespace TinyRenderer
 		SDL_LockSurface(m_screen_surface);
 		{
 			Uint32* destPixels = (Uint32*)m_screen_surface->pixels;
-			for (int i = 0; i < width * height; ++i)
+			parallelFor((size_t)0, (size_t)width *height, [&](const size_t &index)
 			{
 				Uint32 color = SDL_MapRGB(
-					m_screen_surface->format, 
-					static_cast<uint8_t>(pixels[i * channel + 0]),
-					static_cast<uint8_t>(pixels[i * channel + 1]),
-					static_cast<uint8_t>(pixels[i * channel + 2]));
-				destPixels[i] = color;
-			}
+					m_screen_surface->format,
+					static_cast<uint8_t>(pixels[index * channel + 0]),
+					static_cast<uint8_t>(pixels[index * channel + 1]),
+					static_cast<uint8_t>(pixels[index * channel + 2]));
+				destPixels[index] = color;
+			});
 		}
 		SDL_UnlockSurface(m_screen_surface);
 		SDL_UpdateWindowSurface(m_window_handle);
