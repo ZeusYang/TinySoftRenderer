@@ -100,8 +100,8 @@ namespace TinyRenderer
 		const unsigned int &screene_height,
 		std::vector<VertexData> &rasterized_points)
 	{
+		//Edge function rasterization algorithm
 		VertexData v[] = { v0, v1, v2 };
-		//Edge-equations rasterization algorithm
 		glm::ivec2 bounding_min;
 		glm::ivec2 bounding_max;
 		bounding_min.x = std::max(std::min(v0.spos.x, std::min(v1.spos.x, v2.spos.x)), 0);
@@ -150,26 +150,89 @@ namespace TinyRenderer
 		int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : -1);
 		int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : -1);
 
-		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
-		for (int y = bounding_min.y; y <= bounding_max.y; ++y)
+		//Rasterize a block
+		auto rasterize_block_func = [&](const glm::ivec2 &bound_min, const glm::ivec2 &bound_max, int Cy1, int Cy2, int Cy3)
 		{
-			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
-			for (int x = bounding_min.x; x <= bounding_max.x; ++x)
+			for (int y = bound_min.y; y <= bound_max.y; ++y)
 			{
-				int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
-				//Counter-clockwise winding order
-				if (E1 <= 0 && E2 <= 0 && E3 <= 0)
+				int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
+				for (int x = bound_min.x; x <= bound_max.x; ++x)
 				{
-					glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
-					auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
-					rasterized_point.spos = glm::ivec2(x, y);
-					rasterized_points.push_back(rasterized_point);
+					int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
+					//Counter-clockwise winding order
+					if (E1 <= 0 && E2 <= 0 && E3 <= 0)
+					{
+						glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
+						auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
+						rasterized_point.spos = glm::ivec2(x, y);
+						rasterized_points.push_back(rasterized_point);
+					}
+					Cx1 += I01; Cx2 += I02; Cx3 += I03;
 				}
-				Cx1 += I01; Cx2 += I02; Cx3 += I03;
+				Cy1 += J01; Cy2 += J02; Cy3 += J03;
 			}
-			Cy1 += J01; Cy2 += J02; Cy3 += J03;
-		}
+		};
 
+		//Adaptive block-based strategy
+		float orient = (float)(bounding_max.x - bounding_min.x) / (float)(bounding_max.y - bounding_min.y);
+		if (orient > 0.4 && orient < 1.6)
+		{
+			//Block level traversal
+			constexpr int blockSize = 8;
+			//Round to block grid.
+			bounding_max.x = bounding_max.x & ~(blockSize - 1);
+			bounding_min.x = bounding_min.x & ~(blockSize - 1);
+			bounding_max.y = bounding_max.y & ~(blockSize - 1);
+			bounding_min.y = bounding_min.y & ~(blockSize - 1);
+
+			int stepX = (bounding_max.x - bounding_min.x) / blockSize + 1;
+			int stepY = (bounding_max.y - bounding_min.y) / blockSize + 1;
+			for (int i = 0; i < stepX * stepY; ++i)
+			{
+				int sx = i % stepX, sy = i / stepX;
+				//Test four corners of the block
+				/*********************
+				 *   c2---c3
+				 *   |    |
+				 *   c0---c1
+				 ********************/
+				glm::ivec2 c0(bounding_min.x + sx * blockSize, bounding_min.y + sy * blockSize);
+				glm::ivec2 c1(c0.x + blockSize, c0.y);
+				glm::ivec2 c2(c0.x, c0.y + blockSize);
+				glm::ivec2 c3(c1.x, c2.y);
+				//Edge function
+				auto edge_func = [&](const int &x, const int &y) -> int
+				{
+					int f1 = I01 * x + J01 * y + K01;
+					int f2 = I02 * x + J02 * y + K02;
+					int f3 = I03 * x + J03 * y + K03;
+					return f1 + f2 + f3;
+				};
+				
+				int c0_f = edge_func(c0.x, c0.y), c1_f = edge_func(c1.x, c1.y);
+				int c2_f = edge_func(c2.x, c2.y), c3_f = edge_func(c3.x, c3.y);
+				
+				//Totally outside
+				if (c0_f > 0 && c1_f > 0 && c2_f > 0 && c3_f > 0)
+				{
+					continue;
+				}
+				//Totally inside or partially inside
+				else
+				{
+					int Cy1 = I01 * c0.x + J01 * c0.y + K01;
+					int Cy2 = I02 * c0.x + J02 * c0.y + K02;
+					int Cy3 = I03 * c0.x + J03 * c0.y + K03;
+					rasterize_block_func(c0, c3, Cy1, Cy2, Cy3);
+				}
+			}
+		}
+		else
+		{
+			//Pixel level traversal
+			int Cy1 = F01, Cy2 = F02, Cy3 = F03;
+			rasterize_block_func(bounding_min, bounding_max, Cy1, Cy2, Cy3);
+		}
 	}
 
 	void TRShadingPipeline::rasterize_wire_aux(

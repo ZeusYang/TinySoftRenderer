@@ -59,7 +59,7 @@ int main(int argc, char* args[])
 	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>("model/light_red.obj");
 	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>("model/light_green.obj");
 	TRDrawableMesh::ptr blueLightMesh = std::make_shared<TRDrawableMesh>("model/light_blue.obj");
-	renderer->addDrawableMesh({/*houseMesh,*/diabloMesh, redLightMesh, greenLightMesh, blueLightMesh });
+	renderer->addDrawableMesh({houseMesh, diabloMesh, redLightMesh, greenLightMesh, blueLightMesh });
 	redLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	greenLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	blueLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
