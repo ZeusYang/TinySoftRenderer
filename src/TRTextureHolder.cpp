@@ -115,9 +115,10 @@ namespace TinyRenderer
 	unsigned int TRZCurveTilingTextureHolder::xyToIndex(const std::uint16_t &x, const std::uint16_t &y) const
 	{
 		//Address mapping
-		std::uint8_t rx = x % blockSize, ry = y % blockSize;
+		//std::uint8_t rx = x % blockSize, ry = y % blockSize;
+		std::uint8_t rx = x & (blockSize - 1), ry = y & (blockSize - 1);
 		std::uint16_t ri = 0;
 		TRZCurveTilingTextureHolder::encodeMortonCurve(rx, ry, ri);
-		return (y / blockSize * m_widthInTiles + x / blockSize) * blockSize_2 + ri;
+		return ((y >> bits) * m_widthInTiles + (x  >> bits)) * blockSize_2 + ri;
 	}
 }

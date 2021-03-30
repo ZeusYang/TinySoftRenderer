@@ -113,8 +113,8 @@ namespace TinyRenderer
 		m_clip_cull_profile.m_num_cliped_triangles = 0;
 		m_clip_cull_profile.m_num_culled_triangles = 0;
 		//std::vector<TRShadingPipeline::VertexData> rasterized_points;tbb::concurrent_vector<VertexData>
-		std::vector<TRShadingPipeline::VertexData> rasterized_points;
-		rasterized_points.reserve(m_backBuffer->getWidth() * m_backBuffer->getHeight());
+		tbb::concurrent_vector<TRShadingPipeline::FragmentGroup> rasterized_fragments;
+		rasterized_fragments.reserve(m_backBuffer->getWidth() * m_backBuffer->getHeight() * 0.25);
 		for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 		{
 			//Configuration
@@ -218,42 +218,45 @@ namespace TinyRenderer
 								}
 							}
 
-							switch (polygonMode)
-							{
-								case TRPolygonMode::TR_TRIANGLE_FILL:
-									m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
-										m_backBuffer->getWidth(), m_backBuffer->getHeight(), rasterized_points);
-									break;
-								case TRPolygonMode::TR_TRIANGLE_WIRE:
-									m_shader_handler->rasterize_wire(vert[0], vert[1], vert[2],
-										m_backBuffer->getWidth(), m_backBuffer->getHeight(), rasterized_points);
-									break;
-							}
+							m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
+								m_backBuffer->getWidth(), m_backBuffer->getHeight(), rasterized_fragments);
 						}
 					}
 
 					//Fragment shader & Depth testing
 					{
-						parallelFor((size_t)0, rasterized_points.size(), [&](size_t index)
+						auto fragment_func = [&](TRShadingPipeline::VertexData &fragment)
 						{
-							auto &point = rasterized_points[index];
-							TRShadingPipeline::VertexData::aftPrespCorrection(point);
+							//Note: spos.x equals -1 -> invalid fragment
+							if (fragment.spos.x == -1)
+								return;
+							TRShadingPipeline::VertexData::aftPrespCorrection(fragment);
 							if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-								m_backBuffer->readDepth(point.spos.x, point.spos.y) > point.cpos.z)
+								m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
 							{
 								glm::vec4 fragColor;
-								m_shader_handler->fragmentShader(point, fragColor);
-								m_backBuffer->writeColor(point.spos.x, point.spos.y, fragColor);
+								m_shader_handler->fragmentShader(fragment, fragColor);
+								m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
 								if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
 								{
-									m_backBuffer->writeDepth(point.spos.x, point.spos.y, point.cpos.z);
+									m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
 								}
 							}
+						};
+
+						//Execute the fragment calculation using 2x2 fragment block as unit.
+						parallelFor((size_t)0, rasterized_fragments.size(), [&](size_t index)
+						{
+							auto &fragments = rasterized_fragments[index];
+							fragment_func(fragments.fragments[0]);
+							fragment_func(fragments.fragments[1]);
+							fragment_func(fragments.fragments[2]);
+							fragment_func(fragments.fragments[3]);
 						}
 						);
 					}
 
-					rasterized_points.clear();
+					rasterized_fragments.clear();
 				}
 			}
 

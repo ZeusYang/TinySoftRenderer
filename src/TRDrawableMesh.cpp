@@ -122,6 +122,7 @@ namespace TinyRenderer
 					{
 						TRTexture2D::ptr normTex = std::make_shared<TRTexture2D>();
 						bool success = normTex->loadTextureFromFile(baseDir + mp->bump_texname);
+						normTex->setFilteringMode(TRTextureFilterMode::TR_NEAREST);
 						texIds.z = TRShadingPipeline::upload_texture_2D(normTex);
 					}
 				}
@@ -138,6 +139,7 @@ namespace TinyRenderer
 					{
 						TRTexture2D::ptr glowTex = std::make_shared<TRTexture2D>();
 						bool success = glowTex->loadTextureFromFile(baseDir + mp->emissive_texname);
+						glowTex->setFilteringMode(TRTextureFilterMode::TR_NEAREST);
 						texIds.w = TRShadingPipeline::upload_texture_2D(glowTex);
 						texDict.insert({ mp->emissive_texname, texIds.w });
 					}

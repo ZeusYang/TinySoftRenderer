@@ -96,15 +96,25 @@ namespace TinyRenderer
 			}
 		}
 
-		static void encodeMortonCurve(const std::uint8_t &x, const std::uint8_t &y, std::uint16_t &index)
+		inline static void encodeMortonCurve(const std::uint8_t &x, const std::uint8_t &y, std::uint16_t &index)
 		{
 			//Morton curve encoding
 			//Refs: https://en.wikipedia.org/wiki/Z-order_curve
 			index = 0;
-			for (int i = 0; i < 2 * bits; ++i)
-			{
-				index |= ((x & (1 << i)) << (i)) | ((y & (1 << i)) << (i + 1));
-			}
+			index |= ((x & (1 << 0)) << (0)) | ((y & (1 << 0)) << (1));
+			index |= ((x & (1 << 1)) << (1)) | ((y & (1 << 1)) << (2));
+			index |= ((x & (1 << 2)) << (2)) | ((y & (1 << 2)) << (3));
+			index |= ((x & (1 << 3)) << (3)) | ((y & (1 << 3)) << (4));
+			index |= ((x & (1 << 4)) << (4)) | ((y & (1 << 4)) << (5));
+			index |= ((x & (1 << 5)) << (5)) | ((y & (1 << 5)) << (6));
+			index |= ((x & (1 << 6)) << (6)) | ((y & (1 << 6)) << (7));
+			index |= ((x & (1 << 7)) << (7)) | ((y & (1 << 7)) << (8));
+			index |= ((x & (1 << 8)) << (8)) | ((y & (1 << 8)) << (9));
+			index |= ((x & (1 << 9)) << (9)) | ((y & (1 << 9)) << (10));
+			//for (int i = 0; i < 2 * bits; ++i)
+			//{
+			//	index |= ((x & (1 << i)) << (i)) | ((y & (1 << i)) << (i + 1));
+			//}
 		}
 	};
 }

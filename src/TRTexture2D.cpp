@@ -165,7 +165,6 @@ namespace TinyRenderer
 	glm::vec4 TRTexture2DSampler::textureSampling_bilinear(const TRTexture2D &texture, glm::vec2 uv)
 	{
 		//Perform bilinear sampling procedure
-
 		const auto &w = texture.getWidth();
 		const auto &h = texture.getHeight();
 

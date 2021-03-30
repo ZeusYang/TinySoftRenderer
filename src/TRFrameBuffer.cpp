@@ -56,7 +56,7 @@ namespace TinyRenderer
 		unsigned char green = static_cast<unsigned char>(color.y * 255);
 		unsigned char blue = static_cast<unsigned char>(color.z * 255);
 		unsigned char alpha = static_cast<unsigned char>(glm::min(255 * color.w, 255.0f));
-		unsigned int index = y * m_width*m_channel + x * m_channel;
+		unsigned int index = y * m_width * m_channel + x * m_channel;
 		m_colorBuffer[index + 0] = red;
 		m_colorBuffer[index + 1] = green;
 		m_colorBuffer[index + 2] = blue;

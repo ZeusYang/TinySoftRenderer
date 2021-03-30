@@ -28,7 +28,7 @@ namespace TinyRenderer
 			glm::mat3 TBN;  //Tangent, bitangent, normal matrix
 
 			VertexData() = default;
-			VertexData(const glm::ivec2 &screen_pos) : spos(screen_pos) {} 
+			VertexData(const glm::ivec2 &screen_pos) : spos(screen_pos) {}
 
 			//Linear interpolation
 			static VertexData lerp(const VertexData &v0, const VertexData &v1, float frac);
@@ -37,6 +37,15 @@ namespace TinyRenderer
 			//Perspective correction for interpolation
 			static void prePerspCorrection(VertexData &v);
 			static void aftPrespCorrection(VertexData &v);
+		};
+
+		//2x2 fragment block
+		class FragmentGroup
+		{
+		public:
+			VertexData fragments[4];
+			float dUdx = 0.0f, dUdy = 0.0f;
+			float dVdx = 0.0f, dVdy = 0.0f;
 		};
 
 		virtual ~TRShadingPipeline() = default;
@@ -69,20 +78,13 @@ namespace TinyRenderer
 		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) = 0;
 
 		//Rasterization
-		static void rasterize_wire(
-			const VertexData &v0,
-			const VertexData &v1,
-			const VertexData &v2,
-			const unsigned int &screen_width,
-			const unsigned int &screene_height, 
-			std::vector<VertexData> &rasterized_points);
 		static void rasterize_fill_edge_function(
 			const VertexData &v0,
 			const VertexData &v1,
 			const VertexData &v2,
 			const unsigned int &screen_width,
 			const unsigned int &screene_height,
-			std::vector<VertexData> &rasterized_points);
+			tbb::concurrent_vector<FragmentGroup> &rasterized_points);
 
 		//Textures and lights
 		static int upload_texture_2D(TRTexture2D::ptr tex);
@@ -93,14 +95,6 @@ namespace TinyRenderer
 		static glm::vec4 texture2D(const unsigned int &id, const glm::vec2 &uv);
 
 	protected:
-
-		//Auxiliary function
-		static void rasterize_wire_aux(
-			const VertexData &begin,
-			const VertexData &end,
-			const unsigned int &screen_width,
-			const unsigned int &screene_height,
-			std::vector<VertexData> &rasterized_points);
 
 		glm::mat4 m_model_matrix = glm::mat4(1.0f);
 		glm::mat3 m_inv_trans_model_matrix = glm::mat3(1.0f);

@@ -80,27 +80,13 @@ namespace TinyRenderer
 	std::vector<TRPointLight> TRShadingPipeline::m_point_lights = {};
 	glm::vec3 TRShadingPipeline::m_viewer_pos = glm::vec3(0.0f);
 
-	void TRShadingPipeline::rasterize_wire(
-		const VertexData &v0,
-		const VertexData &v1,
-		const VertexData &v2,
-		const unsigned int &screen_width,
-		const unsigned int &screene_height,
-		std::vector<VertexData> &rasterized_points)
-	{
-		//Draw each line step by step
-		rasterize_wire_aux(v0, v1, screen_width, screene_height, rasterized_points);
-		rasterize_wire_aux(v1, v2, screen_width, screene_height, rasterized_points);
-		rasterize_wire_aux(v0, v2, screen_width, screene_height, rasterized_points);
-	}
-
 	void TRShadingPipeline::rasterize_fill_edge_function(
 		const VertexData &v0,
 		const VertexData &v1,
 		const VertexData &v2,
 		const unsigned int &screen_width,
 		const unsigned int &screene_height,
-		std::vector<VertexData> &rasterized_points)
+		tbb::concurrent_vector<FragmentGroup> &rasterized_fragments)
 	{
 		//Edge function rasterization algorithm
 		//Accelerated Half-Space Triangle Rasterization
@@ -154,130 +140,39 @@ namespace TinyRenderer
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
 
-		//TRExecutionPolicy policy = (bounding_max.x - bounding_min.x) * (bounding_max.y - bounding_min.y) > 5000
-		//	? TRExecutionPolicy::TR_SERIAL : TRExecutionPolicy::TR_SERIAL;
-		//policy = TRExecutionPolicy::TR_PARALLEL;
-		//Note: parallel is not suitable here.
-		//parallelFor((int)bounding_min.y, (int)(bounding_max.y + 1), [&](const int &y)
-		//{
-		//	int Cx1 = Cy1 + (y - bounding_min.y) * J01;
-		//	int Cx2 = Cy2 + (y - bounding_min.y) * J02;
-		//	int Cx3 = Cy3 + (y - bounding_min.y) * J03;;
-		//	for (int x = bounding_min.x; x <= bounding_max.x; ++x)
-		//	{
-		//		int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
-		//		//Counter-clockwise winding order
-		//		if (E1 <= 0 && E2 <= 0 && E3 <= 0)
-		//		{
-		//			glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
-		//			auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
-		//			rasterized_point.spos = glm::ivec2(x, y);
-		//			//tmp.push_back(rasterized_point);
-		//			rasterized_points.push_back(rasterized_point);
-		//		}
-		//		Cx1 += I01; Cx2 += I02; Cx3 += I03;
-		//	}
-		//	//Cy1 += J01; Cy2 += J02; Cy3 += J03;
-		//}, policy);
-
-		for (int y = bounding_min.y; y <= bounding_max.y; ++y)
+		auto edge_func = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3) -> VertexData
 		{
-			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
-			for (int x = bounding_min.x; x <= bounding_max.x; ++x)
+			if(x > bounding_max.x || y > bounding_max.y) //Invalid fragment
+				return VertexData(glm::ivec2(-1));
+
+			int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
+			//Counter-clockwise winding order
+			if (E1 <= 0 && E2 <= 0 && E3 <= 0)
 			{
-				int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
-				//Counter-clockwise winding order
-				if (E1 <= 0 && E2 <= 0 && E3 <= 0)
-				{
-					glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
-					auto rasterized_point = TRShadingPipeline::VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
-					rasterized_point.spos = glm::ivec2(x, y);
-					rasterized_points.push_back(rasterized_point);
-				}
-				Cx1 += I01; Cx2 += I02; Cx3 += I03;
+				glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
+				auto rasterized_point = VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
+				rasterized_point.spos = glm::ivec2(x, y);
+				return rasterized_point;
 			}
-			Cy1 += J01; Cy2 += J02; Cy3 += J03;
-		}
-	}
+			return VertexData(glm::ivec2(-1));//Invalid fragment
+		};
 
-	void TRShadingPipeline::rasterize_wire_aux(
-		const VertexData &from,
-		const VertexData &to,
-		const unsigned int &screen_width,
-		const unsigned int &screen_height,
-		std::vector<VertexData> &rasterized_points)
-	{
-		//Bresenham line rasterization
-
-		int dx = to.spos.x - from.spos.x;
-		int dy = to.spos.y - from.spos.y;
-		int stepX = 1, stepY = 1;
-
-		// judge the sign
-		if (dx < 0)
+		int iterCnt = (bounding_max.y - bounding_min.y) / 2;
+		parallelFor((int)0, (int)(iterCnt + 1), [&](const int &i)
 		{
-			stepX = -1;
-			dx = -dx;
-		}
-		if (dy < 0)
-		{
-			stepY = -1;
-			dy = -dy;
-		}
-
-		int d2x = 2 * dx, d2y = 2 * dy;
-		int d2y_minus_d2x = d2y - d2x;
-		int sx = from.spos.x;
-		int sy = from.spos.y;
-
-		// slope < 1.
-		if (dy <= dx)
-		{
-			int flag = d2y - dx;
-			for (int i = 0; i <= dx; ++i)
+			int y = bounding_min.y + i * 2;
+			int Cx1 = Cy1 + i * 2 * J01, Cx2 = Cy2 + i * 2 * J02, Cx3 = Cy3 + i * 2 * J03;
+			for (int x = bounding_min.x; x <= bounding_max.x; x += 2)
 			{
-				auto mid = VertexData::lerp(from, to, static_cast<float>(i) / dx);
-				mid.spos = glm::ivec2(sx, sy);
-				if (mid.spos.x >= 0 && mid.spos.x <= screen_width && mid.spos.y >= 0 && mid.spos.y <= screen_height)
-				{
-					rasterized_points.push_back(mid);
-				}
-				sx += stepX;
-				if (flag <= 0)
-				{
-					flag += d2y;
-				}
-				else
-				{
-					sy += stepY;
-					flag += d2y_minus_d2x;
-				}
+				FragmentGroup group;
+				group.fragments[0] = edge_func(x, y, Cx1, Cx2, Cx3);
+				group.fragments[1] = edge_func(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03);
+				group.fragments[2] = edge_func(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03);
+				group.fragments[3] = edge_func(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03);
+				rasterized_fragments.push_back(group);
+				Cx1 += 2 * I01; Cx2 += 2 * I02; Cx3 += 2 * I03;
 			}
-		}
-		// slope > 1.
-		else
-		{
-			int flag = d2x - dy;
-			for (int i = 0; i <= dy; ++i)
-			{
-				auto mid = VertexData::lerp(from, to, static_cast<float>(i) / dy);
-				mid.spos = glm::ivec2(sx, sy);
-				if (mid.spos.x >= 0 && mid.spos.x < screen_width && mid.spos.y >= 0 && mid.spos.y < screen_height)
-				{
-					rasterized_points.push_back(mid);
-				}
-				sy += stepY;
-				if (flag <= 0)
-				{
-					flag += d2x;
-				}
-				else
-				{
-					sx += stepX;
-					flag -= d2y_minus_d2x;
-				}
-			}
-		}
+		});
 	}
 
 	int TRShadingPipeline::upload_texture_2D(TRTexture2D::ptr tex)
