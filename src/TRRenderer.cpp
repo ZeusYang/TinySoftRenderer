@@ -225,7 +225,8 @@ namespace TinyRenderer
 
 					//Fragment shader & Depth testing
 					{
-						auto fragment_func = [&](TRShadingPipeline::VertexData &fragment, const float &LOD)
+						auto fragment_func = [&](TRShadingPipeline::VertexData &fragment,
+							const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 						{
 							//Note: spos.x equals -1 -> invalid fragment
 							if (fragment.spos.x == -1)
@@ -234,7 +235,7 @@ namespace TinyRenderer
 								m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
 							{
 								glm::vec4 fragColor;
-								m_shader_handler->fragmentShader(fragment, fragColor, LOD);
+								m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
 								m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
 								if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
 								{
@@ -251,18 +252,14 @@ namespace TinyRenderer
 							//Perspective correction restore
 							block.aftPrespCorrectionForBlocks();
 
-							//Calculate LOD for mipmap
-							float dUdx = block.dUdx();
-							float dUdy = block.dUdy();
-							float dVdx = block.dVdx();
-							float dVdy = block.dVdy();
-							float L = glm::max(glm::length(glm::vec2(dUdx, dVdx)), glm::length(glm::vec2(dUdy, dVdy)));
-							float LOD = glm::log2(L);
+							//Calculate dUVdx, dUVdy for mipmap
+							glm::vec2 dUVdx(block.dUdx(), block.dVdx());
+							glm::vec2 dUVdy(block.dUdy(), block.dVdy());
 
-							fragment_func(block.fragments[0], LOD);
-							fragment_func(block.fragments[1], LOD);
-							fragment_func(block.fragments[2], LOD);
-							fragment_func(block.fragments[3], LOD);
+							fragment_func(block.fragments[0], dUVdx, dUVdy);
+							fragment_func(block.fragments[1], dUVdx, dUVdy);
+							fragment_func(block.fragments[2], dUVdx, dUVdy);
+							fragment_func(block.fragments[3], dUVdx, dUVdy);
 						}
 						);
 					}

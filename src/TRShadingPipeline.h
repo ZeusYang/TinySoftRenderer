@@ -54,10 +54,49 @@ namespace TinyRenderer
 
 			//Forward differencing
 			//Note: Need to handle the boundary condition.
-			inline float dUdx() const { return fragments[1].tex.x - fragments[0].tex.x; }
-			inline float dUdy() const { return fragments[2].tex.y - fragments[0].tex.y; }
-			inline float dVdx() const { return fragments[1].tex.y - fragments[0].tex.y;}
-			inline float dVdy() const { return fragments[2].tex.y - fragments[0].tex.y;}
+			inline float dUdx() const 
+			{
+				const auto &f = (fragments[1].spos.x != -1) ? fragments[1] : fragments[3];
+				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[2];
+				
+				if (f.spos.x == -1 || t.spos.x == -1)
+					return 1.0f;
+
+				return f.tex.x - t.tex.x;
+			}
+
+			inline float dUdy() const 
+			{ 
+				const auto &f = (fragments[2].spos.x != -1) ? fragments[2] : fragments[3];
+				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[1];
+
+				if (f.spos.x == -1 || t.spos.x == -1)
+					return 1.0f;
+
+				return f.tex.x - t.tex.x;
+			}
+
+			inline float dVdx() const 
+			{
+				const auto &f = (fragments[1].spos.x != -1) ? fragments[1] : fragments[3];
+				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[2];
+
+				if (f.spos.x == -1 || t.spos.x == -1)
+					return 1.0f;
+
+				return f.tex.y - t.tex.y;
+			}
+
+			inline float dVdy() const 
+			{
+				const auto &f = (fragments[2].spos.x != -1) ? fragments[2] : fragments[3];
+				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[1];
+
+				if (f.spos.x == -1 || t.spos.x == -1)
+					return 1.0f;
+
+				return f.tex.y - t.tex.y;
+			}
 		
 			//Perspective correction restore
 			inline void aftPrespCorrectionForBlocks()
@@ -100,7 +139,8 @@ namespace TinyRenderer
 
 		//Shaders
 		virtual void vertexShader(VertexData &vertex) = 0;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) = 0;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) = 0;
 
 		//Rasterization
 		static void rasterize_fill_edge_function(

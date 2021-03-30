@@ -12,7 +12,8 @@ namespace TinyRenderer
 		vertex.cpos = m_view_project_matrix * vertex.pos;
 	}
 
-	void TR3DShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD)
+	void TR3DShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
@@ -26,7 +27,8 @@ namespace TinyRenderer
 		vertex.cpos = vertex.pos;
 	}
 
-	void TRDoNothingShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD)
+	void TRDoNothingShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
@@ -34,7 +36,8 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRTextureShadingPipeline----------------------------------------------
 
-	void TRTextureShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD)
+	void TRTextureShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		//Default color
 		fragColor = glm::vec4(m_ke, 1.0f);
@@ -45,12 +48,41 @@ namespace TinyRenderer
 		}
 	}
 
+	//----------------------------------------------TRLODVisualizePipeline----------------------------------------------
+
+	void TRLODVisualizePipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+	{
+		//Visualization of LOD
+		static const glm::vec3 mipmapColors[] =
+		{
+			glm::vec3(1, 0, 0),
+			glm::vec3(0, 0, 1),
+			glm::vec3(1, 0.5f, 0),
+			glm::vec3(1, 0, 0.5f),
+			glm::vec3(0, 0.5f, 0.5f),
+			glm::vec3(0, 0.25f, 0.5f),
+			glm::vec3(0.25f, 0.5f, 0),
+			glm::vec3(0.5f, 0, 1),
+			glm::vec3(1, 0.25f, 0.5f),
+			glm::vec3(0.5f, 0.5f, 0.5f),
+			glm::vec3(0.25f, 0.25f, 0.25f),
+			glm::vec3(0.125f, 0.125f, 0.125f)
+		};
+		auto tex = TRShadingPipeline::getTexture2D(m_diffuse_tex_id);
+		int w = tex != nullptr ? tex->getWidth() : 1000;
+		int h = tex != nullptr ? tex->getHeight() : 1000;
+		float L = glm::max(glm::dot(dUVdx * glm::vec2(w, h), dUVdx * glm::vec2(w, h)),
+			glm::dot(dUVdy * glm::vec2(w, h), dUVdy * glm::vec2(w, h)));
+		float LOD = 0.5f * glm::log2(L);
+		fragColor = glm::vec4(mipmapColors[glm::max(int(LOD + 0.5), 0)], 1.0f);
+		return;
+	}
+
 	//----------------------------------------------TRPhongShadingPipeline----------------------------------------------
 
-	void TRPhongShadingPipeline::fragmentShader(
-		const VertexData &data, 
-		glm::vec4 &fragColor,
-		const float &LOD)
+	void TRPhongShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		fragColor = glm::vec4(0.0f);
 
@@ -116,10 +148,8 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRBlinPhongShadingPipeline----------------------------------------------
 
-	void TRBlinnPhongShadingPipeline::fragmentShader(
-		const VertexData &data, 
-		glm::vec4 &fragColor, 
-		const float &LOD)
+	void TRBlinnPhongShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		fragColor = glm::vec4(0.0f);
 
@@ -196,10 +226,8 @@ namespace TinyRenderer
 		vertex.TBN = glm::mat3(T, B, vertex.nor);
 	}
 
-	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(
-		const VertexData &data, 
-		glm::vec4 &fragColor, 
-		const float &LOD)
+	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		fragColor = glm::vec4(0.0f);
 

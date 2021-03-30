@@ -75,11 +75,14 @@ int main(int argc, char* args[])
 	//Simple texture
 	//renderer->setShaderPipeline(std::make_shared<TRTextureShadingPipeline>());
 
+	//LOD visualization
+	renderer->setShaderPipeline(std::make_shared<TRLODVisualizePipeline>());
+
 	//Phong lighting
 	//renderer->setShaderPipeline(std::make_shared<TRPhongShadingPipeline>());
 	
 	//Blinn-Phong lighting
-	renderer->setShaderPipeline(std::make_shared<TRBlinnPhongShadingPipeline>());
+	//renderer->setShaderPipeline(std::make_shared<TRBlinnPhongShadingPipeline>());
 
 	//Blinn-Phong lighting using normal mapping
 	//renderer->setShaderPipeline(std::make_shared<TRBlinnPhongNormalMapShadingPipeline>());
