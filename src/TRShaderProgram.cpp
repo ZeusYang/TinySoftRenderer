@@ -12,7 +12,7 @@ namespace TinyRenderer
 		vertex.cpos = m_view_project_matrix * vertex.pos;
 	}
 
-	void TR3DShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	void TR3DShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD)
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
@@ -26,7 +26,7 @@ namespace TinyRenderer
 		vertex.cpos = vertex.pos;
 	}
 
-	void TRDoNothingShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	void TRDoNothingShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD)
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
@@ -34,7 +34,7 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRTextureShadingPipeline----------------------------------------------
 
-	void TRTextureShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	void TRTextureShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD)
 	{
 		//Default color
 		fragColor = glm::vec4(m_ke, 1.0f);
@@ -47,7 +47,10 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRPhongShadingPipeline----------------------------------------------
 
-	void TRPhongShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	void TRPhongShadingPipeline::fragmentShader(
+		const VertexData &data, 
+		glm::vec4 &fragColor,
+		const float &LOD)
 	{
 		fragColor = glm::vec4(0.0f);
 
@@ -113,7 +116,10 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRBlinPhongShadingPipeline----------------------------------------------
 
-	void TRBlinnPhongShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	void TRBlinnPhongShadingPipeline::fragmentShader(
+		const VertexData &data, 
+		glm::vec4 &fragColor, 
+		const float &LOD)
 	{
 		fragColor = glm::vec4(0.0f);
 
@@ -190,7 +196,10 @@ namespace TinyRenderer
 		vertex.TBN = glm::mat3(T, B, vertex.nor);
 	}
 
-	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor)
+	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(
+		const VertexData &data, 
+		glm::vec4 &fragColor, 
+		const float &LOD)
 	{
 		fragColor = glm::vec4(0.0f);
 

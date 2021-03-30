@@ -14,7 +14,7 @@ namespace TinyRenderer
 		virtual ~TR3DShadingPipeline() = default;
 
 		virtual void vertexShader(VertexData &vertex) override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) override;
 
 	};
 
@@ -27,7 +27,7 @@ namespace TinyRenderer
 		virtual ~TRDoNothingShadingPipeline() = default;
 
 		virtual void vertexShader(VertexData &vertex) override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) override;
 	};
 
 	class TRTextureShadingPipeline final : public TR3DShadingPipeline
@@ -38,7 +38,7 @@ namespace TinyRenderer
 
 		virtual ~TRTextureShadingPipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) override;
 	};
 
 	class TRPhongShadingPipeline final : public TR3DShadingPipeline
@@ -48,7 +48,7 @@ namespace TinyRenderer
 
 		virtual ~TRPhongShadingPipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) override;
 	};
 
 	class TRBlinnPhongShadingPipeline final : public TR3DShadingPipeline
@@ -58,7 +58,7 @@ namespace TinyRenderer
 
 		virtual ~TRBlinnPhongShadingPipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) override;
 	};
 
 	class TRBlinnPhongNormalMapShadingPipeline final : public TR3DShadingPipeline
@@ -69,7 +69,7 @@ namespace TinyRenderer
 		virtual ~TRBlinnPhongNormalMapShadingPipeline() = default;
 
 		virtual void vertexShader(VertexData &vertex) override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) override;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) override;
 	};
 }
 

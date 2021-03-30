@@ -140,21 +140,27 @@ namespace TinyRenderer
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
 
-		auto edge_func = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3) -> VertexData
+		auto edge_func = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3, VertexData &p) -> bool
 		{
-			if(x > bounding_max.x || y > bounding_max.y) //Invalid fragment
-				return VertexData(glm::ivec2(-1));
+			if (x > bounding_max.x || y > bounding_max.y) //Invalid fragment
+			{
+				p = VertexData(glm::ivec2(-1));
+				return false;
+			}
 
 			int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
 			//Counter-clockwise winding order
 			if (E1 <= 0 && E2 <= 0 && E3 <= 0)
 			{
 				glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
-				auto rasterized_point = VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
-				rasterized_point.spos = glm::ivec2(x, y);
-				return rasterized_point;
+				p = VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
+				p.spos = glm::ivec2(x, y);
+				return true;
 			}
-			return VertexData(glm::ivec2(-1));//Invalid fragment
+
+			//Invalid fragment
+			p = VertexData(glm::ivec2(-1));
+			return false;
 		};
 
 		int iterCnt = (bounding_max.y - bounding_min.y) / 2;
@@ -164,12 +170,15 @@ namespace TinyRenderer
 			int Cx1 = Cy1 + i * 2 * J01, Cx2 = Cy2 + i * 2 * J02, Cx3 = Cy3 + i * 2 * J03;
 			for (int x = bounding_min.x; x <= bounding_max.x; x += 2)
 			{
+				//2x2 fragments block
 				FragmentGroup group;
-				group.fragments[0] = edge_func(x, y, Cx1, Cx2, Cx3);
-				group.fragments[1] = edge_func(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03);
-				group.fragments[2] = edge_func(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03);
-				group.fragments[3] = edge_func(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03);
-				rasterized_fragments.push_back(group);
+				bool inside1 = edge_func(x, y, Cx1, Cx2, Cx3, group.fragments[0]);
+				bool inside2 = edge_func(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03, group.fragments[1]);
+				bool inside3 = edge_func(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.fragments[2]);
+				bool inside4 = edge_func(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03, group.fragments[3]);
+				//Note: at least one of them is inside the triangle.
+				if(inside1 || inside2 || inside3 || inside4)
+					rasterized_fragments.push_back(group);
 				Cx1 += 2 * I01; Cx2 += 2 * I02; Cx3 += 2 * I03;
 			}
 		});

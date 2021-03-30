@@ -39,13 +39,38 @@ namespace TinyRenderer
 			static void aftPrespCorrection(VertexData &v);
 		};
 
-		//2x2 fragment block
+		//2x2 fragments block for calculating dFdx and dFdy.
 		class FragmentGroup
 		{
 		public:
+			/***********************************
+			 *   f2--f3
+			 *   |   |
+			 *   f0--f1
+			 *f0 -> (x, y  ), f1 -> (x+1,y  )
+			 *f2 -> (x, y+1), f3 -> (x+1,y+1)
+			 **********************************/
 			VertexData fragments[4];
-			float dUdx = 0.0f, dUdy = 0.0f;
-			float dVdx = 0.0f, dVdy = 0.0f;
+
+			//Forward differencing
+			//Note: Need to handle the boundary condition.
+			inline float dUdx() const { return fragments[1].tex.x - fragments[0].tex.x; }
+			inline float dUdy() const { return fragments[2].tex.y - fragments[0].tex.y; }
+			inline float dVdx() const { return fragments[1].tex.y - fragments[0].tex.y;}
+			inline float dVdy() const { return fragments[2].tex.y - fragments[0].tex.y;}
+		
+			//Perspective correction restore
+			inline void aftPrespCorrectionForBlocks()
+			{
+				if (fragments[0].spos.x != -1)
+					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[0]);
+				if (fragments[1].spos.x != -1)
+					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[1]);
+				if (fragments[2].spos.x != -1)
+					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[2]);
+				if (fragments[3].spos.x != -1)
+					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[3]);
+			}
 		};
 
 		virtual ~TRShadingPipeline() = default;
@@ -75,7 +100,7 @@ namespace TinyRenderer
 
 		//Shaders
 		virtual void vertexShader(VertexData &vertex) = 0;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor) = 0;
+		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, const float &LOD = 0.0f) = 0;
 
 		//Rasterization
 		static void rasterize_fill_edge_function(

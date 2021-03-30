@@ -225,17 +225,16 @@ namespace TinyRenderer
 
 					//Fragment shader & Depth testing
 					{
-						auto fragment_func = [&](TRShadingPipeline::VertexData &fragment)
+						auto fragment_func = [&](TRShadingPipeline::VertexData &fragment, const float &LOD)
 						{
 							//Note: spos.x equals -1 -> invalid fragment
 							if (fragment.spos.x == -1)
 								return;
-							TRShadingPipeline::VertexData::aftPrespCorrection(fragment);
 							if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
 								m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
 							{
 								glm::vec4 fragColor;
-								m_shader_handler->fragmentShader(fragment, fragColor);
+								m_shader_handler->fragmentShader(fragment, fragColor, LOD);
 								m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
 								if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
 								{
@@ -244,14 +243,26 @@ namespace TinyRenderer
 							}
 						};
 
-						//Execute the fragment calculation using 2x2 fragment block as unit.
+						//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
 						parallelFor((size_t)0, rasterized_fragments.size(), [&](size_t index)
 						{
-							auto &fragments = rasterized_fragments[index];
-							fragment_func(fragments.fragments[0]);
-							fragment_func(fragments.fragments[1]);
-							fragment_func(fragments.fragments[2]);
-							fragment_func(fragments.fragments[3]);
+							auto &block = rasterized_fragments[index];
+							
+							//Perspective correction restore
+							block.aftPrespCorrectionForBlocks();
+
+							//Calculate LOD for mipmap
+							float dUdx = block.dUdx();
+							float dUdy = block.dUdy();
+							float dVdx = block.dVdx();
+							float dVdy = block.dVdy();
+							float L = glm::max(glm::length(glm::vec2(dUdx, dVdx)), glm::length(glm::vec2(dUdy, dVdy)));
+							float LOD = glm::log2(L);
+
+							fragment_func(block.fragments[0], LOD);
+							fragment_func(block.fragments[1], LOD);
+							fragment_func(block.fragments[2], LOD);
+							fragment_func(block.fragments[3], LOD);
 						}
 						);
 					}
