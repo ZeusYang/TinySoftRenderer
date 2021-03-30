@@ -64,6 +64,9 @@ int main(int argc, char* args[])
 	greenLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	blueLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 
+	//diabloMesh->setPolygonMode(TRPolygonMode::TR_TRIANGLE_WIRE);
+	//houseMesh->setPolygonMode(TRPolygonMode::TR_TRIANGLE_WIRE);
+
 	winApp->readyToStart();
 
 	//Simple shading

@@ -61,13 +61,6 @@ namespace TinyRenderer
 			const std::vector<TRShadingPipeline::VertexData> &polygon,
 			const int &axis, 
 			const int &side) const;
-		bool isPointInsideInClipingFrustum(const glm::vec4 &p) const
-		{
-			return (p.x <= p.w && p.x >= -p.w)
-				&& (p.y <= p.w && p.y >= -p.w)
-				&& (p.z <= p.w && p.z >= -p.w)
-				&& (p.w <= m_frustum_near_far.y && p.w >= m_frustum_near_far.x);
-		}
 
 		//Back face culling
 		bool isBackFacing(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode) const;

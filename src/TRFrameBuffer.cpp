@@ -3,6 +3,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "TRParallelWrapper.h"
+
 namespace TinyRenderer
 {
 	TRFrameBuffer::TRFrameBuffer(int width, int height)
@@ -26,17 +28,14 @@ namespace TinyRenderer
 		unsigned char blue = static_cast<unsigned char>(255 * color.z);
 		unsigned char alpha = static_cast<unsigned char>(255 * color.w);
 
-		for (unsigned int row = 0; row < m_height; ++row)
+		parallelFor(0, (int)(m_width * m_height), [&](const int &index)
 		{
-			for (unsigned int col = 0; col < m_width; ++col)
-			{
-				m_depthBuffer[row * m_width + col] = 1.0f;
-				m_colorBuffer[row * m_width * m_channel + col * m_channel + 0] = red;
-				m_colorBuffer[row * m_width * m_channel + col * m_channel + 1] = green;
-				m_colorBuffer[row * m_width * m_channel + col * m_channel + 2] = blue;
-				m_colorBuffer[row * m_width * m_channel + col * m_channel + 3] = alpha;
-			}
-		}
+			m_depthBuffer[index] = 1.0f;
+			m_colorBuffer[index * m_channel + 0] = red;
+			m_colorBuffer[index * m_channel + 1] = green;
+			m_colorBuffer[index * m_channel + 2] = blue;
+			m_colorBuffer[index * m_channel + 3] = alpha;
+		});
 	}
 
 	void TRFrameBuffer::writeDepth(const unsigned int &x, const unsigned int &y, const float &value)

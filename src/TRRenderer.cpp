@@ -5,6 +5,7 @@
 #include "TRShadingPipeline.h"
 #include "TRShaderProgram.h"
 #include "TRMathUtils.h"
+#include "TRParallelWrapper.h"
 
 #include <cmath>
 
@@ -232,23 +233,40 @@ namespace TinyRenderer
 
 					//Fragment shader & Depth testing
 					{
-						for (auto &points : rasterized_points)
+						parallelFor((size_t)0, rasterized_points.size(), [&](size_t index)
 						{
-							//Perspective correction after rasterization
-							TRShadingPipeline::VertexData::aftPrespCorrection(points);
+							auto &point = rasterized_points[index];
+							TRShadingPipeline::VertexData::aftPrespCorrection(point);
 							if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-								m_backBuffer->readDepth(points.spos.x, points.spos.y) <= points.cpos.z)
+								m_backBuffer->readDepth(point.spos.x, point.spos.y) > point.cpos.z)
 							{
-								continue;
-							}
-							glm::vec4 fragColor;
-							m_shader_handler->fragmentShader(points, fragColor);
-							m_backBuffer->writeColor(points.spos.x, points.spos.y, fragColor);
-							if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-							{
-								m_backBuffer->writeDepth(points.spos.x, points.spos.y, points.cpos.z);
+								glm::vec4 fragColor;
+								m_shader_handler->fragmentShader(point, fragColor);
+								m_backBuffer->writeColor(point.spos.x, point.spos.y, fragColor);
+								if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+								{
+									m_backBuffer->writeDepth(point.spos.x, point.spos.y, point.cpos.z);
+								}
 							}
 						}
+						);
+						//for (auto &points : rasterized_points)
+						//{
+						//	//Perspective correction after rasterization
+						//	TRShadingPipeline::VertexData::aftPrespCorrection(points);
+						//	if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
+						//		m_backBuffer->readDepth(points.spos.x, points.spos.y) <= points.cpos.z)
+						//	{
+						//		continue;
+						//	}
+						//	glm::vec4 fragColor;
+						//	m_shader_handler->fragmentShader(points, fragColor);
+						//	m_backBuffer->writeColor(points.spos.x, points.spos.y, fragColor);
+						//	if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+						//	{
+						//		m_backBuffer->writeDepth(points.spos.x, points.spos.y, points.cpos.z);
+						//	}
+						//}
 					}
 
 					rasterized_points.clear();
@@ -293,13 +311,20 @@ namespace TinyRenderer
 		//Note: in the following situation, we could return the answer without complicate cliping,
 		//      and this optimization should be very important.
 		{
+			auto isPointInsideInClipingFrustum = [](const glm::vec4 &p, const float &near, const float &far) -> bool
+			{
+				return (p.x <= p.w && p.x >= -p.w) && (p.y <= p.w && p.y >= -p.w)
+					&& (p.z <= p.w && p.z >= -p.w) && (p.w <= far && p.w >= near);
+			};
+
 			//Totally inside
-			if (isPointInsideInClipingFrustum(v0.cpos)
-				&& isPointInsideInClipingFrustum(v1.cpos)
-				&& isPointInsideInClipingFrustum(v2.cpos))
+			if (isPointInsideInClipingFrustum(v0.cpos, m_frustum_near_far.x, m_frustum_near_far.y) && 
+				isPointInsideInClipingFrustum(v1.cpos, m_frustum_near_far.x, m_frustum_near_far.y) && 
+				isPointInsideInClipingFrustum(v2.cpos, m_frustum_near_far.x, m_frustum_near_far.y))
 			{
 				return { v0,v1,v2 };
 			}
+
 			//Totally outside
 			if (v0.cpos.w < m_frustum_near_far.x && v1.cpos.w < m_frustum_near_far.x && v2.cpos.w < m_frustum_near_far.x)
 				return{};
@@ -414,6 +439,7 @@ namespace TinyRenderer
 
 	bool TRRenderer::isBackFacing(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode) const
 	{
+		//Back face culling in screen space
 		if (mode == TRCullFaceMode::TR_CULL_DISABLE)
 			return false;
 
