@@ -70,12 +70,15 @@ namespace TinyRenderer
 			glm::vec3(0.125f, 0.125f, 0.125f)
 		};
 		auto tex = TRShadingPipeline::getTexture2D(m_diffuse_tex_id);
-		//int w = tex != nullptr ? tex->getWidth() : 1000;
-		//int h = tex != nullptr ? tex->getHeight() : 1000;
-		int w = 1000;
-		int h = 1000;
-		float L = glm::max(glm::dot(dUVdx * glm::vec2(w, h), dUVdx * glm::vec2(w, h)),
-			glm::dot(dUVdy * glm::vec2(w, h), dUVdy * glm::vec2(w, h)));
+		int w = 1000, h = 100;
+		if (tex != nullptr)
+		{
+			w = tex->getWidth();
+			h = tex->getHeight();
+		}
+		glm::vec2 dfdx = dUVdx * glm::vec2(w, h);
+		glm::vec2 dfdy = dUVdy * glm::vec2(w, h);
+		float L = glm::max(glm::dot(dfdx, dfdx), glm::dot(dfdy, dfdy));
 		float LOD = 0.5f * glm::log2(L);
 		fragColor = glm::vec4(mipmapColors[glm::max(int(LOD + 0.5), 0)], 1.0f);
 		return;
