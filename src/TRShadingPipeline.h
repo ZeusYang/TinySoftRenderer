@@ -106,13 +106,16 @@ namespace TinyRenderer
 			const unsigned int &screene_height,
 			tbb::concurrent_vector<QuadFragments> &rasterized_points);
 
-		//Textures and lights
+		//Textures and lights setting
 		static int upload_texture_2D(TRTexture2D::ptr tex);
 		static TRTexture2D::ptr getTexture2D(int index);
 		static int addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color);
 		static TRPointLight &getPointLight(int index);
 		static void setViewerPos(const glm::vec3 &viewer) { m_viewer_pos = viewer; }
-		static glm::vec4 texture2D(const unsigned int &id, const glm::vec2 &uv);
+
+		//Texture sampling
+		static glm::vec4 texture2D(const unsigned int &id, const glm::vec2 &uv, 
+			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy);
 
 	protected:
 

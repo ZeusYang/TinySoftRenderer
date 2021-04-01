@@ -2,6 +2,7 @@
 #define TRTEXTURE_2D_H
 
 #include <string>
+#include <vector>
 #include <memory>
 
 #include "glm/glm.hpp"
@@ -20,8 +21,9 @@ namespace TinyRenderer
 		TRTexture2D(bool generatedMipmap);
 		~TRTexture2D() = default;
 
-		int getWidth() const { return m_width; }
-		int getHeight() const { return m_height; }
+		bool isGeneratedMipmap() const { return m_generate_mipmap; }
+		int getWidth() const { return m_texHolders[0]->getWidth(); }
+		int getHeight() const { return m_texHolders[0]->getHeight(); }
 
 		//Sampling options setting
 		void setWarpingMode(TRTextureWarpMode mode);
@@ -33,23 +35,18 @@ namespace TinyRenderer
 			TRTextureFilterMode filterMode = TRTextureFilterMode::TR_LINEAR);
 
 		//Sampling according to the given uv coordinate
-		glm::vec4 sample(const glm::vec2 &uv) const;
+		glm::vec4 sample(const glm::vec2 &uv, const float &level = 0.0f) const;
 
 	private:
 		//Auxiliary functions
-		void readPixel(
-			const std::uint16_t &u,
-			const std::uint16_t &v, 
-			unsigned char &r, 
-			unsigned char &g, 
-			unsigned char &b, 
-			unsigned char &a) const;
+		void readPixel(const std::uint16_t &u, const std::uint16_t &v, unsigned char &r, 
+			unsigned char &g, unsigned char &b, unsigned char &a, const int level = 0) const;
+
+		void generateMipmap(unsigned char *pixels, int width, int height, int channel);
 
 	private:
-		int m_width, m_height, m_channel;
-		TRTextureHolder::ptr m_texHolder;
-
-		bool m_mipmap = false;
+		bool m_generate_mipmap = false;
+		std::vector<TRTextureHolder::ptr> m_texHolders;
 
 		TRTextureWarpMode m_warp_mode;
 		TRTextureFilterMode m_filtering_mode;
@@ -62,8 +59,8 @@ namespace TinyRenderer
 	public:
 
 		//Sampling algorithm
-		static glm::vec4 textureSampling_nearest(const TRTexture2D &texture, glm::vec2 uv);
-		static glm::vec4 textureSampling_bilinear(const TRTexture2D &texture, glm::vec2 uv);
+		static glm::vec4 textureSampling_nearest(TRTextureHolder::ptr texture, glm::vec2 uv);
+		static glm::vec4 textureSampling_bilinear(TRTextureHolder::ptr texture, glm::vec2 uv);
 	};
 }
 

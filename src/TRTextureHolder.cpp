@@ -1,5 +1,7 @@
 #include "TRTextureHolder.h"
 
+#include "TRParallelWrapper.h"
+
 namespace TinyRenderer
 {
 	//----------------------------------------------TRTextureHolder----------------------------------------------
@@ -15,48 +17,44 @@ namespace TinyRenderer
 		return m_data[xyToIndex(x, y)];
 	}
 
-	void TRTextureHolder::loadTexture(
-		unsigned int nElements, 
-		unsigned char *data,
-		std::uint16_t width,
-		std::uint16_t height,
-		int channel)
+	void TRTextureHolder::read(const std::uint16_t &x, const std::uint16_t &y, unsigned char &r, unsigned char &g,
+		unsigned char &b, unsigned char &a) const
+	{
+		//Please guarantee that x and y are in [0,width-1],[0,height-1] respectively
+		std::uint32_t texel = read(x, y);
+		r = (texel >> 24) & 0xFF;
+		g = (texel >> 16) & 0xFF;
+		b = (texel >>  8) & 0xFF;
+		a = (texel >>  0) & 0xFF;
+	}
+
+	void TRTextureHolder::loadTexture(const unsigned int &nElements, unsigned char *data, const std::uint16_t &width,
+		const std::uint16_t &height, const int &channel)
 	{
 		//Unified to 32bpp texel format
 		m_data = new std::uint32_t[nElements];
-
-		for (int y = 0; y < height; ++y)
+		parallelFor((int)0, (int)(height * width), [&](const int &index) -> void
 		{
-			for (int x = 0; x < width; ++x)
+			int y = index / width, x = index % width;
+			unsigned char r, g, b, a;
+			int addres = index * channel;
+			switch (channel)
 			{
-				unsigned char r, g, b, a;
-				int index = (y * width + x) * channel;
-				switch (channel)
-				{
-				case 1://R
-					r = g = b = data[index];
-					a = 255;
-					break;
-				case 3://RGB
-					r = data[index + 0];
-					g = data[index + 1];
-					b = data[index + 2];
-					a = 255;
-					break;
-				case 4://RGBA
-					r = data[index + 0];
-					g = data[index + 1];
-					b = data[index + 2];
-					a = data[index + 3];
-					break;
-				default:
-					r = g = b = data[index];
-					a = 255;
-					break;
-				}
-				m_data[xyToIndex(x, y)] = (r << 24) | (g << 16) | (b << 8) | (a << 0);
+			case 1://R
+				r = g = b = data[addres], a = 255;
+				break;
+			case 3://RGB
+				r = data[addres + 0], g = data[addres + 1], b = data[addres + 2], a = 255;
+				break;
+			case 4://RGBA
+				r = data[addres + 0], g = data[addres + 1], b = data[addres + 2], a = data[addres + 3];
+				break;
+			default:
+				r = g = b = data[addres], a = 255;
+				break;
 			}
-		}
+			m_data[xyToIndex(x, y)] = (r << 24) | (g << 16) | (b << 8) | (a << 0);
+		});
 	}
 
 	void TRTextureHolder::freeTexture()

@@ -246,11 +246,24 @@ namespace TinyRenderer
 		return m_point_lights[index];
 	}
 
-	glm::vec4 TRShadingPipeline::texture2D(const unsigned int &id, const glm::vec2 &uv)
+	glm::vec4 TRShadingPipeline::texture2D(const unsigned int &id, const glm::vec2 &uv,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
 		if (id < 0 || id >= m_global_texture_units.size())
 			return glm::vec4(0.0f);
-		return m_global_texture_units[id]->sample(uv);
+		const auto &texture = m_global_texture_units[id];
+		if (texture->isGeneratedMipmap())
+		{
+			//Calculate lod level
+			glm::vec2 dfdx = dUVdx * glm::vec2(texture->getWidth(), texture->getHeight());
+			glm::vec2 dfdy = dUVdy * glm::vec2(texture->getWidth(), texture->getHeight());
+			float L = glm::max(glm::dot(dfdx, dfdx), glm::dot(dfdy, dfdy));
+			return texture->sample(uv, 0.5f * glm::log2(L));
+		}
+		else
+		{
+			return texture->sample(uv);
+		}
 	}
 
 }

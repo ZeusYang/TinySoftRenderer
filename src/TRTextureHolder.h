@@ -14,17 +14,19 @@ namespace TinyRenderer
 		TRTextureHolder(std::uint16_t width, std::uint16_t height);
 		virtual ~TRTextureHolder();
 
+		std::uint16_t getWidth() const { return m_width; }
+		std::uint16_t getHeight() const { return m_height; }
+
 		virtual std::uint32_t read(const std::uint16_t &x, const std::uint16_t &y) const;
+		virtual void read(const std::uint16_t &x, const std::uint16_t &y, unsigned char &r, unsigned char &g,
+			unsigned char &b, unsigned char &a) const;
 		
 	protected:
 		std::uint16_t m_width, m_height;
 		std::uint32_t *m_data;//32bpp texture format (RGBA)
 
-		void loadTexture(unsigned int nElements,
-			unsigned char *data,
-			std::uint16_t width,
-			std::uint16_t height,
-			int channel);
+		void loadTexture(const unsigned int &nElements, unsigned char *data, const std::uint16_t &width, 
+			const std::uint16_t &height, const int &channel);
 		virtual unsigned int xyToIndex(const std::uint16_t &x, const std::uint16_t &y) const = 0;
 		void freeTexture();
 	};

@@ -44,7 +44,7 @@ namespace TinyRenderer
 
 		if (m_diffuse_tex_id != -1)
 		{
-			fragColor = texture2D(m_diffuse_tex_id, data.tex);
+			fragColor = texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy);
 		}
 	}
 
@@ -70,8 +70,10 @@ namespace TinyRenderer
 			glm::vec3(0.125f, 0.125f, 0.125f)
 		};
 		auto tex = TRShadingPipeline::getTexture2D(m_diffuse_tex_id);
-		int w = tex != nullptr ? tex->getWidth() : 1000;
-		int h = tex != nullptr ? tex->getHeight() : 1000;
+		//int w = tex != nullptr ? tex->getWidth() : 1000;
+		//int h = tex != nullptr ? tex->getHeight() : 1000;
+		int w = 1000;
+		int h = 1000;
 		float L = glm::max(glm::dot(dUVdx * glm::vec2(w, h), dUVdx * glm::vec2(w, h)),
 			glm::dot(dUVdy * glm::vec2(w, h), dUVdy * glm::vec2(w, h)));
 		float LOD = 0.5f * glm::log2(L);
@@ -88,9 +90,9 @@ namespace TinyRenderer
 
 		//Fetch the corresponding color 
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex)) : m_kd;
-		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex)) : m_ks;
-		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex)) : m_ke;
+		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy)) : m_kd;
+		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
+		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
 
 		//No lighting
 		if (!m_lighting_enable)
@@ -155,9 +157,9 @@ namespace TinyRenderer
 
 		//Fetch the corresponding color 
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex)) : m_kd;
-		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex)) : m_ks;
-		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex)) : m_ke;
+		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy)) : m_kd;
+		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
+		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
 
 		//No lighting
 		if (!m_lighting_enable)
@@ -233,9 +235,9 @@ namespace TinyRenderer
 
 		//Fetch the corresponding color 
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex)) : m_kd;
-		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex)) : m_ks;
-		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex)) : m_ke;
+		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy)) : m_kd;
+		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
+		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
 
 		//No lighting
 		if (!m_lighting_enable)
@@ -248,7 +250,7 @@ namespace TinyRenderer
 		glm::vec3 normal = data.nor;
 		if (m_normal_tex_id != -1)
 		{
-			normal = glm::vec3(texture2D(m_normal_tex_id, data.tex)) * 2.0f - glm::vec3(1.0f);
+			normal = glm::vec3(texture2D(m_normal_tex_id, data.tex, dUVdx, dUVdy)) * 2.0f - glm::vec3(1.0f);
 			normal = data.TBN * normal;
 		}
 		normal = glm::normalize(normal);
