@@ -57,7 +57,7 @@ namespace TinyRenderer
 
 		//32bpp
 		unsigned char *raw = new unsigned char[width * height * 4];
-		parallelFor((int)0, (int)(width * width), [&](const int &index)
+		parallelFor((int)0, (int)(width * height), [&](const int &index)
 		{
 			unsigned char &r = raw[index * 4 + 0];
 			unsigned char &g = raw[index * 4 + 1];
@@ -79,7 +79,7 @@ namespace TinyRenderer
 				r = g = b = pixels[fromIndex], a = 255;
 				break;
 			}
-		});
+		}, TRExecutionPolicy::TR_PARALLEL);
 		channel = 4;
 		stbi_image_free(pixels);
 		pixels = nullptr;

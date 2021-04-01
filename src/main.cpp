@@ -54,11 +54,13 @@ int main(int argc, char* args[])
 	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(45.0f, static_cast<float>(width) / height, 0.001f, 10.0f), 0.001f, 10.0f);
 
 	//Load the rendering data
-	TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>("model/diablo3_pose/diablo3_pose.obj");
-	TRDrawableMesh::ptr houseMesh = std::make_shared<TRDrawableMesh>("model/floor.obj");
-	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>("model/light_red.obj");
-	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>("model/light_green.obj");
-	TRDrawableMesh::ptr blueLightMesh = std::make_shared<TRDrawableMesh>("model/light_blue.obj");
+	bool generatedMipMap = true;
+	TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>("model/diablo3_pose/diablo3_pose.obj", generatedMipMap);
+	//TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>("model/mountain/mountain.obj", false);
+	TRDrawableMesh::ptr houseMesh = std::make_shared<TRDrawableMesh>("model/floor.obj", generatedMipMap);
+	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>("model/light_red.obj", generatedMipMap);
+	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>("model/light_green.obj", generatedMipMap);
+	TRDrawableMesh::ptr blueLightMesh = std::make_shared<TRDrawableMesh>("model/light_blue.obj", generatedMipMap);
 	renderer->addDrawableMesh({ diabloMesh, redLightMesh, greenLightMesh, blueLightMesh, houseMesh });
 	redLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	greenLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);

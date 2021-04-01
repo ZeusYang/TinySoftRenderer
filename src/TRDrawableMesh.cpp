@@ -12,9 +12,9 @@
 namespace TinyRenderer
 {
 
-	TRDrawableMesh::TRDrawableMesh(const std::string &filename)
+	TRDrawableMesh::TRDrawableMesh(const std::string &filename, bool generatedMipmap)
 	{
-		loadMeshFromFile(filename);
+		loadMeshFromFile(filename, generatedMipmap);
 	}
 
 	void TRDrawableMesh::clear()
@@ -32,7 +32,7 @@ namespace TinyRenderer
 		return *this;
 	}
 
-	void TRDrawableMesh::loadMeshFromFile(const std::string &filename)
+	void TRDrawableMesh::loadMeshFromFile(const std::string &filename, bool generatedMipmap)
 	{
 		clear();
 
@@ -87,7 +87,7 @@ namespace TinyRenderer
 					else
 					{
 						//Need to generate mipmap.
-						TRTexture2D::ptr diffTex = std::make_shared<TRTexture2D>(true);
+						TRTexture2D::ptr diffTex = std::make_shared<TRTexture2D>(generatedMipmap);
 						bool success = diffTex->loadTextureFromFile(baseDir + mp->diffuse_texname);
 						texIds.x = TRShadingPipeline::upload_texture_2D(diffTex);
 						texDict.insert({ mp->diffuse_texname, texIds.x });
@@ -105,7 +105,7 @@ namespace TinyRenderer
 					else
 					{
 						//Need to generate mipmap as well.
-						TRTexture2D::ptr specuTex = std::make_shared<TRTexture2D>(true);
+						TRTexture2D::ptr specuTex = std::make_shared<TRTexture2D>(generatedMipmap);
 						bool success = specuTex->loadTextureFromFile(baseDir + mp->specular_texname);
 						texIds.y = TRShadingPipeline::upload_texture_2D(specuTex);
 						texDict.insert({ mp->specular_texname, texIds.y });
@@ -140,7 +140,7 @@ namespace TinyRenderer
 					else
 					{
 						//Need to generate mipmap as well.
-						TRTexture2D::ptr glowTex = std::make_shared<TRTexture2D>(true);
+						TRTexture2D::ptr glowTex = std::make_shared<TRTexture2D>(generatedMipmap);
 						bool success = glowTex->loadTextureFromFile(baseDir + mp->emissive_texname);
 						glowTex->setFilteringMode(TRTextureFilterMode::TR_NEAREST);
 						texIds.w = TRShadingPipeline::upload_texture_2D(glowTex);

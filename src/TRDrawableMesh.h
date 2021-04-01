@@ -50,12 +50,12 @@ namespace TinyRenderer
 		TRDrawableMesh() = default;
 		~TRDrawableMesh() = default;
 		
-		TRDrawableMesh(const std::string &filename);
+		TRDrawableMesh(const std::string &filename, bool generatedMipmap = true);
 		TRDrawableMesh(const TRDrawableMesh& mesh)
 			: m_vertices_attrib(mesh.m_vertices_attrib), m_mesh_faces(mesh.m_mesh_faces) {}
 		TRDrawableMesh& operator=(const TRDrawableMesh& mesh);
 
-		void loadMeshFromFile(const std::string &filename);
+		void loadMeshFromFile(const std::string &filename, bool generatedMipmap = true);
 
 		TRVertexAttrib& getVerticesAttrib() { return m_vertices_attrib; }
 		std::vector<TRMeshFace>& getMeshFaces() { return m_mesh_faces; }
