@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 
+#include "tbb/spin_mutex.h"
 #include "tbb/parallel_for.h"
 #include "tbb/concurrent_vector.h"
 

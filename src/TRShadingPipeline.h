@@ -43,72 +43,29 @@ namespace TinyRenderer
 		class FragmentGroup
 		{
 		public:
-			/***********************************
+			/*************************************
 			 *   f2--f3
 			 *   |   |
 			 *   f0--f1
-			 *f0 -> (x, y  ), f1 -> (x+1,y  )
-			 *f2 -> (x, y+1), f3 -> (x+1,y+1)
-			 **********************************/
+			 *   f0 -> (x+0, y+0), f1 -> (x+1,y+0 )
+			 *   f2 -> (x+0, y+1), f3 -> (x+1,y+1)
+			 ************************************/
 			VertexData fragments[4];
 
 			//Forward differencing
 			//Note: Need to handle the boundary condition.
-			inline float dUdx() const 
-			{
-				const auto &f = (fragments[1].spos.x != -1) ? fragments[1] : fragments[3];
-				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[2];
-				
-				if (f.spos.x == -1 || t.spos.x == -1)
-					return 1.0f;
-
-				return f.tex.x - t.tex.x;
-			}
-
-			inline float dUdy() const 
-			{ 
-				const auto &f = (fragments[2].spos.x != -1) ? fragments[2] : fragments[3];
-				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[1];
-
-				if (f.spos.x == -1 || t.spos.x == -1)
-					return 1.0f;
-
-				return f.tex.x - t.tex.x;
-			}
-
-			inline float dVdx() const 
-			{
-				const auto &f = (fragments[1].spos.x != -1) ? fragments[1] : fragments[3];
-				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[2];
-
-				if (f.spos.x == -1 || t.spos.x == -1)
-					return 1.0f;
-
-				return f.tex.y - t.tex.y;
-			}
-
-			inline float dVdy() const 
-			{
-				const auto &f = (fragments[2].spos.x != -1) ? fragments[2] : fragments[3];
-				const auto &t = (fragments[0].spos.x != -1) ? fragments[0] : fragments[1];
-
-				if (f.spos.x == -1 || t.spos.x == -1)
-					return 1.0f;
-
-				return f.tex.y - t.tex.y;
-			}
+			inline float dUdx() const { return fragments[1].tex.x - fragments[0].tex.x; }
+			inline float dUdy() const { return fragments[2].tex.x - fragments[0].tex.x; }
+			inline float dVdx() const { return fragments[1].tex.y - fragments[0].tex.y;	}
+			inline float dVdy() const { return fragments[2].tex.y - fragments[0].tex.y; }
 		
 			//Perspective correction restore
 			inline void aftPrespCorrectionForBlocks()
 			{
-				if (fragments[0].spos.x != -1)
-					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[0]);
-				if (fragments[1].spos.x != -1)
-					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[1]);
-				if (fragments[2].spos.x != -1)
-					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[2]);
-				if (fragments[3].spos.x != -1)
-					TRShadingPipeline::VertexData::aftPrespCorrection(fragments[3]);
+				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[0]);
+				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[1]);
+				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[2]);
+				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[3]);
 			}
 		};
 

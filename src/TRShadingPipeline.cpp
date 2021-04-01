@@ -142,18 +142,19 @@ namespace TinyRenderer
 
 		auto edge_func = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3, VertexData &p) -> bool
 		{
-			if (x > bounding_max.x || y > bounding_max.y) //Invalid fragment
+			//Invalid fragment
+			if (x > bounding_max.x || y > bounding_max.y)
 			{
 				p = VertexData(glm::ivec2(-1));
 				return false;
 			}
 
+			//Note: Counter-clockwise winding order
 			int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
-			//Counter-clockwise winding order
 			if (E1 <= 0 && E2 <= 0 && E3 <= 0)
 			{
-				glm::vec3 uvw(Cx2 * one_div_delta, Cx3 * one_div_delta, Cx1 * one_div_delta);
-				p = VertexData::barycentricLerp(v[0], v[1], v[2], uvw);
+				glm::vec3 uvw(Cx2, Cx3, Cx1);
+				p = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
 				p.spos = glm::ivec2(x, y);
 				return true;
 			}
@@ -161,6 +162,16 @@ namespace TinyRenderer
 			//Invalid fragment
 			p = VertexData(glm::ivec2(-1));
 			return false;
+		};
+
+		//Strict barycenteric weights calculation
+		auto barycentericWeight = [&](const int &x, const int &y) -> glm::vec3
+		{
+			glm::vec3 s[2];
+			s[0] = glm::vec3(v[2].spos.x - v[0].spos.x, v[1].spos.x - v[0].spos.x, v[0].spos.x - x);
+			s[1] = glm::vec3(v[2].spos.y - v[0].spos.y, v[1].spos.y - v[0].spos.y, v[0].spos.y - y);
+			auto uf = glm::cross(s[0], s[1]);
+			return glm::vec3(1.f - (uf.x + uf.y) / uf.z, uf.y / uf.z, uf.x / uf.z);
 		};
 
 		int iterCnt = (bounding_max.y - bounding_min.y) / 2;
@@ -177,8 +188,31 @@ namespace TinyRenderer
 				bool inside3 = edge_func(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.fragments[2]);
 				bool inside4 = edge_func(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03, group.fragments[3]);
 				//Note: at least one of them is inside the triangle.
-				if(inside1 || inside2 || inside3 || inside4)
+				if (inside1 || inside2 || inside3 || inside4)
+				{
+					if (!inside1)
+					{
+						group.fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y));
+						group.fragments[0].spos = glm::ivec2(-1);
+					}
+					if (!inside2)
+					{
+						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x+1, y));
+						group.fragments[1].spos = glm::ivec2(-1);
+					}
+					if (!inside3)
+					{
+						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y+1));
+						group.fragments[2].spos = glm::ivec2(-1);
+					}
+					if (!inside4)
+					{
+						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x+1, y+1));
+						group.fragments[3].spos = glm::ivec2(-1);
+					}
+
 					rasterized_fragments.push_back(group);
+				}
 				Cx1 += 2 * I01; Cx2 += 2 * I02; Cx3 += 2 * I03;
 			}
 		});
