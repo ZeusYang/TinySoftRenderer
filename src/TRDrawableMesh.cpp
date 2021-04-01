@@ -188,15 +188,15 @@ namespace TinyRenderer
 						if (shapes[s].mesh.material_ids[f] < materials.size())
 						{
 							const tinyobj::material_t* mp = &materials[shapes[s].mesh.material_ids[f]];
-							face.kA = glm::vec3(mp->ambient[0], mp->ambient[1], mp->ambient[2]);
-							face.kD = glm::vec3(mp->diffuse[0], mp->diffuse[1], mp->diffuse[2]);
-							face.kS = glm::vec3(mp->specular[0], mp->specular[1], mp->specular[2]);
-							face.kE = glm::vec3(mp->emission[0], mp->emission[1], mp->emission[2]);
-							face.shininess = mp->shininess;
-							face.diffuseMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].x;
-							face.specularMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].y;
-							face.normalMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].z;
-							face.glowMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].w;
+							m_drawing_material.kA = glm::vec3(mp->ambient[0], mp->ambient[1], mp->ambient[2]);
+							m_drawing_material.kD = glm::vec3(mp->diffuse[0], mp->diffuse[1], mp->diffuse[2]);
+							m_drawing_material.kS = glm::vec3(mp->specular[0], mp->specular[1], mp->specular[2]);
+							m_drawing_material.kE = glm::vec3(mp->emission[0], mp->emission[1], mp->emission[2]);
+							m_drawing_material.shininess = mp->shininess;
+							m_drawing_material.diffuseMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].x;
+							m_drawing_material.specularMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].y;
+							m_drawing_material.normalMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].z;
+							m_drawing_material.glowMapTexId = matTextureIds[shapes[s].mesh.material_ids[f]].w;
 						}
 					}
 

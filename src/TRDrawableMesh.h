@@ -36,17 +36,6 @@ namespace TinyRenderer
 		unsigned int vnorIndex[3];
 		unsigned int vtexIndex[3];
 
-		//Per face material
-		int diffuseMapTexId = -1;
-		int specularMapTexId = -1;
-		int normalMapTexId = -1;
-		int glowMapTexId = -1;
-		glm::vec3 kA = glm::vec3(0.0f);//Ambient coefficient
-		glm::vec3 kD = glm::vec3(1.0f);//Diffuse coefficient
-		glm::vec3 kS = glm::vec3(0.0f);//Specular coefficient
-		glm::vec3 kE = glm::vec3(0.0f);//Emission
-		float shininess = 1.0f;		   //Specular highlight exponment
-
 		//TBN matrix
 		glm::vec3 tangent;
 		glm::vec3 bitangent;
@@ -82,13 +71,31 @@ namespace TinyRenderer
 		void setDepthwriteMode(TRDepthWriteMode mode) { m_drawing_config.depthwriteMode = mode; }
 		void setModelMatrix(const glm::mat4& mat) { m_drawing_config.modelMatrix = mat; }
 		void setLightingMode(TRLightingMode mode) { m_drawing_config.lightingMode = mode; }
+		void setDiffuseMapTexId(const int &id) { m_drawing_material.diffuseMapTexId = id; }
+		void setSpecularMapTexId(const int &id) { m_drawing_material.specularMapTexId = id; }
+		void setNormalMapTexId(const int &id) { m_drawing_material.normalMapTexId = id; }
+		void setGlowMapTexId(const int &id) { m_drawing_material.glowMapTexId = id; }
+		void setAmbientCoff(const glm::vec3 &cof) { m_drawing_material.kA = cof; }
+		void setDiffuseCoff(const glm::vec3 &cof) { m_drawing_material.kD = cof; }
+		void setSpecularCoff(const glm::vec3 &cof) { m_drawing_material.kS = cof; }
+		void setEmissionCoff(const glm::vec3 &cof) { m_drawing_material.kE = cof; }
 
+		//Getter
 		TRPolygonMode getPolygonMode() const { return m_drawing_config.polygonMode; }
 		TRCullFaceMode getCullfaceMode() const { return m_drawing_config.cullfaceMode; }
 		TRDepthTestMode getDepthtestMode() const { return m_drawing_config.depthtestMode; }
 		TRDepthWriteMode getDepthwriteMode() const { return m_drawing_config.depthwriteMode; }
 		const glm::mat4& getModelMatrix() const { return m_drawing_config.modelMatrix; }
 		TRLightingMode getLightingMode() const { return m_drawing_config.lightingMode; }
+		const int& getDiffuseMapTexId() const { return m_drawing_material.diffuseMapTexId; }
+		const int& getSpecularMapTexId() const { return m_drawing_material.specularMapTexId; }
+		const int& getNormalMapTexId() const { return m_drawing_material.normalMapTexId; }
+		const int& getGlowMapTexId() const { return m_drawing_material.glowMapTexId; }
+		const glm::vec3& getAmbientCoff() const { return m_drawing_material.kA; }
+		const glm::vec3& getDiffuseCoff() const { return m_drawing_material.kD; }
+		const glm::vec3& getSpecularCoff() const { return m_drawing_material.kS; }
+		const glm::vec3& getEmissionCoff() const { return m_drawing_material.kE; }
+		const float& getSpecularExponent() const { return m_drawing_material.shininess; }
 
 	protected:
 		TRVertexAttrib m_vertices_attrib;
@@ -105,6 +112,21 @@ namespace TinyRenderer
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 		};
 		DrawableConfig m_drawing_config;
+
+		//Material
+		struct DrawableMaterial
+		{
+			int diffuseMapTexId = -1;
+			int specularMapTexId = -1;
+			int normalMapTexId = -1;
+			int glowMapTexId = -1;
+			glm::vec3 kA = glm::vec3(0.0f);//Ambient coefficient
+			glm::vec3 kD = glm::vec3(1.0f);//Diffuse coefficient
+			glm::vec3 kS = glm::vec3(0.0f);//Specular coefficient
+			glm::vec3 kE = glm::vec3(0.0f);//Emission
+			float shininess = 1.0f;		   //Specular highlight exponment
+		};
+		DrawableMaterial m_drawing_material;
 	};
 
 }

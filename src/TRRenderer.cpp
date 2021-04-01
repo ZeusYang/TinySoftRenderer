@@ -113,40 +113,43 @@ namespace TinyRenderer
 		m_clip_cull_profile.m_num_cliped_triangles = 0;
 		m_clip_cull_profile.m_num_culled_triangles = 0;
 		//std::vector<TRShadingPipeline::VertexData> rasterized_points;tbb::concurrent_vector<VertexData>
-		tbb::concurrent_vector<TRShadingPipeline::FragmentGroup> rasterized_fragments;
+		tbb::concurrent_vector<TRShadingPipeline::QuadFragments> rasterized_fragments;
 		rasterized_fragments.reserve(m_backBuffer->getWidth() * m_backBuffer->getHeight() * 0.25);
 		for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 		{
-			//Configuration
-			TRPolygonMode polygonMode = m_drawableMeshes[m]->getPolygonMode();
-			TRCullFaceMode cullfaceMode = m_drawableMeshes[m]->getCullfaceMode();
-			TRDepthTestMode depthtestMode = m_drawableMeshes[m]->getDepthtestMode();
-			TRDepthWriteMode depthwriteMode = m_drawableMeshes[m]->getDepthwriteMode();
-			m_shader_handler->setModelMatrix(m_drawableMeshes[m]->getModelMatrix());
-			m_shader_handler->setLightingEnable(m_drawableMeshes[m]->getLightingMode() == TRLightingMode::TR_LIGHTING_ENABLE);
+			const auto &drawable = m_drawableMeshes[m];
 
-			const auto& vertices = m_drawableMeshes[m]->getVerticesAttrib();
-			const auto& faces = m_drawableMeshes[m]->getMeshFaces();
+			//Configuration
+			TRPolygonMode polygonMode = drawable->getPolygonMode();
+			TRCullFaceMode cullfaceMode = drawable->getCullfaceMode();
+			TRDepthTestMode depthtestMode = drawable->getDepthtestMode();
+			TRDepthWriteMode depthwriteMode = drawable->getDepthwriteMode();
+
+			//Setup the shading options
+			m_shader_handler->setModelMatrix(drawable->getModelMatrix());
+			m_shader_handler->setLightingEnable(drawable->getLightingMode() == TRLightingMode::TR_LIGHTING_ENABLE);
+			m_shader_handler->setAmbientCoef(drawable->getAmbientCoff());
+			m_shader_handler->setDiffuseCoef(drawable->getDiffuseCoff());
+			m_shader_handler->setSpecularCoef(drawable->getSpecularCoff());
+			m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
+			m_shader_handler->setDiffuseTexId(drawable->getDiffuseMapTexId());
+			m_shader_handler->setSpecularTexId(drawable->getSpecularMapTexId());
+			m_shader_handler->setNormalTexId(drawable->getNormalMapTexId());
+			m_shader_handler->setGlowTexId(drawable->getGlowMapTexId());
+			m_shader_handler->setShininess(drawable->getSpecularExponent());
+
+			const auto& vertices = drawable->getVerticesAttrib();
+			const auto& faces = drawable->getMeshFaces();
 			for (size_t f = 0; f < faces.size(); ++f)
 			{
-				//Setup the shading options
-				{
-					m_shader_handler->setAmbientCoef(faces[f].kA);
-					m_shader_handler->setDiffuseCoef(faces[f].kD);
-					m_shader_handler->setSpecularCoef(faces[f].kS);
-					m_shader_handler->setEmissionColor(faces[f].kE);
-					m_shader_handler->setDiffuseTexId(faces[f].diffuseMapTexId);
-					m_shader_handler->setSpecularTexId(faces[f].specularMapTexId);
-					m_shader_handler->setNormalTexId(faces[f].normalMapTexId);
-					m_shader_handler->setGlowTexId(faces[f].glowMapTexId);
-					m_shader_handler->setShininess(faces[f].shininess);
-					m_shader_handler->setTangent(faces[f].tangent);
-					m_shader_handler->setBitangent(faces[f].bitangent);
-				}
 
 				//A triangle as primitive
 				TRShadingPipeline::VertexData v[3];
 				{
+					glm::mat3 TBN_mat;
+					TBN_mat[0] = faces[f].tangent;
+					TBN_mat[1] = faces[f].bitangent;
+
 					v[0].pos = vertices.vpositions[faces[f].vposIndex[0]];
 					v[0].col = glm::vec3(vertices.vcolors[faces[f].vposIndex[0]]);
 					v[0].nor = vertices.vnormals[faces[f].vnorIndex[0]];
@@ -161,6 +164,8 @@ namespace TinyRenderer
 					v[2].col = glm::vec3(vertices.vcolors[faces[f].vposIndex[2]]);
 					v[2].nor = vertices.vnormals[faces[f].vnorIndex[2]];
 					v[2].tex = vertices.vtexcoords[faces[f].vtexIndex[2]];
+
+					v[0].TBN = v[1].TBN = v[2].TBN = TBN_mat;
 				}
 
 				//Vertex shader stage

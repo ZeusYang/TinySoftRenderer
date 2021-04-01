@@ -4,7 +4,7 @@ namespace TinyRenderer
 {
 	//----------------------------------------------TR3DShadingPipeline----------------------------------------------
 
-	void TR3DShadingPipeline::vertexShader(VertexData &vertex)
+	void TR3DShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//Local space -> World space -> Camera space -> Project space
 		vertex.pos = m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f);
@@ -13,7 +13,7 @@ namespace TinyRenderer
 	}
 
 	void TR3DShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
@@ -21,14 +21,14 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRDoNothingShadingPipeline----------------------------------------------
 
-	void TRDoNothingShadingPipeline::vertexShader(VertexData &vertex)
+	void TRDoNothingShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//do nothing at all
 		vertex.cpos = vertex.pos;
 	}
 
 	void TRDoNothingShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Just return the color.
 		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
@@ -37,7 +37,7 @@ namespace TinyRenderer
 	//----------------------------------------------TRTextureShadingPipeline----------------------------------------------
 
 	void TRTextureShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Default color
 		fragColor = glm::vec4(m_ke, 1.0f);
@@ -51,7 +51,7 @@ namespace TinyRenderer
 	//----------------------------------------------TRLODVisualizePipeline----------------------------------------------
 
 	void TRLODVisualizePipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Visualization of LOD
 		static const glm::vec3 mipmapColors[] =
@@ -82,7 +82,7 @@ namespace TinyRenderer
 	//----------------------------------------------TRPhongShadingPipeline----------------------------------------------
 
 	void TRPhongShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		fragColor = glm::vec4(0.0f);
 
@@ -149,7 +149,7 @@ namespace TinyRenderer
 	//----------------------------------------------TRBlinPhongShadingPipeline----------------------------------------------
 
 	void TRBlinnPhongShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		fragColor = glm::vec4(0.0f);
 
@@ -214,20 +214,20 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRBlinnPhongNormalMapShadingPipeline----------------------------------------------
 
-	void TRBlinnPhongNormalMapShadingPipeline::vertexShader(VertexData &vertex)
+	void TRBlinnPhongNormalMapShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//Local space -> World space -> Camera space -> Project space
 		vertex.pos = m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f);
 		vertex.nor = glm::normalize(m_inv_trans_model_matrix * vertex.nor);
 		vertex.cpos = m_view_project_matrix * vertex.pos;
 
-		glm::vec3 T = glm::normalize(m_inv_trans_model_matrix * m_tangent);
-		glm::vec3 B = glm::normalize(m_inv_trans_model_matrix * m_bitangent);
+		glm::vec3 T = glm::normalize(m_inv_trans_model_matrix * vertex.TBN[0]);
+		glm::vec3 B = glm::normalize(m_inv_trans_model_matrix * vertex.TBN[1]);
 		vertex.TBN = glm::mat3(T, B, vertex.nor);
 	}
 
 	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		fragColor = glm::vec4(0.0f);
 

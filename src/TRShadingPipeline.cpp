@@ -86,7 +86,7 @@ namespace TinyRenderer
 		const VertexData &v2,
 		const unsigned int &screen_width,
 		const unsigned int &screene_height,
-		tbb::concurrent_vector<FragmentGroup> &rasterized_fragments)
+		tbb::concurrent_vector<QuadFragments> &rasterized_fragments)
 	{
 		//Edge function rasterization algorithm
 		//Accelerated Half-Space Triangle Rasterization
@@ -182,7 +182,7 @@ namespace TinyRenderer
 			for (int x = bounding_min.x; x <= bounding_max.x; x += 2)
 			{
 				//2x2 fragments block
-				FragmentGroup group;
+				QuadFragments group;
 				bool inside1 = edge_func(x, y, Cx1, Cx2, Cx3, group.fragments[0]);
 				bool inside2 = edge_func(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03, group.fragments[1]);
 				bool inside3 = edge_func(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.fragments[2]);

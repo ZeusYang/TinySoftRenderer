@@ -40,7 +40,7 @@ namespace TinyRenderer
 		};
 
 		//2x2 fragments block for calculating dFdx and dFdy.
-		class FragmentGroup
+		class QuadFragments
 		{
 		public:
 			/*************************************
@@ -91,13 +91,11 @@ namespace TinyRenderer
 		void setNormalTexId(const int &id) { m_normal_tex_id = id; }
 		void setGlowTexId(const int &id) { m_glow_tex_id = id; }
 		void setShininess(const float &shininess) { m_shininess = shininess; }
-		void setTangent(const glm::vec3 &tangent) { m_tangent = tangent; }
-		void setBitangent(const glm::vec3 &bitangent) { m_bitangent = bitangent; }
 
 		//Shaders
-		virtual void vertexShader(VertexData &vertex) = 0;
+		virtual void vertexShader(VertexData &vertex) const = 0;
 		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
-			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) = 0;
+			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const = 0;
 
 		//Rasterization
 		static void rasterize_fill_edge_function(
@@ -106,7 +104,7 @@ namespace TinyRenderer
 			const VertexData &v2,
 			const unsigned int &screen_width,
 			const unsigned int &screene_height,
-			tbb::concurrent_vector<FragmentGroup> &rasterized_points);
+			tbb::concurrent_vector<QuadFragments> &rasterized_points);
 
 		//Textures and lights
 		static int upload_texture_2D(TRTexture2D::ptr tex);
@@ -139,9 +137,6 @@ namespace TinyRenderer
 		int m_glow_tex_id = -1;
 
 		bool m_lighting_enable = true;
-
-		glm::vec3 m_tangent;
-		glm::vec3 m_bitangent;
 	};
 }
 
