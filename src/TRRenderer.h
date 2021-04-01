@@ -50,6 +50,9 @@ namespace TinyRenderer
 
 	private:
 
+
+	private:
+
 		//Homogeneous space clipping - Sutherland Hodgeman algorithm
 		std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgeman(
 			const TRShadingPipeline::VertexData &v0,

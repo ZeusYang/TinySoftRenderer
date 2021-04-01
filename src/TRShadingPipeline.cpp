@@ -86,7 +86,7 @@ namespace TinyRenderer
 		const VertexData &v2,
 		const unsigned int &screen_width,
 		const unsigned int &screene_height,
-		tbb::concurrent_vector<QuadFragments> &rasterized_fragments)
+		std::vector<QuadFragments> &rasterized_fragments)
 	{
 		//Edge function rasterization algorithm
 		//Accelerated Half-Space Triangle Rasterization
@@ -174,11 +174,9 @@ namespace TinyRenderer
 			return glm::vec3(1.f - (uf.x + uf.y) / uf.z, uf.y / uf.z, uf.x / uf.z);
 		};
 
-		int iterCnt = (bounding_max.y - bounding_min.y) / 2;
-		parallelFor((int)0, (int)(iterCnt + 1), [&](const int &i)
+		for(int y = bounding_min.y;y <= bounding_max.y;y += 2)
 		{
-			int y = bounding_min.y + i * 2;
-			int Cx1 = Cy1 + i * 2 * J01, Cx2 = Cy2 + i * 2 * J02, Cx3 = Cy3 + i * 2 * J03;
+			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
 			for (int x = bounding_min.x; x <= bounding_max.x; x += 2)
 			{
 				//2x2 fragments block
@@ -197,17 +195,17 @@ namespace TinyRenderer
 					}
 					if (!inside2)
 					{
-						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x+1, y));
+						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y));
 						group.fragments[1].spos = glm::ivec2(-1);
 					}
 					if (!inside3)
 					{
-						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y+1));
+						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y + 1));
 						group.fragments[2].spos = glm::ivec2(-1);
 					}
 					if (!inside4)
 					{
-						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x+1, y+1));
+						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y + 1));
 						group.fragments[3].spos = glm::ivec2(-1);
 					}
 
@@ -215,7 +213,8 @@ namespace TinyRenderer
 				}
 				Cx1 += 2 * I01; Cx2 += 2 * I02; Cx3 += 2 * I03;
 			}
-		});
+			Cy1 += 2 * J01;	Cy2 += 2 * J02; Cy3 += 2 * J03;
+		}
 	}
 
 	int TRShadingPipeline::upload_texture_2D(TRTexture2D::ptr tex)

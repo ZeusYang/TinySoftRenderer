@@ -52,6 +52,26 @@ namespace TinyRenderer
 	void parallelFor(IndexType beginIndex, IndexType endIndex,
 		const Function& function, TRExecutionPolicy policy = TRExecutionPolicy::TR_PARALLEL);
 
+	//!
+	//! \brief      Makes a for-loop from \p beginIndex \p to endIndex in parallel with \p given chunk size.
+	//!
+	//! This function makes a for-loop specified by begin and end indices in
+	//! parallel. The order of the visit is not guaranteed due to the nature of
+	//! parallel execution.
+	//!
+	//! \param[in]  beginIndex The begin index.
+	//! \param[in]  endIndex   The end index.
+	//! \param[in]  grainSize  The chunk size.
+	//! \param[in]  function   The function to call for each index.
+	//! \param[in]  policy     The execution policy (parallel or serial).
+	//!
+	//! \tparam     IndexType  Index type.
+	//! \tparam     Function   Function type.
+	//!
+	template <typename Function>
+	void parallelForWithAffinity(size_t beginIndex, size_t endIndex,
+		const Function& function, TRExecutionPolicy policy = TRExecutionPolicy::TR_PARALLEL);
+
 	//! --------------------------------------Definition---------------------------------------------
 
 	template <typename RandomIterator, typename T>
@@ -72,6 +92,22 @@ namespace TinyRenderer
 			return;
 		if (policy == TRExecutionPolicy::TR_PARALLEL)
 			tbb::parallel_for(start, end, func);
+		else
+		{
+			for (auto i = start; i < end; ++i)
+				func(i);
+		}
+	}
+
+	template <typename Function>
+	void parallelForWithAffinity(size_t start, size_t end,
+		const Function& func, TRExecutionPolicy policy)
+	{
+		if (start > end)
+			return;
+		static tbb::affinity_partitioner ap;
+		if (policy == TRExecutionPolicy::TR_PARALLEL)
+			tbb::parallel_for(start, end, func, ap);
 		else
 		{
 			for (auto i = start; i < end; ++i)

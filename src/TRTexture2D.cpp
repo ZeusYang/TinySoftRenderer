@@ -203,15 +203,15 @@ namespace TinyRenderer
 			});
 
 			//Note: Just use linear memory layout for small texture
-			//if (curW >= 32)
-			//{
-			//	m_texHolders.push_back(std::make_shared<TRZCurveTilingTextureHolder>(current, curW, curH, channel));
-			//}
-			//else
-			//{
-			//	m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
-			//}
-			m_texHolders.push_back(std::make_shared<TRTilingTextureHolder>(current, curW, curH, channel));
+			if (curW >= 32)
+			{
+				m_texHolders.push_back(std::make_shared<TRZCurveTilingTextureHolder>(current, curW, curH, channel));
+			}
+			else
+			{
+				m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
+			}
+			//m_texHolders.push_back(std::make_shared<TRTilingTextureHolder>(current, curW, curH, channel));
 			std::swap(current, previous);
 		}
 

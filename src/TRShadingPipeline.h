@@ -104,7 +104,7 @@ namespace TinyRenderer
 			const VertexData &v2,
 			const unsigned int &screen_width,
 			const unsigned int &screene_height,
-			tbb::concurrent_vector<QuadFragments> &rasterized_points);
+			std::vector<QuadFragments> &rasterized_points);
 
 		//Textures and lights setting
 		static int upload_texture_2D(TRTexture2D::ptr tex);
