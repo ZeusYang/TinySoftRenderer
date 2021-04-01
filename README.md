@@ -83,7 +83,7 @@ Please check out `src/main.cpp` for more details. More examples are planned.
 ## Features
 
 - Affine and perspective correct per vertex parameter interpolation.
-- Acceleracted edge function triangle rasterization. Refs: [link](http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf)
+- Accelerated edge function triangle rasterization. Refs: [link](http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf)
 
 <img src="images/raster.jpg" alt="Logo" width="100%">
 
