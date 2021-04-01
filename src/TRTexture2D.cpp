@@ -203,14 +203,15 @@ namespace TinyRenderer
 			});
 
 			//Note: Just use linear memory layout for small texture
-			if (curW >= 32)
-			{
-				m_texHolders.push_back(std::make_shared<TRZCurveTilingTextureHolder>(current, curW, curH, channel));
-			}
-			else
-			{
-				m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
-			}
+			//if (curW >= 32)
+			//{
+			//	m_texHolders.push_back(std::make_shared<TRZCurveTilingTextureHolder>(current, curW, curH, channel));
+			//}
+			//else
+			//{
+			//	m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
+			//}
+			m_texHolders.push_back(std::make_shared<TRTilingTextureHolder>(current, curW, curH, channel));
 			std::swap(current, previous);
 		}
 
@@ -374,19 +375,15 @@ namespace TinyRenderer
 		//p0
 		texture->read(ix, iy, r, g, b, a);
 		glm::vec4 p0(r, g, b, a);
-
 		//p1
 		texture->read((ix + 1 >= w) ? ix : (ix + 1), iy, r, g, b, a);
 		glm::vec4 p1(r, g, b, a);
-
 		//p2
 		texture->read(ix, (iy + 1 >= h) ? iy : (iy + 1), r, g, b, a);
 		glm::vec4 p2(r, g, b, a);
-
 		//p3
 		texture->read((ix + 1 >= w) ? ix : (ix + 1), (iy + 1 >= h) ? iy : (iy + 1), r, g, b, a);
 		glm::vec4 p3(r, g, b, a);
-
 		return ((1.0f - frac_x) * (1.0f - frac_y) * p0 + frac_x * (1.0f - frac_y) * p1 +
 			   (1.0f - frac_x) * frac_y * p2 + frac_x * frac_y * p3) * denom;
 	}

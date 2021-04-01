@@ -258,7 +258,7 @@ namespace TinyRenderer
 			glm::vec2 dfdx = dUVdx * glm::vec2(texture->getWidth(), texture->getHeight());
 			glm::vec2 dfdy = dUVdy * glm::vec2(texture->getWidth(), texture->getHeight());
 			float L = glm::max(glm::dot(dfdx, dfdx), glm::dot(dfdy, dfdy));
-			return texture->sample(uv, 0.5f * glm::log2(L));
+			return texture->sample(uv, glm::max(0.5f * glm::log2(L), 0.0f));
 		}
 		else
 		{

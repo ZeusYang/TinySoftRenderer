@@ -122,7 +122,7 @@ namespace TinyRenderer
 					}
 					else
 					{
-						TRTexture2D::ptr normTex = std::make_shared<TRTexture2D>(true);
+						TRTexture2D::ptr normTex = std::make_shared<TRTexture2D>(false);
 						bool success = normTex->loadTextureFromFile(baseDir + mp->bump_texname);
 						normTex->setFilteringMode(TRTextureFilterMode::TR_NEAREST);
 						texIds.z = TRShadingPipeline::upload_texture_2D(normTex);
