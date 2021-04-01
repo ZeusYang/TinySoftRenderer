@@ -86,16 +86,17 @@ Please check out `src/main.cpp` for more details. More examples are planned.
 - Phong/Blinn-Phong shading, point lights
 - Textureing, Nearest texture sampling, Bilinear texture sampling
 - Tiling and morton curve layout for texture
+- Mipmap texture, trilinear sampling
 - Sutherland Hodgeman Homogeneous Cliping
 - Tangent Space Normal Mapping
 - Z-buffering
+- Multi-thread support for parallelization
 
 
 
 ## ToDo
 
 - Performance optimization
-- Mipmap texturing
 - MSAA
 - Alpha Blending
 

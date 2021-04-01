@@ -1,8 +1,4 @@
-############################################################
-# Computer Graphics Assignment Configuration
-# Tested on Windows 10 and Ubuntu 16.04.1
-# By Wencong Yang, yangwc3@mail2.sysu.edu.cn
-############################################################
+
 cmake_minimum_required(VERSION 3.5)
 
 # You'd better build it in release mode for performance
