@@ -43,9 +43,9 @@ ENDIF()
 # Create an executable
 ############################################################
 
-file(GLOB_RECURSE HEADERS ./src/*.h)
+file(GLOB_RECURSE HEADERS ./renderer/*.h)
 source_group("Header Files" FILES ${HEADERS})
-aux_source_directory(./src/ DIR_SRCS)
+aux_source_directory(./renderer/ DIR_SRCS)
 
 # Add an executable with the above sources
 add_executable(${PROJECT_NAME} ${DIR_SRCS} ${HEADERS})
