@@ -31,7 +31,7 @@ This project was totally refactored based on previous naive version I built 2 ye
 * [GLM](https://github.com/g-truc/glm)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image](https://github.com/nothings/stb)
-* [oneTBB](https://github.com/oneapi-src/oneTBB)
+* [assimp](https://github.com/assimp/assimp)
 
 
 
@@ -110,12 +110,10 @@ Please check out `examples/` for more details.
 
 ## ToDo
 
-- Performance optimization
 - MSAA
 - Alpha Blending
-- Replace tinyobjloader with Assimp for more robust model loading
 
-
+  
 
 ## License
 
