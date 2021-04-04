@@ -69,7 +69,7 @@ Please note that copy **external/dlls/*.dll** (for example: SDL2.dll) to the cor
 
 ## Usage
 
-Please check out `src/main.cpp` for more details. More examples are planned.
+Please check out `examples/` for more details. 
 
 
 
