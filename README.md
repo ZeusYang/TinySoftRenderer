@@ -63,7 +63,7 @@ Please make sure your system is equipped with the following softwares.
    
    or using cmake-gui is ok.
 
-Please note that copy **external/dlls/*.dll** (for example: SDL2.dll) to the corresponding example binary directory for execution.
+Please note that copy **external/dlls/*.dll** (for example: SDL2.dll) to the corresponding example binary directory for execution (like `build/Release`). Release mode is much more efficient than debug mode.
 
 
 
