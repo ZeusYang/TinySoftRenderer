@@ -39,7 +39,7 @@ namespace TinyRenderer
 		//Refs: https://github.com/nothings/stb
 		int width, height, channel;
 		{
-			stbi_set_flip_vertically_on_load(true);
+			//stbi_set_flip_vertically_on_load(true);
 			pixels = stbi_load(filepath.c_str(), &width, &height, &channel, 0);
 
 			if (pixels == nullptr)

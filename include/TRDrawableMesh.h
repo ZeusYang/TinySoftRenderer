@@ -11,95 +11,113 @@
 
 namespace TinyRenderer
 {
-	class TRVertexAttrib final
+	class TRVertex final
 	{
 	public:
-		std::vector<glm::vec4> vpositions;
-		std::vector<glm::vec4> vcolors;
-		std::vector<glm::vec2> vtexcoords;
-		std::vector<glm::vec3> vnormals;
 
-		void clear()
-		{
-			std::vector<glm::vec4>().swap(vpositions);
-			std::vector<glm::vec4>().swap(vcolors);
-			std::vector<glm::vec2>().swap(vtexcoords);
-			std::vector<glm::vec3>().swap(vnormals);
+		glm::vec4 vpositions = glm::vec4(0, 0, 0, 1);
+		glm::vec4 vcolors    = glm::vec4(1, 1, 1, 1);
+		glm::vec2 vtexcoords = glm::vec2(0, 0);
+		glm::vec3 vnormals   = glm::vec3(0, 1, 0);
 
-		}
+		// tangent
+		glm::vec3 vtangent;
+		// bitangent
+		glm::vec3 vbitangent;
 	};
 
-	class TRMeshFace final
+	class TRDrawableSubMesh
 	{
 	public:
-		unsigned int vposIndex[3];
-		unsigned int vnorIndex[3];
-		unsigned int vtexIndex[3];
+		typedef std::shared_ptr<TRDrawableSubMesh> ptr;
 
-		//TBN matrix
-		glm::vec3 tangent;
-		glm::vec3 bitangent;
+		TRDrawableSubMesh() = default;
+		~TRDrawableSubMesh() = default;
+		
+		TRDrawableSubMesh(const TRDrawableSubMesh& mesh);
+		TRDrawableSubMesh& operator=(const TRDrawableSubMesh& mesh);
+
+		void setVertices(const std::vector<TRVertex> &vertices) { m_vertices = vertices; }
+		void setIndices(const std::vector<unsigned int> &indices) { m_indices = indices; }
+
+		void setDiffuseMapTexId(const int &id) { m_drawing_material.diffuseMapTexId = id; }
+		void setSpecularMapTexId(const int &id) { m_drawing_material.specularMapTexId = id; }
+		void setNormalMapTexId(const int &id) { m_drawing_material.normalMapTexId = id; }
+		void setGlowMapTexId(const int &id) { m_drawing_material.glowMapTexId = id; }
+
+		const int& getDiffuseMapTexId() const { return m_drawing_material.diffuseMapTexId; }
+		const int& getSpecularMapTexId() const { return m_drawing_material.specularMapTexId; }
+		const int& getNormalMapTexId() const { return m_drawing_material.normalMapTexId; }
+		const int& getGlowMapTexId() const { return m_drawing_material.glowMapTexId; }
+
+		std::vector<TRVertex>& getVertices() { return m_vertices; }
+		std::vector<unsigned int>& getIndices() { return m_indices; }
+		const std::vector<TRVertex>& getVertices() const { return m_vertices; }
+		const std::vector<unsigned int>& getIndices() const { return m_indices; }
+
+		void clear();
+
+	protected:
+		std::vector<TRVertex> m_vertices;
+		std::vector<unsigned int> m_indices;
+
+		struct DrawableMaterialTex
+		{
+			int diffuseMapTexId = -1;
+			int specularMapTexId = -1;
+			int normalMapTexId = -1;
+			int glowMapTexId = -1;
+		};
+		DrawableMaterialTex m_drawing_material;
 	};
 
 	class TRDrawableMesh
 	{
 	public:
-
 		typedef std::shared_ptr<TRDrawableMesh> ptr;
 
-		TRDrawableMesh() = default;
-		~TRDrawableMesh() = default;
-		
-		TRDrawableMesh(const std::string &filename, bool generatedMipmap = true);
-		TRDrawableMesh(const TRDrawableMesh& mesh)
-			: m_vertices_attrib(mesh.m_vertices_attrib), m_mesh_faces(mesh.m_mesh_faces) {}
-		TRDrawableMesh& operator=(const TRDrawableMesh& mesh);
-
-		void loadMeshFromFile(const std::string &filename, bool generatedMipmap = true);
-
-		TRVertexAttrib& getVerticesAttrib() { return m_vertices_attrib; }
-		std::vector<TRMeshFace>& getMeshFaces() { return m_mesh_faces; }
-		const TRVertexAttrib& getVerticesAttrib() const { return m_vertices_attrib; }
-		const std::vector<TRMeshFace>& getMeshFaces() const { return m_mesh_faces; }
+		TRDrawableMesh(const std::string &path, bool generatedMipmap);
 
 		void clear();
 
-		//Setting
 		void setPolygonMode(TRPolygonMode mode) { m_drawing_config.polygonMode = mode; }
 		void setCullfaceMode(TRCullFaceMode mode) { m_drawing_config.cullfaceMode = mode; }
 		void setDepthtestMode(TRDepthTestMode mode) { m_drawing_config.depthtestMode = mode; }
 		void setDepthwriteMode(TRDepthWriteMode mode) { m_drawing_config.depthwriteMode = mode; }
 		void setModelMatrix(const glm::mat4& mat) { m_drawing_config.modelMatrix = mat; }
 		void setLightingMode(TRLightingMode mode) { m_drawing_config.lightingMode = mode; }
-		void setDiffuseMapTexId(const int &id) { m_drawing_material.diffuseMapTexId = id; }
-		void setSpecularMapTexId(const int &id) { m_drawing_material.specularMapTexId = id; }
-		void setNormalMapTexId(const int &id) { m_drawing_material.normalMapTexId = id; }
-		void setGlowMapTexId(const int &id) { m_drawing_material.glowMapTexId = id; }
+
+		//Setting
+
 		void setAmbientCoff(const glm::vec3 &cof) { m_drawing_material.kA = cof; }
 		void setDiffuseCoff(const glm::vec3 &cof) { m_drawing_material.kD = cof; }
 		void setSpecularCoff(const glm::vec3 &cof) { m_drawing_material.kS = cof; }
 		void setEmissionCoff(const glm::vec3 &cof) { m_drawing_material.kE = cof; }
+		void setSpecularExponent(const float &cof) { m_drawing_material.shininess = cof; }
 
 		//Getter
-		TRPolygonMode getPolygonMode() const { return m_drawing_config.polygonMode; }
-		TRCullFaceMode getCullfaceMode() const { return m_drawing_config.cullfaceMode; }
-		TRDepthTestMode getDepthtestMode() const { return m_drawing_config.depthtestMode; }
-		TRDepthWriteMode getDepthwriteMode() const { return m_drawing_config.depthwriteMode; }
-		const glm::mat4& getModelMatrix() const { return m_drawing_config.modelMatrix; }
-		TRLightingMode getLightingMode() const { return m_drawing_config.lightingMode; }
-		const int& getDiffuseMapTexId() const { return m_drawing_material.diffuseMapTexId; }
-		const int& getSpecularMapTexId() const { return m_drawing_material.specularMapTexId; }
-		const int& getNormalMapTexId() const { return m_drawing_material.normalMapTexId; }
-		const int& getGlowMapTexId() const { return m_drawing_material.glowMapTexId; }
 		const glm::vec3& getAmbientCoff() const { return m_drawing_material.kA; }
 		const glm::vec3& getDiffuseCoff() const { return m_drawing_material.kD; }
 		const glm::vec3& getSpecularCoff() const { return m_drawing_material.kS; }
 		const glm::vec3& getEmissionCoff() const { return m_drawing_material.kE; }
 		const float& getSpecularExponent() const { return m_drawing_material.shininess; }
 
+		TRPolygonMode getPolygonMode() const { return m_drawing_config.polygonMode; }
+		TRCullFaceMode getCullfaceMode() const { return m_drawing_config.cullfaceMode; }
+		TRDepthTestMode getDepthtestMode() const { return m_drawing_config.depthtestMode; }
+		TRDepthWriteMode getDepthwriteMode() const { return m_drawing_config.depthwriteMode; }
+		const glm::mat4& getModelMatrix() const { return m_drawing_config.modelMatrix; }
+		TRLightingMode getLightingMode() const { return m_drawing_config.lightingMode; }
+
+		size_t getFaceNums() const;
+		std::vector<TRDrawableSubMesh>& getDrawableSubMeshes() { return m_drawables; }
+
 	protected:
-		TRVertexAttrib m_vertices_attrib;
-		std::vector<TRMeshFace> m_mesh_faces;
+		void importMeshFromFile(const std::string &path, bool generatedMipmap = true);
+
+	protected:
+
+		std::vector<TRDrawableSubMesh> m_drawables;
 
 		//Configuration
 		struct DrawableConfig
@@ -114,21 +132,17 @@ namespace TinyRenderer
 		DrawableConfig m_drawing_config;
 
 		//Material
-		struct DrawableMaterial
+		struct DrawableMaterialCof
 		{
-			int diffuseMapTexId = -1;
-			int specularMapTexId = -1;
-			int normalMapTexId = -1;
-			int glowMapTexId = -1;
 			glm::vec3 kA = glm::vec3(0.0f);//Ambient coefficient
 			glm::vec3 kD = glm::vec3(1.0f);//Diffuse coefficient
 			glm::vec3 kS = glm::vec3(0.0f);//Specular coefficient
 			glm::vec3 kE = glm::vec3(0.0f);//Emission
 			float shininess = 1.0f;		   //Specular highlight exponment
 		};
-		DrawableMaterial m_drawing_material;
-	};
+		DrawableMaterialCof m_drawing_material;
 
+	};
 }
 
 #endif

@@ -118,7 +118,7 @@ namespace TinyRenderer
 		{
 			for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 			{
-				maxFaces = std::max(maxFaces, m_drawableMeshes[m]->getMeshFaces().size());
+				maxFaces = std::max(maxFaces, m_drawableMeshes[m]->getFaceNums());
 			}
 		}
 		static std::vector<std::vector<TRShadingPipeline::QuadFragments>> fragments(maxFaces);
@@ -139,151 +139,146 @@ namespace TinyRenderer
 			m_shader_handler->setDiffuseCoef(drawable->getDiffuseCoff());
 			m_shader_handler->setSpecularCoef(drawable->getSpecularCoff());
 			m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
-			m_shader_handler->setDiffuseTexId(drawable->getDiffuseMapTexId());
-			m_shader_handler->setSpecularTexId(drawable->getSpecularMapTexId());
-			m_shader_handler->setNormalTexId(drawable->getNormalMapTexId());
-			m_shader_handler->setGlowTexId(drawable->getGlowMapTexId());
 			m_shader_handler->setShininess(drawable->getSpecularExponent());
 
-			const auto& vertices = drawable->getVerticesAttrib();
-			const auto& faces = drawable->getMeshFaces();
-
-			parallelFor((size_t)0, (size_t)faces.size(), [&](const size_t &f)
+			const auto &submeshes = drawable->getDrawableSubMeshes();
+			for (size_t s = 0; s < submeshes.size(); ++s)
 			{
-				//A triangle as primitive
-				TRShadingPipeline::VertexData v[3];
+				const auto &submesh = submeshes[s];
+
+				m_shader_handler->setDiffuseTexId(submesh.getDiffuseMapTexId());
+				m_shader_handler->setSpecularTexId(submesh.getSpecularMapTexId());
+				m_shader_handler->setNormalTexId(submesh.getNormalMapTexId());
+				m_shader_handler->setGlowTexId(submesh.getGlowMapTexId());
+
+				const auto& vertices = submesh.getVertices();
+				const auto& indices = submesh.getIndices();
+
+				int iterCnt = indices.size() / 3;
+				parallelFor((size_t)0, (size_t)iterCnt, [&](const size_t &p)
 				{
-					glm::mat3 TBN_mat;
-					TBN_mat[0] = faces[f].tangent;
-					TBN_mat[1] = faces[f].bitangent;
-
-					v[0].pos = vertices.vpositions[faces[f].vposIndex[0]];
-					v[0].col = glm::vec3(vertices.vcolors[faces[f].vposIndex[0]]);
-					v[0].nor = vertices.vnormals[faces[f].vnorIndex[0]];
-					v[0].tex = vertices.vtexcoords[faces[f].vtexIndex[0]];
-
-					v[1].pos = vertices.vpositions[faces[f].vposIndex[1]];
-					v[1].col = glm::vec3(vertices.vcolors[faces[f].vposIndex[1]]);
-					v[1].nor = vertices.vnormals[faces[f].vnorIndex[1]];
-					v[1].tex = vertices.vtexcoords[faces[f].vtexIndex[1]];
-
-					v[2].pos = vertices.vpositions[faces[f].vposIndex[2]];
-					v[2].col = glm::vec3(vertices.vcolors[faces[f].vposIndex[2]]);
-					v[2].nor = vertices.vnormals[faces[f].vnorIndex[2]];
-					v[2].tex = vertices.vtexcoords[faces[f].vtexIndex[2]];
-
-					v[0].TBN = v[1].TBN = v[2].TBN = TBN_mat;
-				}
-
-				//Vertex shader stage
-				std::vector<TRShadingPipeline::VertexData> clipped_vertices;
-				{
-					//Vertex shader
+					//A triangle as primitive
+					const size_t f = p * 3;
+					TRShadingPipeline::VertexData v[3];
+					for (int i = 0; i < 3; ++i)
 					{
-						m_shader_handler->vertexShader(v[0]);
-						m_shader_handler->vertexShader(v[1]);
-						m_shader_handler->vertexShader(v[2]);
+						v[i].pos = vertices[indices[f + i]].vpositions;
+						v[i].col = vertices[indices[f + i]].vcolors;
+						v[i].nor = vertices[indices[f + i]].vnormals;
+						v[i].tex = vertices[indices[f + i]].vtexcoords;
+						v[i].TBN[0] = vertices[indices[f + i]].vtangent;
+						v[i].TBN[1] = vertices[indices[f + i]].vbitangent;
 					}
 
-					//Homogeneous space cliping
+					//Vertex shader stage
+					std::vector<TRShadingPipeline::VertexData> clipped_vertices;
 					{
-						clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
-						if (clipped_vertices.empty())
+						//Vertex shader
 						{
-							return;
+							m_shader_handler->vertexShader(v[0]);
+							m_shader_handler->vertexShader(v[1]);
+							m_shader_handler->vertexShader(v[2]);
 						}
-					}
 
-					//Perspective division
-					for (auto &vert : clipped_vertices)
-					{
-						//From clip space -> ndc space
-						TRShadingPipeline::VertexData::prePerspCorrection(vert);
-						vert.cpos /= vert.cpos.w;
-					}
-				}
-
-				int num_verts = clipped_vertices.size();
-				for (int i = 0; i < num_verts - 2; ++i)
-				{
-					//Triangle assembly
-					TRShadingPipeline::VertexData vert[3] = {
-							clipped_vertices[0],
-							clipped_vertices[i + 1],
-							clipped_vertices[i + 2] };
-
-					//Rasterization stage
-					{
-						//Transform to screen space & Rasterization
+						//Homogeneous space cliping
 						{
-							vert[0].spos = glm::ivec2(m_viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
-							vert[1].spos = glm::ivec2(m_viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
-							vert[2].spos = glm::ivec2(m_viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
-
-							//Backface culling
+							clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
+							if (clipped_vertices.empty())
 							{
-								if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, cullfaceMode))
-								{
-									continue;
-								}
+								return;
 							}
+						}
 
-							m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
-								m_backBuffer->getWidth(), m_backBuffer->getHeight(), fragments[f]);
+						//Perspective division
+						for (auto &vert : clipped_vertices)
+						{
+							//From clip space -> ndc space
+							TRShadingPipeline::VertexData::prePerspCorrection(vert);
+							vert.cpos /= vert.cpos.w;
 						}
 					}
-				}
-			}, TRExecutionPolicy::TR_PARALLEL);
-
-			//Fragment shader & Depth testing
-
-			auto fragment_func = [&](TRShadingPipeline::VertexData &fragment,
-				const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
-			{
-				//Note: spos.x equals -1 -> invalid fragment
-				if (fragment.spos.x == -1)
-					return;
-				if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-					m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
-				{
-					glm::vec4 fragColor;
-					m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-					m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
-					if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					int num_verts = clipped_vertices.size();
+					for (int i = 0; i < num_verts - 2; ++i)
 					{
-						m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
+						//Triangle assembly
+						TRShadingPipeline::VertexData vert[3] = {
+								clipped_vertices[0],
+								clipped_vertices[i + 1],
+								clipped_vertices[i + 2] };
+
+						//Rasterization stage
+						{
+							//Transform to screen space & Rasterization
+							{
+								vert[0].spos = glm::ivec2(m_viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
+								vert[1].spos = glm::ivec2(m_viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
+								vert[2].spos = glm::ivec2(m_viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
+
+								//Backface culling
+								{
+									if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, cullfaceMode))
+									{
+										continue;
+									}
+								}
+
+								m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
+									m_backBuffer->getWidth(), m_backBuffer->getHeight(), fragments[p]);
+							}
+						}
 					}
-				}
-			};
-
-			parallelFor((size_t)0, (size_t)fragments.size(), [&](const size_t &f)
-			{
-				if (fragments[f].empty())
-					return;
-
-				++ num_triangles;
-
-				//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
-				parallelFor((size_t)0, (size_t)fragments[f].size(), [&](const size_t &index)
-				{
-					auto &block = fragments[f][index];
-
-					//Perspective correction restore
-					block.aftPrespCorrectionForBlocks();
-
-					//Calculate dUVdx, dUVdy for mipmap
-					glm::vec2 dUVdx(block.dUdx(), block.dVdx());
-					glm::vec2 dUVdy(block.dUdy(), block.dVdy());
-
-					fragment_func(block.fragments[0], dUVdx, dUVdy);
-					fragment_func(block.fragments[1], dUVdx, dUVdy);
-					fragment_func(block.fragments[2], dUVdx, dUVdy);
-					fragment_func(block.fragments[3], dUVdx, dUVdy);
-
 				}, TRExecutionPolicy::TR_PARALLEL);
-				fragments[f].clear();
 
-			}, TRExecutionPolicy::TR_SERIAL); //Note: parallelization herein is not good at all.
+				//Fragment shader & Depth testing
+
+				auto fragment_func = [&](TRShadingPipeline::VertexData &fragment,
+					const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+				{
+					//Note: spos.x equals -1 -> invalid fragment
+					if (fragment.spos.x == -1)
+						return;
+					if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
+						m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
+					{
+						glm::vec4 fragColor;
+						m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+						m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
+						if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+						{
+							m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
+						}
+					}
+				};
+
+				parallelFor((size_t)0, (size_t)fragments.size(), [&](const size_t &f)
+				{
+					if (fragments[f].empty())
+						return;
+
+					++num_triangles;
+
+					//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
+					parallelFor((size_t)0, (size_t)fragments[f].size(), [&](const size_t &index)
+					{
+						auto &block = fragments[f][index];
+
+						//Perspective correction restore
+						block.aftPrespCorrectionForBlocks();
+
+						//Calculate dUVdx, dUVdy for mipmap
+						glm::vec2 dUVdx(block.dUdx(), block.dVdx());
+						glm::vec2 dUVdy(block.dUdy(), block.dVdy());
+
+						fragment_func(block.fragments[0], dUVdx, dUVdy);
+						fragment_func(block.fragments[1], dUVdx, dUVdy);
+						fragment_func(block.fragments[2], dUVdx, dUVdy);
+						fragment_func(block.fragments[3], dUVdx, dUVdy);
+
+					}, TRExecutionPolicy::TR_PARALLEL);
+					fragments[f].clear();
+
+				}, TRExecutionPolicy::TR_SERIAL); //Note: parallelization herein is not good at all.
+			}
 		}
 
 		//Swap double buffers

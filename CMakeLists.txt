@@ -35,9 +35,8 @@ target_link_libraries( ${PROJECT_NAME}
 	SDL2main
 		tbb
 		tbb12
+		assimp
 )
 
 # Add sub directories
-add_subdirectory(examples/scene_mary)
-add_subdirectory(examples/scene_diablo3)
-add_subdirectory(examples/scene_helmet)
+add_subdirectory(examples/example1_point_lighting)
