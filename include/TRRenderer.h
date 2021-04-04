@@ -41,12 +41,10 @@ namespace TinyRenderer
 		glm::mat4 getMVPMatrix();
 
 		//Draw call
-		void renderAllDrawableMeshes();
+		unsigned int renderAllDrawableMeshes();
 
 		//Commit rendered result
 		unsigned char* commitRenderedColorBuffer();
-		unsigned int getNumberOfClipFaces() const;
-		unsigned int getNumberOfCullFaces() const;
 
 	private:
 
@@ -91,14 +89,7 @@ namespace TinyRenderer
 
 		//Double buffers
 		TRFrameBuffer::ptr m_backBuffer;                      // The frame buffer that's goint to be written.
-		TRFrameBuffer::ptr m_frontBuffer;                     // The frame buffer that's goint to be display.
-
-		struct Profile
-		{
-			unsigned int m_num_cliped_triangles = 0;
-			unsigned int m_num_culled_triangles = 0;
-		};
-		Profile m_clip_cull_profile;
+		TRFrameBuffer::ptr m_frontBuffer;                     // The frame buffer that's goint to be displayed.
 	};
 }
 

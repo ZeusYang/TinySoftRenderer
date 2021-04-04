@@ -98,7 +98,7 @@ namespace TinyRenderer
 		return TRShadingPipeline::getPointLight(index);
 	}
 
-	void TRRenderer::renderAllDrawableMeshes()
+	unsigned int TRRenderer::renderAllDrawableMeshes()
 	{
 		if (m_shader_handler == nullptr)
 		{
@@ -110,8 +110,7 @@ namespace TinyRenderer
 		m_shader_handler->setViewProjectMatrix(m_projectMatrix * m_viewMatrix);
 
 		//Draw a mesh step by step
-		m_clip_cull_profile.m_num_cliped_triangles = 0;
-		m_clip_cull_profile.m_num_culled_triangles = 0;
+		unsigned int num_triangles = 0;
 
 		//Pre allocation
 		static size_t maxFaces = 0;
@@ -191,8 +190,6 @@ namespace TinyRenderer
 						clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
 						if (clipped_vertices.empty())
 						{
-							//Note: race condition in parallel mode
-							++m_clip_cull_profile.m_num_cliped_triangles;
 							return;
 						}
 					}
@@ -227,8 +224,6 @@ namespace TinyRenderer
 							{
 								if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, cullfaceMode))
 								{
-									//Note: race condition in parallel mode
-									++m_clip_cull_profile.m_num_culled_triangles;
 									continue;
 								}
 							}
@@ -241,27 +236,32 @@ namespace TinyRenderer
 			}, TRExecutionPolicy::TR_PARALLEL);
 
 			//Fragment shader & Depth testing
+
+			auto fragment_func = [&](TRShadingPipeline::VertexData &fragment,
+				const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+			{
+				//Note: spos.x equals -1 -> invalid fragment
+				if (fragment.spos.x == -1)
+					return;
+				if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
+					m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
+				{
+					glm::vec4 fragColor;
+					m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+					m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
+					if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					{
+						m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
+					}
+				}
+			};
+
 			parallelFor((size_t)0, (size_t)fragments.size(), [&](const size_t &f)
 			{
-				auto fragment_func = [&](TRShadingPipeline::VertexData &fragment,
-					const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
-				{
-					//Note: spos.x equals -1 -> invalid fragment
-					if (fragment.spos.x == -1)
-						return;
-					if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-						m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
-					{
-						glm::vec4 fragColor;
-						m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-						m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
-						if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-						{
-							m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
-						}
-					}
-				};
+				if (fragments[f].empty())
+					return;
 
+				++ num_triangles;
 
 				//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
 				parallelFor((size_t)0, (size_t)fragments[f].size(), [&](const size_t &index)
@@ -291,21 +291,12 @@ namespace TinyRenderer
 			std::swap(m_backBuffer, m_frontBuffer);
 		}
 
+		return num_triangles;
 	}
 
 	unsigned char* TRRenderer::commitRenderedColorBuffer()
 	{
 		return m_frontBuffer->getColorBuffer();
-	}
-
-	unsigned int TRRenderer::getNumberOfClipFaces() const
-	{
-		return m_clip_cull_profile.m_num_cliped_triangles;
-	}
-
-	unsigned int TRRenderer::getNumberOfCullFaces() const
-	{
-		return m_clip_cull_profile.m_num_culled_triangles;
 	}
 
 	std::vector<TRShadingPipeline::VertexData> TRRenderer::clipingSutherlandHodgeman(

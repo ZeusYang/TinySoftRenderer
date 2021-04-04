@@ -123,8 +123,7 @@ namespace TinyRenderer
 		int width,
 		int height,
 		int channel,
-		unsigned int num_cliped_faces,
-		unsigned int num_culled_faces)
+		unsigned int num_triangles)
 	{
 		//Update pixels
 		SDL_LockSurface(m_screen_surface);
@@ -158,8 +157,7 @@ namespace TinyRenderer
 
 				std::stringstream ss;
 				ss << " FPS:" << std::setiosflags(std::ios::left) << std::setw(3) << m_fps;
-				ss << "#ClipedFaces:" << std::setiosflags(std::ios::left) << std::setw(5) << num_cliped_faces;
-				ss << "#CulledFaces:" << std::setiosflags(std::ios::left) << std::setw(5) << num_culled_faces;
+				ss << " #Triangles:" << std::setiosflags(std::ios::left) << std::setw(5) << num_triangles;
 				SDL_SetWindowTitle(m_window_handle, (m_window_title + ss.str()).c_str());
 			}
 		}

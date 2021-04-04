@@ -74,8 +74,7 @@ namespace TinyRenderer
 			int width, 
 			int height, 
 			int channel,
-			unsigned int num_cliped_faces,
-			unsigned int num_culled_faces);
+			unsigned int num_triangles);
 
 		static TRWindowsApp::ptr getInstance();
 		static TRWindowsApp::ptr getInstance(int width, int height, const std::string title = "winApp");

@@ -18,7 +18,7 @@
 
 ## About The Project
 
-The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. We all know that only when we implement these algorithms by ourselves can we actually understand the principles behind what we observe. Computer graphics is a kind of rational romance as I see it!
+The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. 
 
 <img src="images/demo.jpg" alt="Logo" width="100%">
 
@@ -37,23 +37,14 @@ This project was totally refactored based on previous naive version I built 2 ye
 
 ## Getting Started
 
-I am trying to build it in a cross-platform manner. At present, I only tested building in both Windows 10 and Ubuntu 16.04 systems.
-
 ### Prerequisites
 
 Please make sure your system is equipped with the following softwares.  
 
 - [cmake](https://cmake.org/)：at least version 3.5
 
-* Microsoft visual studio 2017 or 2019 (for windows) 
+* Microsoft visual studio 2017 or 2019
   
-* SDL2 (for ubuntu)：
-  
-  ```sh
-  sudo apt-get update
-  sudo apt-get install libsdl2-2.0
-  sudo apt-get install libsdl2-dev
-  ```
 
 ### Installation
 
@@ -71,6 +62,8 @@ Please make sure your system is equipped with the following softwares.
    ```
    
    or using cmake-gui is ok.
+
+Please note that copy **external/dlls/*.dll** (for example: SDL2.dll) to the corresponding example binary directory for execution.
 
 
 

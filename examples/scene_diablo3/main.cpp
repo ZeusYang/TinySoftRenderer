@@ -37,7 +37,7 @@ int main(int argc, char* args[])
 	constexpr int width =  666;
 	constexpr int height = 500;
 
-	TRWindowsApp::ptr winApp = TRWindowsApp::getInstance(width, height, "TinySoftRenderer-By Wencong Yang");
+	TRWindowsApp::ptr winApp = TRWindowsApp::getInstance(width, height, "TinySoftRenderer-By Yangwc");
 
 	if (winApp == nullptr)
 	{
@@ -55,24 +55,16 @@ int main(int argc, char* args[])
 
 	//Load the rendering data
 	bool generatedMipMap = false;
-	//TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>("model/diablo3_pose/diablo3_pose.obj", generatedMipMap);
-	TRDrawableMesh::ptr maryMesh = std::make_shared<TRDrawableMesh>("model/mary/Marry.obj", false);
-	TRDrawableMesh::ptr houseMesh = std::make_shared<TRDrawableMesh>("model/floor.obj", generatedMipMap);
-	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>("model/light_red.obj", generatedMipMap);
-	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>("model/light_green.obj", generatedMipMap);
-	TRDrawableMesh::ptr blueLightMesh = std::make_shared<TRDrawableMesh>("model/light_blue.obj", generatedMipMap);
-	renderer->addDrawableMesh({ /*diabloMesh*/maryMesh, redLightMesh, greenLightMesh, blueLightMesh/*, houseMesh*/ });
+	std::string root = "../../";
+	TRDrawableMesh::ptr diabloMesh = std::make_shared<TRDrawableMesh>(root + "models/diablo3_pose/diablo3_pose.obj", generatedMipMap);
+	TRDrawableMesh::ptr houseMesh = std::make_shared<TRDrawableMesh>(root + "models/floor.obj", generatedMipMap);
+	TRDrawableMesh::ptr redLightMesh = std::make_shared<TRDrawableMesh>(root + "models/light_red.obj", generatedMipMap);
+	TRDrawableMesh::ptr greenLightMesh = std::make_shared<TRDrawableMesh>(root + "models/light_green.obj", generatedMipMap);
+	TRDrawableMesh::ptr blueLightMesh = std::make_shared<TRDrawableMesh>(root + "models/light_blue.obj", generatedMipMap);
+	renderer->addDrawableMesh({ diabloMesh, redLightMesh, greenLightMesh, blueLightMesh, houseMesh });
 	redLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	greenLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
 	blueLightMesh->setLightingMode(TRLightingMode::TR_LIGHTING_DISABLE);
-
-	//For mary
-	{
-		glm::mat4 maryModelMat(1.0f);
-		maryModelMat = glm::translate(maryModelMat, glm::vec3(0, -1, 0));
-		maryModelMat = glm::scale(maryModelMat, glm::vec3(0.5f));
-		maryMesh->setModelMatrix(maryModelMat);
-	}
 
 	winApp->readyToStart();
 
@@ -128,7 +120,7 @@ int main(int argc, char* args[])
 
 		//Draw call
 		renderer->setViewerPos(cameraPos);
-		renderer->renderAllDrawableMeshes();
+		auto numTriangles = renderer->renderAllDrawableMeshes();
 
 		//Display to screen
 		double deltaTime = winApp->updateScreenSurface(
@@ -136,8 +128,7 @@ int main(int argc, char* args[])
 			width, 
 			height,
 			4,
-			renderer->getNumberOfClipFaces(),
-			renderer->getNumberOfCullFaces());
+			numTriangles);
 
 		//Model transformation
 		{
