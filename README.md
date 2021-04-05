@@ -29,9 +29,9 @@ The original intention of building such a 3D rendering system from scratch witho
 This project was totally refactored based on previous naive version I built 2 years ago. Now, I utilize the following third-party libraries to build this renderer. Please note that SDL2 is just for displaying the rendered results as well as handling mouse and key events.
 * [SDL2](https://www.libsdl.org/)
 * [GLM](https://github.com/g-truc/glm)
-* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 * [stb_image](https://github.com/nothings/stb)
 * [assimp](https://github.com/assimp/assimp)
+* [oneTBB](https://github.com/oneapi-src/oneTBB)
 
 
 
@@ -39,7 +39,7 @@ This project was totally refactored based on previous naive version I built 2 ye
 
 ### Prerequisites
 
-Please make sure your system is equipped with the following softwares.  
+At present, I build it on Windows platform. Please make sure your system is equipped with the following softwares.  
 
 - [cmake](https://cmake.org/)：at least version 3.5
 
