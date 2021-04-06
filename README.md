@@ -48,6 +48,8 @@ At present, I build it on Windows platform. Please make sure your system is equi
 
 ### Installation
 
+Please compile the project for **x64 platform**.
+
 1. Clone the repo
    ```sh
    git clone https://github.com/ZeusYang/TinySoftRenderer.git
