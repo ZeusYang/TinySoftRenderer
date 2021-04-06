@@ -45,7 +45,7 @@ int main(int argc, char* args[])
 		return -1;
 	}
 
-	bool generatedMipmap = true;
+	bool generatedMipmap = false;
 	TRRenderer::ptr renderer = std::make_shared<TRRenderer>(width, height);
 
 	//Load scene
@@ -53,6 +53,7 @@ int main(int argc, char* args[])
 	//parser.parse("../../models/diablo3_pose/diablo3.scene", renderer, generatedMipmap);
 	//parser.parse("../../models/mountain/terrain.scene", renderer, generatedMipmap);
 	parser.parse("../../models/mary/Mary.scene", renderer, generatedMipmap);
+	//parser.parse("../../models/camping-buscraft-ambience/camping.scene", renderer, generatedMipmap);
 
 	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
 		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));
@@ -102,7 +103,8 @@ int main(int argc, char* args[])
 		winApp->processEvent();
 
 		//Clear frame buffer (both color buffer and depth buffer)
-		renderer->clearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		//renderer->clearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		renderer->clearColorAndDepth(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.0f);
 
 		//Draw call
 		renderer->setViewerPos(cameraPos);
@@ -113,7 +115,7 @@ int main(int argc, char* args[])
 			renderer->commitRenderedColorBuffer(),
 			width, 
 			height,
-			4,
+			3,//RGB
 			numTriangles);
 
 		//Model transformation
