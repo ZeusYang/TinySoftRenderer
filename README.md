@@ -103,15 +103,17 @@ Please check out `examples/` for more details.
 <img src="images/culling.jpg" alt="Logo" width="90%">
 
 - Tangent Space Normal Mapping
-- Z-buffering
+- Z-buffering (Reversed z)
+- Multi sampling anti-aliasing (MSAA 4X)
 - Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend
 
 
 
 ## ToDo
 
-- MSAA
 - Alpha Blending
+
+- More light source type
 
   
 
