@@ -106,7 +106,7 @@ Please check out `examples/` for more details.
 - Z-buffering (Reversed z)
 - Multi sampling anti-aliasing (MSAA 4X)
 
-<img src="images/MSAA.jpg" alt="Logo" width="100%">
+<img src="images/MSAA4X.jpg" alt="Logo" width="100%">
 
 - Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend
 
