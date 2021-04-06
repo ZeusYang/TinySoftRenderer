@@ -54,6 +54,15 @@ namespace TinyRenderer
 		TR_LIGHTING_ENABLE
 	};
 
+	class TRShadingState
+	{
+	public:
+		TRCullFaceMode trCullFaceMode		= TRCullFaceMode::TR_CULL_BACK;
+		TRDepthTestMode trDepthTestMode		= TRDepthTestMode::TR_DEPTH_TEST_ENABLE;
+		TRDepthWriteMode trDepthWriteMode	= TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE;
+
+	};
+
 	//Point lights
 	class TRPointLight
 	{

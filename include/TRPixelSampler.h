@@ -15,7 +15,6 @@ namespace TinyRenderer
 		std::array<T, N> samplers;
 
 		static size_t getSamplingNum() { return N; }
-		//virtual std::array<glm::vec2, N> getSamplingOffsets() const = 0;
 
 		T& operator[](const int &index) { return samplers[index]; }
 		const T& operator[](const int &index) const { return samplers[index]; }
@@ -47,6 +46,7 @@ namespace TinyRenderer
 
 		static const std::array<glm::vec2, 4> &getSamplingOffsets()
 		{
+			//Sampling points' offset
 			return
 			{
 				glm::vec2(-0.25, -0.25),
@@ -73,6 +73,7 @@ namespace TinyRenderer
 	using TRDepthPixelSampler = TRPixelSampler<float>;
 	using TRColorPixelSampler = TRPixelSampler<TRPixelRGBA>;
 
+	//Framebuffer attachment
 	using TRMaskBuffer = std::vector<TRMaskPixelSampler>;
 	using TRDepthBuffer = std::vector<TRDepthPixelSampler>;
 	using TRColorBuffer = std::vector<TRColorPixelSampler>;

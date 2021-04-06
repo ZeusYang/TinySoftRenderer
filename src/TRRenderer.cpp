@@ -43,60 +43,11 @@ namespace TinyRenderer
 		std::vector<TRDrawableMesh::ptr>().swap(m_drawableMeshes);
 	}
 
-	void TRRenderer::setViewMatrix(const glm::mat4 &view)
-	{
-		m_mvp_dirty = true;
-		m_viewMatrix = view;
-	}
-
-	void TRRenderer::setModelMatrix(const glm::mat4 &model)
-	{
-		m_mvp_dirty = true;
-		m_modelMatrix = model;
-	}
-
-	void TRRenderer::setProjectMatrix(const glm::mat4 &project, float near, float far)
-	{
-		m_mvp_dirty = true;
-		m_projectMatrix = project;
-		m_frustum_near_far = glm::vec2(near, far);
-	}
-
-	void TRRenderer::setShaderPipeline(TRShadingPipeline::ptr shader)
-	{
-		m_shader_handler = shader;
-	}
-
 	void TRRenderer::setViewerPos(const glm::vec3 &viewer)
 	{
 		if (m_shader_handler == nullptr)
 			return;
 		m_shader_handler->setViewerPos(viewer);
-	}
-
-	glm::mat4 TRRenderer::getMVPMatrix()
-	{
-		if (m_mvp_dirty)
-		{
-			m_mvp_matrix = m_projectMatrix * m_viewMatrix * m_modelMatrix;
-			m_mvp_dirty = false;
-		}
-		return m_mvp_matrix;
-	}
-
-	void TRRenderer::clearColor(const glm::vec4 &color)
-	{
-		m_backBuffer->clearColor(color);
-	}
-
-	void TRRenderer::clearDepth(const float &depth)
-	{
-		m_backBuffer->clearDepth(depth);
-	}
-
-	void TRRenderer::clearColorAndDepth(const glm::vec4 &color, const float &depth)
-	{
-		m_backBuffer->clearColorAndDepth(color, depth);
 	}
 
 	int TRRenderer::addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color)
@@ -131,202 +82,12 @@ namespace TinyRenderer
 			{
 				maxFaces = std::max(maxFaces, m_drawableMeshes[m]->getDrawableMaxFaceNums());
 			}
+			m_fragmentsCache.resize(maxFaces);
 		}
-		static std::vector<std::vector<TRShadingPipeline::QuadFragments>> fragments(maxFaces);
-
+	
 		for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 		{
-			const auto &drawable = m_drawableMeshes[m];
-			//Configuration
-			TRPolygonMode polygonMode = drawable->getPolygonMode();
-			TRCullFaceMode cullfaceMode = drawable->getCullfaceMode();
-			TRDepthTestMode depthtestMode = drawable->getDepthtestMode();
-			TRDepthWriteMode depthwriteMode = drawable->getDepthwriteMode();
-
-			//Setup the shading options
-			m_shader_handler->setModelMatrix(drawable->getModelMatrix());
-			m_shader_handler->setLightingEnable(drawable->getLightingMode() == TRLightingMode::TR_LIGHTING_ENABLE);
-			m_shader_handler->setAmbientCoef(drawable->getAmbientCoff());
-			m_shader_handler->setDiffuseCoef(drawable->getDiffuseCoff());
-			m_shader_handler->setSpecularCoef(drawable->getSpecularCoff());
-			m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
-			m_shader_handler->setShininess(drawable->getSpecularExponent());
-
-			const auto &submeshes = drawable->getDrawableSubMeshes();
-			for (size_t s = 0; s < submeshes.size(); ++s)
-			{
-				const auto &submesh = submeshes[s];
-
-				m_shader_handler->setDiffuseTexId(submesh.getDiffuseMapTexId());
-				m_shader_handler->setSpecularTexId(submesh.getSpecularMapTexId());
-				m_shader_handler->setNormalTexId(submesh.getNormalMapTexId());
-				m_shader_handler->setGlowTexId(submesh.getGlowMapTexId());
-
-				const auto& vertices = submesh.getVertices();
-				const auto& indices = submesh.getIndices();
-
-				int iterCnt = indices.size() / 3;
-				parallelFor((size_t)0, (size_t)iterCnt, [&](const size_t &p)
-				{
-					//A triangle as primitive
-					const size_t f = p * 3;
-					TRShadingPipeline::VertexData v[3];
-					for (int i = 0; i < 3; ++i)
-					{
-						v[i].pos = vertices[indices[f + i]].vpositions;
-						v[i].col = vertices[indices[f + i]].vcolors;
-						v[i].nor = vertices[indices[f + i]].vnormals;
-						v[i].tex = vertices[indices[f + i]].vtexcoords;
-						v[i].TBN[0] = vertices[indices[f + i]].vtangent;
-						v[i].TBN[1] = vertices[indices[f + i]].vbitangent;
-					}
-
-					//Vertex shader stage
-					std::vector<TRShadingPipeline::VertexData> clipped_vertices;
-					{
-						//Vertex shader
-						{
-							m_shader_handler->vertexShader(v[0]);
-							m_shader_handler->vertexShader(v[1]);
-							m_shader_handler->vertexShader(v[2]);
-						}
-
-						//Homogeneous space cliping
-						{
-							clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
-							if (clipped_vertices.empty())
-							{
-								return;
-							}
-						}
-
-						//Perspective division
-						for (auto &vert : clipped_vertices)
-						{
-							//From clip space -> ndc space
-							TRShadingPipeline::VertexData::prePerspCorrection(vert);
-							vert.cpos *= vert.rhw;
-						}
-					}
-					int num_verts = clipped_vertices.size();
-					for (int i = 0; i < num_verts - 2; ++i)
-					{
-						//Triangle assembly
-						TRShadingPipeline::VertexData vert[3] = {
-								clipped_vertices[0],
-								clipped_vertices[i + 1],
-								clipped_vertices[i + 2] };
-
-						//Rasterization stage
-						{
-							//Transform to screen space & Rasterization
-							{
-								vert[0].spos = glm::ivec2(m_viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
-								vert[1].spos = glm::ivec2(m_viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
-								vert[2].spos = glm::ivec2(m_viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
-
-								//Backface culling
-								{
-									if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, cullfaceMode))
-									{
-										continue;
-									}
-								}
-
-								m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
-									m_backBuffer->getWidth(), m_backBuffer->getHeight(), fragments[p]);
-							}
-						}
-					}
-				}, TRExecutionPolicy::TR_PARALLEL);
-
-				//Fragment shader & Depth testing
-
-				auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment,
-					const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
-				{
-					//Note: spos.x equals -1 -> invalid fragment
-					if (fragment.spos.x == -1)
-						return;
-
-					//Depth testing for each sampling point
-					if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
-					{
-						int samplingNum = TRMaskPixelSampler::getSamplingNum();
-						const auto &coverageDepth = fragment.coverage_depth;
-						for (int s = 0; s < samplingNum; ++s)
-						{
-							if (fragment.coverage[s] == 1 && 
-								m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
-							{
-								fragment.coverage[s] = 0;//Occuluded
-							}
-						}
-					}
-
-					int cnt = 0;
-					int samplingNum = TRMaskPixelSampler::getSamplingNum();
-					for (int s = 0; s < samplingNum; ++s)
-					{
-						cnt += fragment.coverage[s];
-					}
-
-					//No valid mask, just discard.
-					if (cnt == 0)
-						return;
-
-					glm::vec4 fragColor;
-					m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-					m_backBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
-					m_backBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
-					if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-					{
-						m_backBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y, fragment.coverage_depth, fragment.coverage);
-					}
-					
-
-					//if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-					//	m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
-					//{
-					//	glm::vec4 fragColor;
-					//	m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-					//	m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
-					//	if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-					//	{
-					//		m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
-					//	}
-					//}
-				};
-
-				parallelFor((size_t)0, (size_t)fragments.size(), [&](const size_t &f)
-				{
-					if (fragments[f].empty())
-						return;
-
-					++num_triangles;
-
-					//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
-					parallelFor((size_t)0, (size_t)fragments[f].size(), [&](const size_t &index)
-					{
-						auto &block = fragments[f][index];
-
-						//Perspective correction restore
-						block.aftPrespCorrectionForBlocks();
-
-						//Calculate dUVdx, dUVdy for mipmap
-						glm::vec2 dUVdx(block.dUdx(), block.dVdx());
-						glm::vec2 dUVdy(block.dUdy(), block.dVdy());
-
-						fragment_func(block.fragments[0], dUVdx, dUVdy);
-						fragment_func(block.fragments[1], dUVdx, dUVdy);
-						fragment_func(block.fragments[2], dUVdx, dUVdy);
-						fragment_func(block.fragments[3], dUVdx, dUVdy);
-
-					}, TRExecutionPolicy::TR_PARALLEL);
-					fragments[f].clear();
-
-				}, TRExecutionPolicy::TR_SERIAL); //Note: parallelization herein is not good at all.
-			}
+			renderDrawableMesh(m);
 		}
 
 		//MSAA resolve stage
@@ -338,6 +99,192 @@ namespace TinyRenderer
 		}
 
 		return num_triangles;
+	}
+
+	unsigned int TRRenderer::renderDrawableMesh(unsigned int &index)
+	{
+		if (index >= m_drawableMeshes.size())
+			return 0;
+
+		unsigned int num_triangles = 0;
+		const auto &drawable = m_drawableMeshes[index];
+
+		//Configuration
+		m_shading_state.trCullFaceMode = drawable->getCullfaceMode();
+		m_shading_state.trDepthTestMode = drawable->getDepthtestMode();
+		m_shading_state.trDepthWriteMode = drawable->getDepthwriteMode();
+
+		//Setup the shading options
+		m_shader_handler->setModelMatrix(drawable->getModelMatrix());
+		m_shader_handler->setLightingEnable(drawable->getLightingMode() == TRLightingMode::TR_LIGHTING_ENABLE);
+		m_shader_handler->setAmbientCoef(drawable->getAmbientCoff());
+		m_shader_handler->setDiffuseCoef(drawable->getDiffuseCoff());
+		m_shader_handler->setSpecularCoef(drawable->getSpecularCoff());
+		m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
+		m_shader_handler->setShininess(drawable->getSpecularExponent());
+
+		const auto &submeshes = drawable->getDrawableSubMeshes();
+		for (size_t s = 0; s < submeshes.size(); ++s)
+		{
+			const auto &submesh = submeshes[s];
+
+			m_shader_handler->setDiffuseTexId(submesh.getDiffuseMapTexId());
+			m_shader_handler->setSpecularTexId(submesh.getSpecularMapTexId());
+			m_shader_handler->setNormalTexId(submesh.getNormalMapTexId());
+			m_shader_handler->setGlowTexId(submesh.getGlowMapTexId());
+
+			const auto& vertices = submesh.getVertices();
+			const auto& indices = submesh.getIndices();
+
+			int iterCnt = indices.size() / 3;
+			parallelFor((size_t)0, (size_t)iterCnt, [&](const size_t &p)
+			{
+				//A triangle as primitive
+				const size_t f = p * 3;
+				TRShadingPipeline::VertexData v[3];
+				for (int i = 0; i < 3; ++i)
+				{
+					v[i].pos = vertices[indices[f + i]].vpositions;
+					v[i].col = vertices[indices[f + i]].vcolors;
+					v[i].nor = vertices[indices[f + i]].vnormals;
+					v[i].tex = vertices[indices[f + i]].vtexcoords;
+					v[i].TBN[0] = vertices[indices[f + i]].vtangent;
+					v[i].TBN[1] = vertices[indices[f + i]].vbitangent;
+				}
+
+				//Vertex shader stage
+				std::vector<TRShadingPipeline::VertexData> clipped_vertices;
+				{
+					//Vertex shader
+					{
+						m_shader_handler->vertexShader(v[0]);
+						m_shader_handler->vertexShader(v[1]);
+						m_shader_handler->vertexShader(v[2]);
+					}
+
+					//Homogeneous space cliping
+					{
+						clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
+						if (clipped_vertices.empty())
+						{
+							return;
+						}
+					}
+
+					//Perspective division
+					for (auto &vert : clipped_vertices)
+					{
+						//From clip space -> ndc space
+						TRShadingPipeline::VertexData::prePerspCorrection(vert);
+						vert.cpos *= vert.rhw;
+					}
+				}
+				int num_verts = clipped_vertices.size();
+				for (int i = 0; i < num_verts - 2; ++i)
+				{
+					//Triangle assembly
+					TRShadingPipeline::VertexData vert[3] = {
+							clipped_vertices[0],
+							clipped_vertices[i + 1],
+							clipped_vertices[i + 2] };
+
+					//Rasterization stage
+					{
+						//Transform to screen space & Rasterization
+						{
+							vert[0].spos = glm::ivec2(m_viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
+							vert[1].spos = glm::ivec2(m_viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
+							vert[2].spos = glm::ivec2(m_viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
+
+							//Backface culling
+							{
+								if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, m_shading_state.trCullFaceMode))
+								{
+									continue;
+								}
+							}
+
+							m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
+								m_backBuffer->getWidth(), m_backBuffer->getHeight(), m_fragmentsCache[p]);
+						}
+					}
+				}
+			}, TRExecutionPolicy::TR_PARALLEL);
+
+			//Fragment shader & Depth testing
+
+			auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment,
+				const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+			{
+				//Note: spos.x equals -1 -> invalid fragment
+				if (fragment.spos.x == -1)
+					return;
+
+				//Depth testing for each sampling point
+				if (isDepthTestEnable())
+				{
+					int samplingNum = TRMaskPixelSampler::getSamplingNum();
+					const auto &coverageDepth = fragment.coverage_depth;
+					for (int s = 0; s < samplingNum; ++s)
+					{
+						if (fragment.coverage[s] == 1 &&
+							m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
+						{
+							fragment.coverage[s] = 0;//Occuluded
+						}
+					}
+				}
+
+				int cnt = 0;
+				int samplingNum = TRMaskPixelSampler::getSamplingNum();
+				for (int s = 0; s < samplingNum; ++s)
+				{
+					cnt += fragment.coverage[s];
+				}
+
+				//No valid mask, just discard.
+				if (cnt == 0)
+					return;
+
+				glm::vec4 fragColor;
+				m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+				m_backBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
+				m_backBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
+				if (isDepthWriteEnable())
+				{
+					m_backBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y, fragment.coverage_depth, fragment.coverage);
+				}
+			};
+
+			parallelFor((size_t)0, (size_t)m_fragmentsCache.size(), [&](const size_t &f)
+			{
+				if (m_fragmentsCache[f].empty())
+					return;
+
+				++num_triangles;
+
+				//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
+				parallelFor((size_t)0, (size_t)m_fragmentsCache[f].size(), [&](const size_t &index)
+				{
+					auto &block = m_fragmentsCache[f][index];
+
+					//Perspective correction restore
+					block.aftPrespCorrectionForBlocks();
+
+					//Calculate dUVdx, dUVdy for mipmap
+					glm::vec2 dUVdx(block.dUdx(), block.dVdx());
+					glm::vec2 dUVdy(block.dUdy(), block.dVdy());
+
+					fragment_func(block.fragments[0], dUVdx, dUVdy);
+					fragment_func(block.fragments[1], dUVdx, dUVdy);
+					fragment_func(block.fragments[2], dUVdx, dUVdy);
+					fragment_func(block.fragments[3], dUVdx, dUVdy);
+
+				}, TRExecutionPolicy::TR_PARALLEL);
+				m_fragmentsCache[f].clear();
+
+			}, TRExecutionPolicy::TR_SERIAL); //Note: parallelization herein is not good at all.
+		}
 	}
 
 	unsigned char* TRRenderer::commitRenderedColorBuffer()

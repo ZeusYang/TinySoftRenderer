@@ -170,7 +170,7 @@ namespace TinyRenderer
 			value[3] = static_cast<unsigned char>(sum.w);
 			currentSamper[0] = value;
 			
-		}, TRExecutionPolicy::TR_SERIAL);
+		}, TRExecutionPolicy::TR_PARALLEL);
 		return m_colorBuffer;
 	}
 
