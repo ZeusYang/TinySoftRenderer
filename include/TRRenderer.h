@@ -41,7 +41,7 @@ namespace TinyRenderer
 		//Draw call
 		unsigned int renderAllDrawableMeshes();
 
-		unsigned int renderDrawableMesh(unsigned int &index);
+		unsigned int renderDrawableMesh(const size_t &index);
 
 		//Commit rendered result
 		unsigned char* commitRenderedColorBuffer();

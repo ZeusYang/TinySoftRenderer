@@ -7,8 +7,6 @@
 #include "TRMathUtils.h"
 #include "TRParallelWrapper.h"
 
-#include <cmath>
-
 namespace TinyRenderer
 {
 
@@ -101,7 +99,7 @@ namespace TinyRenderer
 		return num_triangles;
 	}
 
-	unsigned int TRRenderer::renderDrawableMesh(unsigned int &index)
+	unsigned int TRRenderer::renderDrawableMesh(const size_t &index)
 	{
 		if (index >= m_drawableMeshes.size())
 			return 0;
@@ -212,7 +210,6 @@ namespace TinyRenderer
 			}, TRExecutionPolicy::TR_PARALLEL);
 
 			//Fragment shader & Depth testing
-
 			auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment,
 				const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 			{
@@ -283,7 +280,7 @@ namespace TinyRenderer
 				}, TRExecutionPolicy::TR_PARALLEL);
 				m_fragmentsCache[f].clear();
 
-			}, TRExecutionPolicy::TR_SERIAL); //Note: parallelization herein is not good at all.
+			}, TRExecutionPolicy::TR_PARALLEL); //Note: parallelization herein is not good at all.
 		}
 	}
 

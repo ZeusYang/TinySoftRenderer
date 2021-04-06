@@ -300,8 +300,8 @@ namespace TinyRenderer
 		else
 		{
 			glm::vec4 texel1(1.0f), texel2(1.0f);
-			unsigned int level1 = glm::min((unsigned int)level, m_texHolders.size() - 1);
-			unsigned int level2 = glm::min((unsigned int)(level + 1), m_texHolders.size() - 1);
+			unsigned int level1 = glm::min((unsigned int)level, (unsigned int)m_texHolders.size() - 1);
+			unsigned int level2 = glm::min((unsigned int)(level + 1), (unsigned int)m_texHolders.size() - 1);
 			switch (m_filtering_mode)
 			{
 			case TRTextureFilterMode::TR_NEAREST:

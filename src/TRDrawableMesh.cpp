@@ -193,7 +193,7 @@ namespace TinyRenderer
 		unsigned int num = 0;
 		for (const auto &drawable : m_drawables)
 		{
-			num = std::max(num, drawable.getIndices().size() / 3);
+			num = std::max(num, (unsigned int)drawable.getIndices().size() / 3);
 		}
 		return num;
 	}
