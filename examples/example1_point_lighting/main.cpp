@@ -45,7 +45,7 @@ int main(int argc, char* args[])
 		return -1;
 	}
 
-	bool generatedMipmap = false;
+	bool generatedMipmap = true;
 	TRRenderer::ptr renderer = std::make_shared<TRRenderer>(width, height);
 
 	//Load scene
