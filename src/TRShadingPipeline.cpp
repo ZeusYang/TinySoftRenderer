@@ -23,24 +23,25 @@ namespace TinyRenderer
 		result.cpos = (1.0f - frac) * v0.cpos + frac * v1.cpos;
 		result.spos.x = (1.0f - frac) * v0.spos.x + frac * v1.spos.x;
 		result.spos.y = (1.0f - frac) * v0.spos.y + frac * v1.spos.y;
+		result.rhw = (1.0f - frac) * v0.rhw + frac * v1.rhw;
 
 		result.TBN = v0.TBN;
 
 		return result;
 	}
 
-	TRShadingPipeline::VertexData TRShadingPipeline::VertexData::barycentricLerp(
+	TRShadingPipeline::FragmentData TRShadingPipeline::VertexData::barycentricLerp(
 		const VertexData &v0, 
 		const VertexData &v1, 
 		const VertexData &v2,
 		const glm::vec3 &w)
 	{
-		VertexData result;
+		FragmentData result;
 		result.pos = w.x * v0.pos + w.y * v1.pos + w.z * v2.pos;
 		result.col = w.x * v0.col + w.y * v1.col + w.z * v2.col;
 		result.nor = w.x * v0.nor + w.y * v1.nor + w.z * v2.nor;
 		result.tex = w.x * v0.tex + w.y * v1.tex + w.z * v2.tex;
-		result.cpos = w.x * v0.cpos + w.y * v1.cpos + w.z * v2.cpos;
+		result.rhw = w.x * v0.rhw + w.y * v1.rhw + w.z * v2.rhw;
 		result.spos.x = w.x * v0.spos.x + w.y * v1.spos.x + w.z * v2.spos.x;
 		result.spos.y = w.x * v0.spos.y + w.y * v1.spos.y + w.z * v2.spos.y;
 
@@ -49,29 +50,33 @@ namespace TinyRenderer
 		return result;
 	}
 
+	float TRShadingPipeline::VertexData::barycentricLerp(const float &d0, const float &d1, const float &d2, const glm::vec3 &w)
+	{
+		return w.x * d0 + w.y * d1 + w.z * d2;
+	}
+
 	void TRShadingPipeline::VertexData::prePerspCorrection(VertexData &v)
 	{
 		//Perspective correction: the world space properties should be multipy by 1/w before rasterization
 		//https://zhuanlan.zhihu.com/p/144331875
-		//We use pos.w to store 1/w
-		float one_div_w =  1.0f / v.cpos.w;
-		v.pos = glm::vec4(v.pos.x * one_div_w, v.pos.y * one_div_w, v.pos.z * one_div_w, one_div_w);
-		v.tex = v.tex * one_div_w;
-		v.nor = v.nor * one_div_w;
-		v.col = v.col * one_div_w;
+		v.rhw = 1.0f / v.cpos.w;
+		v.pos *= v.rhw;
+		v.tex *= v.rhw;
+		v.nor *= v.rhw;
+		v.col *= v.rhw;
+
 	}
 
-	void TRShadingPipeline::VertexData::aftPrespCorrection(VertexData &v)
+	void TRShadingPipeline::FragmentData::aftPrespCorrection(FragmentData &v)
 	{
 		//Perspective correction: the world space properties should be multipy by w after rasterization
 		//https://zhuanlan.zhihu.com/p/144331875
-		//We use pos.w to store 1/w
-		float w = 1.0f / v.pos.w;
-		//v.cpos.z *= w;
-		v.pos = glm::vec4(v.pos.x * w, v.pos.y * w, v.pos.z * w, v.pos.w);
-		v.tex = v.tex * w;
-		v.nor = v.nor * w;
-		v.col = v.col * w;
+		float w = 1.0f / v.rhw;
+		v.pos *= w;
+		v.tex *= w;
+		v.nor *= w;
+		v.col *= w;
+
 	}
 
 	//----------------------------------------------TRShadingPipeline----------------------------------------------
@@ -140,38 +145,51 @@ namespace TinyRenderer
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
 
-		auto edge_func = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3, VertexData &p) -> bool
-		{
-			//Invalid fragment
-			if (x > bounding_max.x || y > bounding_max.y)
-			{
-				p = VertexData(glm::ivec2(-1));
-				return false;
-			}
-
-			//Note: Counter-clockwise winding order
-			int E1 = Cx1 + E1_t, E2 = Cx2 + E2_t, E3 = Cx3 + E3_t;
-			if (E1 <= 0 && E2 <= 0 && E3 <= 0)
-			{
-				glm::vec3 uvw(Cx2, Cx3, Cx1);
-				p = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
-				p.spos = glm::ivec2(x, y);
-				return true;
-			}
-
-			//Invalid fragment
-			p = VertexData(glm::ivec2(-1));
-			return false;
-		};
-
 		//Strict barycenteric weights calculation
-		auto barycentericWeight = [&](const int &x, const int &y) -> glm::vec3
+		auto barycentericWeight = [&](const float &x, const float &y) -> glm::vec3
 		{
 			glm::vec3 s[2];
 			s[0] = glm::vec3(v[2].spos.x - v[0].spos.x, v[1].spos.x - v[0].spos.x, v[0].spos.x - x);
 			s[1] = glm::vec3(v[2].spos.y - v[0].spos.y, v[1].spos.y - v[0].spos.y, v[0].spos.y - y);
 			auto uf = glm::cross(s[0], s[1]);
 			return glm::vec3(1.f - (uf.x + uf.y) / uf.z, uf.y / uf.z, uf.x / uf.z);
+		};
+
+		auto sampling_is_inside = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3, FragmentData &p) -> bool
+		{
+			//Invalid fragment
+			if (x > bounding_max.x || y > bounding_max.y)
+			{
+				p = glm::ivec2(-1);
+				return false;
+			}
+
+			bool at_least_one_inside = false;
+			const int samplingNum = TRMaskPixelSampler::getSamplingNum();
+			auto samplingOffsetArray = TRMaskPixelSampler::getSamplingOffsets();
+			for (int s = 0; s < samplingNum; ++s)
+			{
+				const auto &offset = samplingOffsetArray[s];
+				//Edge function
+				const float E1 = Cx1 + offset.x * I01 + offset.y * J01;
+				const float E2 = Cx2 + offset.x * I02 + offset.y * J02;
+				const float E3 = Cx3 + offset.x * I03 + offset.y * J03;
+				//Note: Counter-clockwise winding order
+				if ((E1 + E1_t) <= 0 && (E2 + E2_t) <= 0 && (E3 + E3_t) <= 0)
+				{
+					at_least_one_inside = true;
+					p.coverage[s] = 1;//Covered
+					//Note: each sampling point should have its own depth
+					glm::vec3 uvw = glm::vec3(E2, E3, E1) * one_div_delta;
+					p.coverage_depth[s] = VertexData::barycentricLerp(v[0].rhw, v[1].rhw, v[2].rhw, uvw);
+				}
+			}
+
+			if (!at_least_one_inside)
+			{
+				p.spos = glm::ivec2(-1);
+			}
+			return at_least_one_inside;
 		};
 
 		for(int y = bounding_min.y;y <= bounding_max.y;y += 2)
@@ -181,32 +199,75 @@ namespace TinyRenderer
 			{
 				//2x2 fragments block
 				QuadFragments group;
-				bool inside1 = edge_func(x, y, Cx1, Cx2, Cx3, group.fragments[0]);
-				bool inside2 = edge_func(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03, group.fragments[1]);
-				bool inside3 = edge_func(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.fragments[2]);
-				bool inside4 = edge_func(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03, group.fragments[3]);
+				bool inside0 = sampling_is_inside(x, y, Cx1, Cx2, Cx3, group.fragments[0]);
+				bool inside1 = sampling_is_inside(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03, group.fragments[1]);
+				bool inside2 = sampling_is_inside(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.fragments[2]);
+				bool inside3 = sampling_is_inside(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03, group.fragments[3]);
 				//Note: at least one of them is inside the triangle.
-				if (inside1 || inside2 || inside3 || inside4)
+				if (inside0 || inside1 || inside2 || inside3)
 				{
-					if (!inside1)
+					if (!inside0)//Invalid fragment
 					{
 						group.fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y));
 						group.fragments[0].spos = glm::ivec2(-1);
 					}
-					if (!inside2)
+					else
+					{
+						glm::vec3 uvw(Cx2, Cx3, Cx1);
+						auto coverage = group.fragments[0].coverage;
+						auto coverage_depth = group.fragments[0].coverage_depth;
+						group.fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.fragments[0].spos = glm::ivec2(x, y);
+						group.fragments[0].coverage = coverage;
+						group.fragments[0].coverage_depth = coverage_depth;
+					}
+
+					if (!inside1)//Invalid fragment
 					{
 						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y));
 						group.fragments[1].spos = glm::ivec2(-1);
 					}
-					if (!inside3)
+					else
+					{
+						glm::vec3 uvw(Cx2 + I02, Cx3 + I03, Cx1 + I01);
+						auto coverage = group.fragments[1].coverage;
+						auto coverage_depth = group.fragments[1].coverage_depth;
+						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.fragments[1].spos = glm::ivec2(x + 1, y);
+						group.fragments[1].coverage = coverage;
+						group.fragments[1].coverage_depth = coverage_depth;
+					}
+
+					if (!inside2)//Invalid fragment
 					{
 						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y + 1));
 						group.fragments[2].spos = glm::ivec2(-1);
 					}
-					if (!inside4)
+					else
+					{
+						glm::vec3 uvw(Cx2 + J02, Cx3 + J03, Cx1 + J01);
+						auto coverage = group.fragments[2].coverage;
+						auto coverage_depth = group.fragments[2].coverage_depth;
+						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.fragments[2].spos = glm::ivec2(x, y + 1);
+						group.fragments[2].coverage = coverage;
+						group.fragments[2].coverage_depth = coverage_depth;
+					}
+
+					if (!inside3)//Invalid fragment
 					{
 						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y + 1));
 						group.fragments[3].spos = glm::ivec2(-1);
+					}
+					else
+					{
+						glm::vec3 uvw(Cx2 + J02 + I02, Cx3 + J03 + I03, Cx1 + J01 + I01);
+						auto coverage = group.fragments[3].coverage;
+						auto coverage_depth = group.fragments[3].coverage_depth;
+						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.fragments[3].spos = glm::ivec2(x + 1, y + 1);
+						group.fragments[3].coverage = coverage;
+						group.fragments[3].coverage_depth = coverage_depth;
 					}
 
 					rasterized_fragments.push_back(group);

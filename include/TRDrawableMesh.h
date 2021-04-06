@@ -109,7 +109,7 @@ namespace TinyRenderer
 		const glm::mat4& getModelMatrix() const { return m_drawing_config.modelMatrix; }
 		TRLightingMode getLightingMode() const { return m_drawing_config.lightingMode; }
 
-		size_t getFaceNums() const;
+		unsigned int getDrawableMaxFaceNums() const;
 		std::vector<TRDrawableSubMesh>& getDrawableSubMeshes() { return m_drawables; }
 
 	protected:

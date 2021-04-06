@@ -18,6 +18,7 @@ namespace TinyRenderer
 		//Double buffer to avoid flickering
 		m_backBuffer = std::make_shared<TRFrameBuffer>(width, height);
 		m_frontBuffer = std::make_shared<TRFrameBuffer>(width, height);
+		m_renderedImg.resize(width * height * 3, 0);
 
 		//Setup viewport matrix (ndc space -> screen space)
 		m_viewportMatrix = TRMathUtils::calcViewPortMatrix(width, height);
@@ -83,9 +84,19 @@ namespace TinyRenderer
 		return m_mvp_matrix;
 	}
 
-	void TRRenderer::clearColor(glm::vec4 color)
+	void TRRenderer::clearColor(const glm::vec4 &color)
 	{
-		m_backBuffer->clear(color);
+		m_backBuffer->clearColor(color);
+	}
+
+	void TRRenderer::clearDepth(const float &depth)
+	{
+		m_backBuffer->clearDepth(depth);
+	}
+
+	void TRRenderer::clearColorAndDepth(const glm::vec4 &color, const float &depth)
+	{
+		m_backBuffer->clearColorAndDepth(color, depth);
 	}
 
 	int TRRenderer::addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color)
@@ -113,12 +124,12 @@ namespace TinyRenderer
 		unsigned int num_triangles = 0;
 
 		//Pre allocation
-		static size_t maxFaces = 0;
+		static unsigned int maxFaces = 0;
 		if (maxFaces == 0)
 		{
 			for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 			{
-				maxFaces = std::max(maxFaces, m_drawableMeshes[m]->getFaceNums());
+				maxFaces = std::max(maxFaces, m_drawableMeshes[m]->getDrawableMaxFaceNums());
 			}
 		}
 		static std::vector<std::vector<TRShadingPipeline::QuadFragments>> fragments(maxFaces);
@@ -194,7 +205,7 @@ namespace TinyRenderer
 						{
 							//From clip space -> ndc space
 							TRShadingPipeline::VertexData::prePerspCorrection(vert);
-							vert.cpos /= vert.cpos.w;
+							vert.cpos *= vert.rhw;
 						}
 					}
 					int num_verts = clipped_vertices.size();
@@ -231,23 +242,60 @@ namespace TinyRenderer
 
 				//Fragment shader & Depth testing
 
-				auto fragment_func = [&](TRShadingPipeline::VertexData &fragment,
+				auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment,
 					const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 				{
 					//Note: spos.x equals -1 -> invalid fragment
 					if (fragment.spos.x == -1)
 						return;
-					if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
-						m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
+
+					//Depth testing for each sampling point
+					if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
 					{
-						glm::vec4 fragColor;
-						m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-						m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
-						if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+						int samplingNum = TRMaskPixelSampler::getSamplingNum();
+						const auto &coverageDepth = fragment.coverage_depth;
+						for (int s = 0; s < samplingNum; ++s)
 						{
-							m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
+							if (fragment.coverage[s] == 1 && 
+								m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
+							{
+								fragment.coverage[s] = 0;//Occuluded
+							}
 						}
 					}
+
+					int cnt = 0;
+					int samplingNum = TRMaskPixelSampler::getSamplingNum();
+					for (int s = 0; s < samplingNum; ++s)
+					{
+						cnt += fragment.coverage[s];
+					}
+
+					//No valid mask, just discard.
+					if (cnt == 0)
+						return;
+
+					glm::vec4 fragColor;
+					m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+					m_backBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
+					m_backBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
+					if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					{
+						m_backBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y, fragment.coverage_depth, fragment.coverage);
+					}
+					
+
+					//if (depthtestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE &&
+					//	m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y) > fragment.cpos.z)
+					//{
+					//	glm::vec4 fragColor;
+					//	m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+					//	m_backBuffer->writeColor(fragment.spos.x, fragment.spos.y, fragColor);
+					//	if (depthwriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					//	{
+					//		m_backBuffer->writeDepth(fragment.spos.x, fragment.spos.y, fragment.cpos.z);
+					//	}
+					//}
 				};
 
 				parallelFor((size_t)0, (size_t)fragments.size(), [&](const size_t &f)
@@ -281,6 +329,9 @@ namespace TinyRenderer
 			}
 		}
 
+		//MSAA resolve stage
+		m_backBuffer->resolve();
+
 		//Swap double buffers
 		{
 			std::swap(m_backBuffer, m_frontBuffer);
@@ -291,7 +342,15 @@ namespace TinyRenderer
 
 	unsigned char* TRRenderer::commitRenderedColorBuffer()
 	{
-		return m_frontBuffer->getColorBuffer();
+		const auto &pixelBuffer = m_frontBuffer->getColorBuffer();
+		parallelFor((size_t)0, (size_t)(m_frontBuffer->getWidth() * m_frontBuffer->getHeight()), [&](const size_t &index)
+		{
+			const auto &pixel = pixelBuffer[index];
+			m_renderedImg[index * 3 + 0] = pixel[0][0];
+			m_renderedImg[index * 3 + 1] = pixel[0][1];
+			m_renderedImg[index * 3 + 2] = pixel[0][2];
+		});
+		return m_renderedImg.data();
 	}
 
 	std::vector<TRShadingPipeline::VertexData> TRRenderer::clipingSutherlandHodgeman(

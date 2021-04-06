@@ -8,6 +8,7 @@
 
 #include "TRTexture2D.h"
 #include "TRParallelWrapper.h"
+#include "TRPixelSampler.h"
 
 namespace TinyRenderer
 {
@@ -16,9 +17,9 @@ namespace TinyRenderer
 	public:
 		typedef std::shared_ptr<TRShadingPipeline> ptr;
 		
-		class VertexData
+		struct FragmentData;
+		struct VertexData
 		{
-		public:
 			glm::vec4 pos;  //World space position
 			glm::vec3 col;  //World space color
 			glm::vec3 nor;  //World space normal
@@ -26,17 +27,42 @@ namespace TinyRenderer
 			glm::vec4 cpos; //Clip space position
 			glm::ivec2 spos;//Screen space position
 			glm::mat3 TBN;  //Tangent, bitangent, normal matrix
+			float rhw;
 
 			VertexData() = default;
 			VertexData(const glm::ivec2 &screen_pos) : spos(screen_pos) {}
 
 			//Linear interpolation
 			static VertexData lerp(const VertexData &v0, const VertexData &v1, float frac);
-			static VertexData barycentricLerp(const VertexData &v0, const VertexData &v1, const VertexData &v2, const glm::vec3 &w);
+
+			static FragmentData barycentricLerp(const VertexData &v0, const VertexData &v1, const VertexData &v2, const glm::vec3 &w);
+			static float barycentricLerp(const float &d0, const float &d1, const float &d2, const glm::vec3 &w);
 
 			//Perspective correction for interpolation
 			static void prePerspCorrection(VertexData &v);
-			static void aftPrespCorrection(VertexData &v);
+		};
+
+		struct FragmentData
+		{
+		public:
+			glm::vec4 pos;  //World space position
+			glm::vec3 col;  //World space color
+			glm::vec3 nor;  //World space normal
+			glm::vec2 tex;	//World space texture coordinate
+			glm::ivec2 spos;//Screen space position
+			glm::mat3 TBN;  //Tangent, bitangent, normal matrix
+			float rhw;
+			
+			//MSAA Mask
+			//Note: each sampling point should have its own depth
+			TRMaskPixelSampler coverage = 0;
+			TRDepthPixelSampler coverage_depth = 0.0f;
+
+			FragmentData() = default;
+			FragmentData(const glm::ivec2 &screen_pos) : spos(screen_pos) {}
+
+			static void aftPrespCorrection(FragmentData &v);
+
 		};
 
 		//2x2 fragments block for calculating dFdx and dFdy.
@@ -50,7 +76,7 @@ namespace TinyRenderer
 			 *   f0 -> (x+0, y+0), f1 -> (x+1,y+0 )
 			 *   f2 -> (x+0, y+1), f3 -> (x+1,y+1)
 			 ************************************/
-			VertexData fragments[4];
+			FragmentData fragments[4];
 
 			//Forward differencing
 			//Note: Need to handle the boundary condition.
@@ -62,10 +88,10 @@ namespace TinyRenderer
 			//Perspective correction restore
 			inline void aftPrespCorrectionForBlocks()
 			{
-				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[0]);
-				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[1]);
-				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[2]);
-				TRShadingPipeline::VertexData::aftPrespCorrection(fragments[3]);
+				TRShadingPipeline::FragmentData::aftPrespCorrection(fragments[0]);
+				TRShadingPipeline::FragmentData::aftPrespCorrection(fragments[1]);
+				TRShadingPipeline::FragmentData::aftPrespCorrection(fragments[2]);
+				TRShadingPipeline::FragmentData::aftPrespCorrection(fragments[3]);
 			}
 		};
 
@@ -94,7 +120,7 @@ namespace TinyRenderer
 
 		//Shaders
 		virtual void vertexShader(VertexData &vertex) const = 0;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const = 0;
 
 		//Rasterization

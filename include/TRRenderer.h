@@ -26,7 +26,9 @@ namespace TinyRenderer
 		void addDrawableMesh(const std::vector<TRDrawableMesh::ptr> &meshes);
 		void unloadDrawableMesh();
 
-		void clearColor(glm::vec4 color);
+		void clearColor(const glm::vec4 &color);
+		void clearDepth(const float &depth);
+		void clearColorAndDepth(const glm::vec4 &color, const float &depth);
 
 		//Setting
 		void setViewMatrix(const glm::mat4 &view);
@@ -90,6 +92,7 @@ namespace TinyRenderer
 		//Double buffers
 		TRFrameBuffer::ptr m_backBuffer;                      // The frame buffer that's goint to be written.
 		TRFrameBuffer::ptr m_frontBuffer;                     // The frame buffer that's goint to be displayed.
+		std::vector<unsigned char> m_renderedImg;		  // The rendered image.
 	};
 }
 

@@ -14,7 +14,7 @@ namespace TinyRenderer
 		virtual ~TR3DShadingPipeline() = default;
 
 		virtual void vertexShader(VertexData &vertex) const override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor, 
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 
 	};
@@ -28,7 +28,7 @@ namespace TinyRenderer
 		virtual ~TRDoNothingShadingPipeline() = default;
 
 		virtual void vertexShader(VertexData &vertex) const override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
 
@@ -40,7 +40,7 @@ namespace TinyRenderer
 
 		virtual ~TRTextureShadingPipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
 
@@ -52,7 +52,7 @@ namespace TinyRenderer
 
 		virtual ~TRLODVisualizePipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
 
@@ -63,7 +63,7 @@ namespace TinyRenderer
 
 		virtual ~TRPhongShadingPipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
 
@@ -74,7 +74,7 @@ namespace TinyRenderer
 
 		virtual ~TRBlinnPhongShadingPipeline() = default;
 
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
 
@@ -86,7 +86,7 @@ namespace TinyRenderer
 		virtual ~TRBlinnPhongNormalMapShadingPipeline() = default;
 
 		virtual void vertexShader(VertexData &vertex) const override;
-		virtual void fragmentShader(const VertexData &data, glm::vec4 &fragColor,
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
 }

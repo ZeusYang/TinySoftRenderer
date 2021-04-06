@@ -14,12 +14,12 @@ namespace TinyRenderer
 	TRTexture2D::TRTexture2D() :
 		m_generate_mipmap(false),
 		m_warp_mode(TRTextureWarpMode::TR_REPEAT),
-		m_filtering_mode(TRTextureFilterMode::TR_NEAREST) {}
+		m_filtering_mode(TRTextureFilterMode::TR_LINEAR) {}
 	
 	TRTexture2D::TRTexture2D(bool generatedMipmap) :
 		m_generate_mipmap(generatedMipmap),
 		m_warp_mode(TRTextureWarpMode::TR_REPEAT),
-		m_filtering_mode(TRTextureFilterMode::TR_NEAREST) {}
+		m_filtering_mode(TRTextureFilterMode::TR_LINEAR) {}
 
 	void TRTexture2D::setWarpingMode(TRTextureWarpMode mode) { m_warp_mode = mode; }
 	void TRTexture2D::setFilteringMode(TRTextureFilterMode mode) { m_filtering_mode = mode; }

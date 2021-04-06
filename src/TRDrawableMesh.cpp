@@ -159,7 +159,7 @@ namespace TinyRenderer
 		// read file via ASSIMP
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals 
-			| aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+			| aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_SplitLargeMeshes | aiProcess_FixInfacingNormals);
 		// check for errors
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
@@ -188,12 +188,12 @@ namespace TinyRenderer
 		importMeshFromFile(path, generatedMipmap);
 	}
 
-	size_t TRDrawableMesh::getFaceNums() const
+	unsigned int TRDrawableMesh::getDrawableMaxFaceNums() const
 	{
-		size_t num = 0;
+		unsigned int num = 0;
 		for (const auto &drawable : m_drawables)
 		{
-			num += drawable.getIndices().size() / 3;
+			num = std::max(num, drawable.getIndices().size() / 3);
 		}
 		return num;
 	}

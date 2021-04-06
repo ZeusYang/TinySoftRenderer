@@ -5,6 +5,7 @@
 
 namespace TinyRenderer
 {
+
 	//Texture warping mode
 	enum TRTextureWarpMode
 	{
