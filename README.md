@@ -31,7 +31,7 @@ This project was totally refactored based on previous naive version I built 2 ye
 * [GLM](https://github.com/g-truc/glm)
 * [stb_image](https://github.com/nothings/stb)
 * [assimp](https://github.com/assimp/assimp)
-* [oneTBB](https://github.com/oneapi-src/oneTBB)
+* [oneTBB](https://github.com/oneapi-src/oneTBB/releases/tag/v2021.1.1)
 
 
 
