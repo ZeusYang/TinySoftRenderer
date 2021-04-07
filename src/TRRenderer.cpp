@@ -14,7 +14,7 @@ namespace TinyRenderer
 {
 	using MutexType = tbb::spin_mutex;				//TBB thread mutex type
 	static MutexType FACE_INDEX_MUTEX;				//Face index mutex lock
-	static constexpr int PIPELINE_BATCH_SIZE = 1024; //The number of faces processed for each batch
+	static constexpr int PIPELINE_BATCH_SIZE = 512; //The number of faces processed for each batch
 	//The cache for rasterized results. For example: the face i -> FragmentCache[i]
 	using FragmentCache = std::array<std::vector<TRShadingPipeline::QuadFragments>, PIPELINE_BATCH_SIZE>;
 
@@ -164,7 +164,8 @@ namespace TinyRenderer
 				if (fragment.spos.x == -1)
 					return;
 
-				//Depth testing for each sampling point
+				//Depth testing for each sampling point (Early Z herein)
+				int cnt = 0;
 				if (drawCall.shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
 				{
 					int samplingNum = TRMaskPixelSampler::getSamplingNum();
@@ -176,20 +177,17 @@ namespace TinyRenderer
 							drawCall.frameBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
 						{
 							fragment.coverage[s] = 0;//Occuluded
+							++cnt;
+						}
+						else if (fragment.coverage[s] == 0)
+						{
+							++cnt;
 						}
 					}
 				}
 
-				int cnt = 0;
-				int samplingNum = TRMaskPixelSampler::getSamplingNum();
-#pragma unroll
-				for (int s = 0; s < samplingNum; ++s)
-				{
-					cnt += fragment.coverage[s];
-				}
-
 				//No valid mask, just discard.
-				if (cnt == 0)
+				if (cnt == 4)
 					return;
 
 				glm::vec4 fragColor;
@@ -362,7 +360,7 @@ namespace TinyRenderer
 						TBBVertexRastFilter(PIPELINE_BATCH_SIZE, startIndex, overIndex, drawCall, fragmentCache)) &
 					//Note: Fragment shaders between different faces should be executed serially out of order
 					//		Because there are race conditions when different threads try access to framebuffer
-					tbb::make_filter<int, void>(tbb::filter_mode::serial_out_of_order,
+					tbb::make_filter<int, void>(tbb::filter_mode::parallel,
 						TBBFragmentFilter(PIPELINE_BATCH_SIZE, drawCall, fragmentCache)));
 			}
 
