@@ -66,6 +66,7 @@ namespace TinyRenderer
 			TRShadingPipeline::VertexData v[3];
 			const auto &indexBuffer = drawCall.indexBuffer;
 			const auto &vertexBuffer = drawCall.vertexBuffer;
+#pragma unroll 3
 			for (int i = 0; i < 3; ++i)
 			{
 				v[i].pos = vertexBuffer[indexBuffer[faceIndex + i]].vpositions;
@@ -168,6 +169,7 @@ namespace TinyRenderer
 				{
 					int samplingNum = TRMaskPixelSampler::getSamplingNum();
 					const auto &coverageDepth = fragment.coverage_depth;
+#pragma unroll
 					for (int s = 0; s < samplingNum; ++s)
 					{
 						if (fragment.coverage[s] == 1 &&
@@ -180,6 +182,7 @@ namespace TinyRenderer
 
 				int cnt = 0;
 				int samplingNum = TRMaskPixelSampler::getSamplingNum();
+#pragma unroll
 				for (int s = 0; s < samplingNum; ++s)
 				{
 					cnt += fragment.coverage[s];
@@ -349,10 +352,10 @@ namespace TinyRenderer
 			DrawcallSetting drawCall(submesh.getVertices(), submesh.getIndices(), m_shader_handler.get(),
 				m_shading_state, m_viewportMatrix, m_frustum_near_far.x, m_frustum_near_far.y, m_backBuffer.get());
 
-			for (int i = 0; i < faceNum; i += PIPELINE_BATCH_SIZE)
+			for (int f = 0; f < faceNum; f += PIPELINE_BATCH_SIZE)
 			{
-				int startIndex = i;
-				int overIndex = glm::min(i + PIPELINE_BATCH_SIZE, faceNum);
+				int startIndex = f;
+				int overIndex = glm::min(f + PIPELINE_BATCH_SIZE, faceNum);
 				tbb::parallel_pipeline(ntokens, //Number of tokens
 					//Note: Vertex shader and rasterization could be parallelized
 					tbb::make_filter<void, int>(tbb::filter_mode::parallel,

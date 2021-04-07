@@ -108,6 +108,7 @@ namespace TinyRenderer
 		glm::vec3 fragPos = glm::vec3(data.pos);
 		glm::vec3 normal = glm::normalize(data.nor);
 		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
+#pragma unroll
 		for (size_t i = 0; i < m_point_lights.size(); ++i)
 		{
 			const auto &light = m_point_lights[i];
@@ -175,6 +176,7 @@ namespace TinyRenderer
 		glm::vec3 fragPos = glm::vec3(data.pos);
 		glm::vec3 normal = glm::normalize(data.nor);
 		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
+#pragma unroll
 		for (size_t i = 0; i < m_point_lights.size(); ++i)
 		{
 			const auto &light = m_point_lights[i];
@@ -261,6 +263,7 @@ namespace TinyRenderer
 		//Calculate the lighting
 		glm::vec3 fragPos = glm::vec3(data.pos);
 		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
+#pragma unroll
 		for (size_t i = 0; i < m_point_lights.size(); ++i)
 		{
 			const auto &light = m_point_lights[i];

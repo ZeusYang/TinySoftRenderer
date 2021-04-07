@@ -169,6 +169,7 @@ namespace TinyRenderer
 			bool at_least_one_inside = false;
 			const int samplingNum = TRMaskPixelSampler::getSamplingNum();
 			auto samplingOffsetArray = TRMaskPixelSampler::getSamplingOffsets();
+#pragma unroll
 			for (int s = 0; s < samplingNum; ++s)
 			{
 				const auto &offset = samplingOffsetArray[s];
@@ -197,6 +198,7 @@ namespace TinyRenderer
 		for(int y = bounding_min.y;y <= bounding_max.y;y += 2)
 		{
 			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
+#pragma unroll 4
 			for (int x = bounding_min.x; x <= bounding_max.x; x += 2)
 			{
 				//2x2 fragments block
