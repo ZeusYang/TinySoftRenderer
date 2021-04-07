@@ -202,16 +202,16 @@ namespace TinyRenderer
 				current[index * channel + 3] = a;
 			});
 
-			//Note: Just use linear memory layout for small texture
-			if (curW >= 32)
-			{
-				m_texHolders.push_back(std::make_shared<TRZCurveTilingTextureHolder>(current, curW, curH, channel));
-			}
-			else
-			{
-				m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
-			}
-			//m_texHolders.push_back(std::make_shared<TRTilingTextureHolder>(current, curW, curH, channel));
+			//Note: Tiling and ZCuve mapping are also time-consuming
+			//if (curW >= 32)
+			//{
+			//	m_texHolders.push_back(std::make_shared<TRZCurveTilingTextureHolder>(current, curW, curH, channel));
+			//}
+			//else
+			//{
+			//	m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
+			//}
+			m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
 			std::swap(current, previous);
 		}
 
