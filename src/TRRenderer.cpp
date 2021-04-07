@@ -7,8 +7,228 @@
 #include "TRMathUtils.h"
 #include "TRParallelWrapper.h"
 
+#include "tbb/parallel_pipeline.h"
+#include "tbb/task_arena.h"
+
 namespace TinyRenderer
 {
+	using MutexType = tbb::spin_mutex;				//TBB thread mutex type
+	static MutexType FACE_INDEX_MUTEX;				//Face index mutex lock
+	static constexpr int PIPELINE_BATCH_SIZE = 1024; //The number of faces processed for each batch
+	//The cache for rasterized results. For example: the face i -> FragmentCache[i]
+	using FragmentCache = std::array<std::vector<TRShadingPipeline::QuadFragments>, PIPELINE_BATCH_SIZE>;
+
+	//Draw call setting which would be utilized in shading parallel pipeline 
+	struct DrawcallSetting final
+	{
+		const TRVertexBuffer &vertexBuffer;			//Vertex data buffer
+		const TRIndexBuffer  &indexBuffer;			//Index data buffer
+		TRShadingPipeline *shaderHandler;			//Shader handler
+		const TRShadingState &shadingState;			//Shading state
+		const glm::mat4 &viewportMatrix;			//Viewport transformation matrix
+		float near, far;							//Near plane and far plane of frustum
+		TRFrameBuffer *frameBuffer;					//Framebuffer 
+
+		explicit DrawcallSetting(const TRVertexBuffer &vbo, const TRIndexBuffer &ibo, TRShadingPipeline *handler,
+			const TRShadingState &state, const glm::mat4 &viewportMat, float np, float fp, TRFrameBuffer *fb)
+			: vertexBuffer(vbo), indexBuffer(ibo), shaderHandler(handler), shadingState(state),
+			viewportMatrix(viewportMat), near(np), far(fp), frameBuffer(fb) {}
+	};
+
+	class TBBVertexRastFilter final
+	{
+	public:
+		explicit TBBVertexRastFilter(int bs, int &startIndex, int &overIndex, const DrawcallSetting &drawcall,
+			FragmentCache &cache) : batchSize(bs), startIndex(startIndex), overIndex(overIndex), currIndex(startIndex),
+			drawCall(drawcall), fragmentCache(cache) {}
+
+		int operator()(tbb::flow_control &fc) const
+		{
+			//Note: process the faces in [startIndex, overIndex) parallely
+			int faceIndex = 0;
+			//Fetch the face that needs to be processed.
+			{
+				//Note: a mutex lock must be herein for accessing to currIndex
+				MutexType::scoped_lock lock(FACE_INDEX_MUTEX);
+				if (currIndex >= overIndex)
+				{
+					fc.stop();//Exceed range, stop the processing flow
+					return -1;
+				}
+				faceIndex = currIndex;
+				++currIndex;
+			}
+
+			//The fragment cache index
+			int order = faceIndex - startIndex;
+			faceIndex *= 3;
+
+			TRShadingPipeline::VertexData v[3];
+			const auto &indexBuffer = drawCall.indexBuffer;
+			const auto &vertexBuffer = drawCall.vertexBuffer;
+			for (int i = 0; i < 3; ++i)
+			{
+				v[i].pos = vertexBuffer[indexBuffer[faceIndex + i]].vpositions;
+				v[i].col = vertexBuffer[indexBuffer[faceIndex + i]].vcolors;
+				v[i].nor = vertexBuffer[indexBuffer[faceIndex + i]].vnormals;
+				v[i].tex = vertexBuffer[indexBuffer[faceIndex + i]].vtexcoords;
+				v[i].TBN[0] = vertexBuffer[indexBuffer[faceIndex + i]].vtangent;
+				v[i].TBN[1] = vertexBuffer[indexBuffer[faceIndex + i]].vbitangent;
+			}
+
+			//Vertex shader stage
+			drawCall.shaderHandler->vertexShader(v[0]);
+			drawCall.shaderHandler->vertexShader(v[1]);
+			drawCall.shaderHandler->vertexShader(v[2]);
+
+			//Homogeneous space cliping
+			std::vector<TRShadingPipeline::VertexData> clipped_vertices;
+			clipped_vertices = TRRenderer::clipingSutherlandHodgeman(v[0], v[1], v[2], drawCall.near, drawCall.far);
+			if (clipped_vertices.empty())
+			{
+				return -1; //Totally outside
+			}
+
+			//Perspective division: from clip space -> ndc space
+			for (auto &vert : clipped_vertices)
+			{
+				TRShadingPipeline::VertexData::prePerspCorrection(vert);
+				vert.cpos *= vert.rhw;
+			}
+
+			int num_verts = clipped_vertices.size();
+			for (int i = 0; i < num_verts - 2; ++i)
+			{
+				//Triangle assembly
+				TRShadingPipeline::VertexData vert[3] = { clipped_vertices[0], clipped_vertices[i + 1], clipped_vertices[i + 2] };
+
+				//Transform to screen space
+				vert[0].spos = glm::ivec2(drawCall.viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
+				vert[1].spos = glm::ivec2(drawCall.viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
+				vert[2].spos = glm::ivec2(drawCall.viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
+
+				//Backface culling
+				if (shouldCulled(vert[0].spos, vert[1].spos, vert[2].spos, drawCall.shadingState.trCullFaceMode))
+				{
+					continue;
+				}
+
+				//Rasterization
+				TRShadingPipeline::rasterize_fill_edge_function(vert[0], vert[1], vert[2],
+					drawCall.frameBuffer->getWidth(), drawCall.frameBuffer->getHeight(), fragmentCache[order]);
+			}
+
+			return order;
+		}
+
+	private:
+
+		static inline bool shouldCulled(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode)
+		{
+			if (mode == TRCullFaceMode::TR_CULL_DISABLE)
+				return false;
+			//Back face culling in screen space
+			auto e1 = v1 - v0;
+			auto e2 = v2 - v0;
+			int orient = e1.x * e2.y - e1.y * e2.x;
+			return (mode == TRCullFaceMode::TR_CULL_BACK) ? orient > 0 : orient < 0;
+		}
+
+	private:
+		int batchSize;
+		const int startIndex;
+		const int overIndex;
+		int &currIndex;
+		const DrawcallSetting &drawCall;
+
+		FragmentCache &fragmentCache;
+	};
+
+	class TBBFragmentFilter final
+	{
+	public:
+		explicit TBBFragmentFilter(int bs, const DrawcallSetting &drawcall, FragmentCache &cache)
+			: batchSize(bs), drawCall(drawcall), fragmentCache(cache) {}
+
+		void operator()(int index) const
+		{
+			//No fragments
+			if (index == -1 || fragmentCache[index].empty())
+				return;
+
+			//Fragment shader & Depth testing
+			auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment, const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
+			{
+				//Note: spos.x equals -1 -> invalid fragment
+				if (fragment.spos.x == -1)
+					return;
+
+				//Depth testing for each sampling point
+				if (drawCall.shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
+				{
+					int samplingNum = TRMaskPixelSampler::getSamplingNum();
+					const auto &coverageDepth = fragment.coverage_depth;
+					for (int s = 0; s < samplingNum; ++s)
+					{
+						if (fragment.coverage[s] == 1 &&
+							drawCall.frameBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
+						{
+							fragment.coverage[s] = 0;//Occuluded
+						}
+					}
+				}
+
+				int cnt = 0;
+				int samplingNum = TRMaskPixelSampler::getSamplingNum();
+				for (int s = 0; s < samplingNum; ++s)
+				{
+					cnt += fragment.coverage[s];
+				}
+
+				//No valid mask, just discard.
+				if (cnt == 0)
+					return;
+
+				glm::vec4 fragColor;
+				drawCall.shaderHandler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+				drawCall.frameBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
+				drawCall.frameBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
+				if (drawCall.shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+				{
+					drawCall.frameBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y,
+						fragment.coverage_depth, fragment.coverage);
+				}
+			};
+
+			//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
+			parallelFor((size_t)0, (size_t)fragmentCache[index].size(), [&](const size_t &f)
+			{
+				auto &block = fragmentCache[index][f];
+
+				//Perspective correction restore
+				block.aftPrespCorrectionForBlocks();
+
+				//Calculate dUVdx, dUVdy for mipmap
+				glm::vec2 dUVdx(block.dUdx(), block.dVdx());
+				glm::vec2 dUVdy(block.dUdy(), block.dVdy());
+
+				fragment_func(block.fragments[0], dUVdx, dUVdy);
+				fragment_func(block.fragments[1], dUVdx, dUVdy);
+				fragment_func(block.fragments[2], dUVdx, dUVdy);
+				fragment_func(block.fragments[3], dUVdx, dUVdy);
+
+			}, TRExecutionPolicy::TR_PARALLEL);
+
+			fragmentCache[index].clear();
+		}
+
+	private:
+		int batchSize;
+		const DrawcallSetting &drawCall;
+		FragmentCache &fragmentCache;
+
+	};
+
 
 	TRRenderer::TRRenderer(int width, int height)
 		: m_backBuffer(nullptr), m_frontBuffer(nullptr)
@@ -72,17 +292,6 @@ namespace TinyRenderer
 		//Draw a mesh step by step
 		unsigned int num_triangles = 0;
 
-		//Pre allocation
-		static unsigned int maxFaces = 0;
-		if (maxFaces == 0)
-		{
-			for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
-			{
-				maxFaces = std::max(maxFaces, m_drawableMeshes[m]->getDrawableMaxFaceNums());
-			}
-			m_fragmentsCache.resize(maxFaces);
-		}
-	
 		for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 		{
 			renderDrawableMesh(m);
@@ -104,8 +313,9 @@ namespace TinyRenderer
 		if (index >= m_drawableMeshes.size())
 			return 0;
 
-		unsigned int num_triangles = 0;
+		//unsigned int num_triangles = 0;
 		const auto &drawable = m_drawableMeshes[index];
+		const auto &submeshes = drawable->getDrawableSubMeshes();
 
 		//Configuration
 		m_shading_state.trCullFaceMode = drawable->getCullfaceMode();
@@ -121,167 +331,41 @@ namespace TinyRenderer
 		m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
 		m_shader_handler->setShininess(drawable->getSpecularExponent());
 
-		const auto &submeshes = drawable->getDrawableSubMeshes();
+		static int ntokens = tbb::this_task_arena::max_concurrency() * 128;
+		static FragmentCache fragmentCache;
+
 		for (size_t s = 0; s < submeshes.size(); ++s)
 		{
 			const auto &submesh = submeshes[s];
+			int faceNum = submesh.getIndices().size() / 3;
 
+			//Texture setting
 			m_shader_handler->setDiffuseTexId(submesh.getDiffuseMapTexId());
 			m_shader_handler->setSpecularTexId(submesh.getSpecularMapTexId());
 			m_shader_handler->setNormalTexId(submesh.getNormalMapTexId());
 			m_shader_handler->setGlowTexId(submesh.getGlowMapTexId());
 
-			const auto& vertices = submesh.getVertices();
-			const auto& indices = submesh.getIndices();
+			//Draw call setting
+			DrawcallSetting drawCall(submesh.getVertices(), submesh.getIndices(), m_shader_handler.get(),
+				m_shading_state, m_viewportMatrix, m_frustum_near_far.x, m_frustum_near_far.y, m_backBuffer.get());
 
-			int iterCnt = indices.size() / 3;
-			parallelFor((size_t)0, (size_t)iterCnt, [&](const size_t &p)
+			for (int i = 0; i < faceNum; i += PIPELINE_BATCH_SIZE)
 			{
-				//A triangle as primitive
-				const size_t f = p * 3;
-				TRShadingPipeline::VertexData v[3];
-				for (int i = 0; i < 3; ++i)
-				{
-					v[i].pos = vertices[indices[f + i]].vpositions;
-					v[i].col = vertices[indices[f + i]].vcolors;
-					v[i].nor = vertices[indices[f + i]].vnormals;
-					v[i].tex = vertices[indices[f + i]].vtexcoords;
-					v[i].TBN[0] = vertices[indices[f + i]].vtangent;
-					v[i].TBN[1] = vertices[indices[f + i]].vbitangent;
-				}
+				int startIndex = i;
+				int overIndex = glm::min(i + PIPELINE_BATCH_SIZE, faceNum);
+				tbb::parallel_pipeline(ntokens, //Number of tokens
+					//Note: Vertex shader and rasterization could be parallelized
+					tbb::make_filter<void, int>(tbb::filter_mode::parallel,
+						TBBVertexRastFilter(PIPELINE_BATCH_SIZE, startIndex, overIndex, drawCall, fragmentCache)) &
+					//Note: Fragment shaders between different faces should be executed serially out of order
+					//		Because there are race conditions when different threads try access to framebuffer
+					tbb::make_filter<int, void>(tbb::filter_mode::serial_out_of_order,
+						TBBFragmentFilter(PIPELINE_BATCH_SIZE, drawCall, fragmentCache)));
+			}
 
-				//Vertex shader stage
-				std::vector<TRShadingPipeline::VertexData> clipped_vertices;
-				{
-					//Vertex shader
-					{
-						m_shader_handler->vertexShader(v[0]);
-						m_shader_handler->vertexShader(v[1]);
-						m_shader_handler->vertexShader(v[2]);
-					}
-
-					//Homogeneous space cliping
-					{
-						clipped_vertices = clipingSutherlandHodgeman(v[0], v[1], v[2]);
-						if (clipped_vertices.empty())
-						{
-							return;
-						}
-					}
-
-					//Perspective division
-					for (auto &vert : clipped_vertices)
-					{
-						//From clip space -> ndc space
-						TRShadingPipeline::VertexData::prePerspCorrection(vert);
-						vert.cpos *= vert.rhw;
-					}
-				}
-				int num_verts = clipped_vertices.size();
-				for (int i = 0; i < num_verts - 2; ++i)
-				{
-					//Triangle assembly
-					TRShadingPipeline::VertexData vert[3] = {
-							clipped_vertices[0],
-							clipped_vertices[i + 1],
-							clipped_vertices[i + 2] };
-
-					//Rasterization stage
-					{
-						//Transform to screen space & Rasterization
-						{
-							vert[0].spos = glm::ivec2(m_viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
-							vert[1].spos = glm::ivec2(m_viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
-							vert[2].spos = glm::ivec2(m_viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
-
-							//Backface culling
-							{
-								if (isBackFacing(vert[0].spos, vert[1].spos, vert[2].spos, m_shading_state.trCullFaceMode))
-								{
-									continue;
-								}
-							}
-
-							m_shader_handler->rasterize_fill_edge_function(vert[0], vert[1], vert[2],
-								m_backBuffer->getWidth(), m_backBuffer->getHeight(), m_fragmentsCache[p]);
-						}
-					}
-				}
-			}, TRExecutionPolicy::TR_PARALLEL);
-
-			//Fragment shader & Depth testing
-			auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment,
-				const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
-			{
-				//Note: spos.x equals -1 -> invalid fragment
-				if (fragment.spos.x == -1)
-					return;
-
-				//Depth testing for each sampling point
-				if (isDepthTestEnable())
-				{
-					int samplingNum = TRMaskPixelSampler::getSamplingNum();
-					const auto &coverageDepth = fragment.coverage_depth;
-					for (int s = 0; s < samplingNum; ++s)
-					{
-						if (fragment.coverage[s] == 1 &&
-							m_backBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
-						{
-							fragment.coverage[s] = 0;//Occuluded
-						}
-					}
-				}
-
-				int cnt = 0;
-				int samplingNum = TRMaskPixelSampler::getSamplingNum();
-				for (int s = 0; s < samplingNum; ++s)
-				{
-					cnt += fragment.coverage[s];
-				}
-
-				//No valid mask, just discard.
-				if (cnt == 0)
-					return;
-
-				glm::vec4 fragColor;
-				m_shader_handler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-				m_backBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
-				m_backBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
-				if (isDepthWriteEnable())
-				{
-					m_backBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y, fragment.coverage_depth, fragment.coverage);
-				}
-			};
-
-			parallelFor((size_t)0, (size_t)m_fragmentsCache.size(), [&](const size_t &f)
-			{
-				if (m_fragmentsCache[f].empty())
-					return;
-
-				++num_triangles;
-
-				//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
-				parallelFor((size_t)0, (size_t)m_fragmentsCache[f].size(), [&](const size_t &index)
-				{
-					auto &block = m_fragmentsCache[f][index];
-
-					//Perspective correction restore
-					block.aftPrespCorrectionForBlocks();
-
-					//Calculate dUVdx, dUVdy for mipmap
-					glm::vec2 dUVdx(block.dUdx(), block.dVdx());
-					glm::vec2 dUVdy(block.dUdy(), block.dVdy());
-
-					fragment_func(block.fragments[0], dUVdx, dUVdy);
-					fragment_func(block.fragments[1], dUVdx, dUVdy);
-					fragment_func(block.fragments[2], dUVdx, dUVdy);
-					fragment_func(block.fragments[3], dUVdx, dUVdy);
-
-				}, TRExecutionPolicy::TR_PARALLEL);
-				m_fragmentsCache[f].clear();
-
-			}, TRExecutionPolicy::TR_PARALLEL); //Note: parallelization herein is not good at all.
 		}
+
+		return 0;
 	}
 
 	unsigned char* TRRenderer::commitRenderedColorBuffer()
@@ -300,7 +384,9 @@ namespace TinyRenderer
 	std::vector<TRShadingPipeline::VertexData> TRRenderer::clipingSutherlandHodgeman(
 		const TRShadingPipeline::VertexData &v0,
 		const TRShadingPipeline::VertexData &v1,
-		const TRShadingPipeline::VertexData &v2) const
+		const TRShadingPipeline::VertexData &v2,
+		const float &near,
+		const float &far)
 	{
 		//Clipping in the homogeneous clipping space
 		//Refs:
@@ -318,17 +404,17 @@ namespace TinyRenderer
 			};
 
 			//Totally inside
-			if (isPointInsideInClipingFrustum(v0.cpos, m_frustum_near_far.x, m_frustum_near_far.y) &&
-				isPointInsideInClipingFrustum(v1.cpos, m_frustum_near_far.x, m_frustum_near_far.y) &&
-				isPointInsideInClipingFrustum(v2.cpos, m_frustum_near_far.x, m_frustum_near_far.y))
+			if (isPointInsideInClipingFrustum(v0.cpos, near, far) &&
+				isPointInsideInClipingFrustum(v1.cpos, near, far) &&
+				isPointInsideInClipingFrustum(v2.cpos, near, far))
 			{
 				return { v0,v1,v2 };
 			}
 
 			//Totally outside
-			if (v0.cpos.w < m_frustum_near_far.x && v1.cpos.w < m_frustum_near_far.x && v2.cpos.w < m_frustum_near_far.x)
+			if (v0.cpos.w < near && v1.cpos.w < near && v2.cpos.w < near)
 				return{};
-			if (v0.cpos.w > m_frustum_near_far.y && v1.cpos.w > m_frustum_near_far.y && v2.cpos.w > m_frustum_near_far.y)
+			if (v0.cpos.w > far && v1.cpos.w > far && v2.cpos.w > far)
 				return{};
 			if (v0.cpos.x > v0.cpos.w && v1.cpos.x > v1.cpos.w && v2.cpos.x > v2.cpos.w)
 				return{};
@@ -408,7 +494,7 @@ namespace TinyRenderer
 	std::vector<TRShadingPipeline::VertexData> TRRenderer::clipingSutherlandHodgeman_aux(
 		const std::vector<TRShadingPipeline::VertexData> &polygon,
 		const int &axis,
-		const int &side) const
+		const int &side)
 	{
 		std::vector<TRShadingPipeline::VertexData> inside_polygon;
 
@@ -435,20 +521,6 @@ namespace TinyRenderer
 			}
 		}
 		return inside_polygon;
-	}
-
-	bool TRRenderer::isBackFacing(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode) const
-	{
-		//Back face culling in screen space
-		if (mode == TRCullFaceMode::TR_CULL_DISABLE)
-			return false;
-
-		auto e1 = v1 - v0;
-		auto e2 = v2 - v0;
-
-		int orient = e1.x * e2.y - e1.y * e2.x;
-
-		return (mode == TRCullFaceMode::TR_CULL_BACK) ? (orient > 0) : (orient < 0);
 	}
 
 }

@@ -137,6 +137,8 @@ namespace TinyRenderer
 		if (F01 + F02 + F03 == 0)
 			return;
 
+		rasterized_fragments.reserve((bounding_max.y - bounding_min.y) * (bounding_max.x - bounding_min.x));
+
 		//Top left fill rule
 		const int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : -1);
 		const int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : -1);

@@ -26,6 +26,9 @@ namespace TinyRenderer
 		glm::vec3 vbitangent;
 	};
 
+	using TRVertexBuffer = std::vector<TRVertex>;
+	using TRIndexBuffer  = std::vector<unsigned int>;
+
 	class TRDrawableSubMesh
 	{
 	public:
@@ -50,16 +53,16 @@ namespace TinyRenderer
 		const int& getNormalMapTexId() const { return m_drawing_material.normalMapTexId; }
 		const int& getGlowMapTexId() const { return m_drawing_material.glowMapTexId; }
 
-		std::vector<TRVertex>& getVertices() { return m_vertices; }
-		std::vector<unsigned int>& getIndices() { return m_indices; }
+		TRVertexBuffer& getVertices() { return m_vertices; }
+		TRIndexBuffer& getIndices() { return m_indices; }
 		const std::vector<TRVertex>& getVertices() const { return m_vertices; }
 		const std::vector<unsigned int>& getIndices() const { return m_indices; }
 
 		void clear();
 
 	protected:
-		std::vector<TRVertex> m_vertices;
-		std::vector<unsigned int> m_indices;
+		TRVertexBuffer m_vertices;
+		TRIndexBuffer  m_indices;
 
 		struct DrawableMaterialTex
 		{
@@ -70,6 +73,8 @@ namespace TinyRenderer
 		};
 		DrawableMaterialTex m_drawing_material;
 	};
+
+	using TRDrawableBuffer = std::vector<TRDrawableSubMesh>;
 
 	class TRDrawableMesh
 	{
@@ -110,14 +115,13 @@ namespace TinyRenderer
 		TRLightingMode getLightingMode() const { return m_drawing_config.lightingMode; }
 
 		unsigned int getDrawableMaxFaceNums() const;
-		std::vector<TRDrawableSubMesh>& getDrawableSubMeshes() { return m_drawables; }
+		TRDrawableBuffer& getDrawableSubMeshes() { return m_drawables; }
 
 	protected:
 		void importMeshFromFile(const std::string &path, bool generatedMipmap = true);
 
 	protected:
-
-		std::vector<TRDrawableSubMesh> m_drawables;
+		TRDrawableBuffer m_drawables;
 
 		//Configuration
 		struct DrawableConfig

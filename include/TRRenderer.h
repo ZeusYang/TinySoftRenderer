@@ -46,26 +46,21 @@ namespace TinyRenderer
 		//Commit rendered result
 		unsigned char* commitRenderedColorBuffer();
 
-	private:
-
 		//Homogeneous space clipping - Sutherland Hodgeman algorithm
-		std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgeman(
+		static std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgeman(
 			const TRShadingPipeline::VertexData &v0,
 			const TRShadingPipeline::VertexData &v1,
-			const TRShadingPipeline::VertexData &v2) const;
+			const TRShadingPipeline::VertexData &v2,
+			const float &near, 
+			const float &far);
+
+	private:
 
 		//Cliping auxiliary functions
-		std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgeman_aux(
+		static std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgeman_aux(
 			const std::vector<TRShadingPipeline::VertexData> &polygon,
 			const int &axis, 
-			const int &side) const;
-
-		//Back face culling
-		bool isBackFacing(const glm::ivec2 &v0, const glm::ivec2 &v1, const glm::ivec2 &v2, TRCullFaceMode mode) const;
-
-		bool isDepthTestEnable() const { return m_shading_state.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE; }
-		bool isDepthWriteEnable() const { return m_shading_state.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE; }
-		bool isBackFaceCullEnable() const { return m_shading_state.trCullFaceMode != TRCullFaceMode::TR_CULL_DISABLE; }
+			const int &side);
 
 	private:
 
@@ -79,7 +74,6 @@ namespace TinyRenderer
 		glm::mat4 m_viewportMatrix = glm::mat4(1.0f);			//From ndc space    -> screen space
 
 		TRShadingState m_shading_state;
-		std::vector<std::vector<TRShadingPipeline::QuadFragments>> m_fragmentsCache;
 
 		//Near plane & far plane
 		glm::vec2 m_frustum_near_far;

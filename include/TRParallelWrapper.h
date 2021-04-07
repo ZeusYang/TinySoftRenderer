@@ -11,6 +11,8 @@
 
 namespace TinyRenderer
 {
+
+	
 	//! Execution policy tag.
 	enum class TRExecutionPolicy { TR_SERIAL, TR_PARALLEL };
 
@@ -114,7 +116,7 @@ namespace TinyRenderer
 				func(i);
 		}
 	}
-
+	
 }
 
 #endif
