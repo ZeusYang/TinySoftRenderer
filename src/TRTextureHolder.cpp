@@ -95,7 +95,10 @@ namespace TinyRenderer
 	unsigned int TRTilingTextureHolder::xyToIndex(const std::uint16_t &x, const std::uint16_t &y) const
 	{
 		//Tiling address mapping
-		return ((int)(y / blockSize) * m_widthInTiles + (int)(x / blockSize)) * blockSize_2 + y % blockSize * blockSize + x % blockSize;
+		//Note: this is naive version
+		//return ((int)(y / blockSize) * m_widthInTiles + (int)(x / blockSize)) * blockSize_2 + (y % blockSize) * blockSize + x % blockSize;
+		//Note: this is optimized version
+		return (((int)(y >> 2) * m_widthInTiles + (int)(x >> 2)) << 4) + ((y & 3) << 2) + (x & 3);
 	}
 
 	//----------------------------------------------TRZCurveTilingTextureHolder----------------------------------------------

@@ -211,7 +211,8 @@ namespace TinyRenderer
 			//{
 			//	m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
 			//}
-			m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
+			m_texHolders.push_back(std::make_shared<TRTilingTextureHolder>(current, curW, curH, channel));
+			//m_texHolders.push_back(std::make_shared<TRLinearTextureHolder>(current, curW, curH, channel));
 			std::swap(current, previous);
 		}
 

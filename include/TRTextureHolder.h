@@ -55,6 +55,7 @@ namespace TinyRenderer
 		virtual ~TRTilingTextureHolder() = default;
 
 	private:
+		//Change the blockSize, you should also change the corresponding code in xyToIndex
 		static constexpr int blockSize = 4;
 		static constexpr int blockSize_2 = 16;
 
