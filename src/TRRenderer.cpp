@@ -412,8 +412,8 @@ namespace TinyRenderer
 					//Note: Vertex shader and rasterization could be parallelized
 					tbb::make_filter<void, int>(tbb::filter_mode::parallel,
 						TBBVertexRastFilter(PIPELINE_BATCH_SIZE, startIndex, overIndex, drawCall, fragmentCache)) &
-					//Note: Fragment shaders between different faces should be executed serially out of order
-					//		Because there are race conditions when different threads try access to framebuffer
+					//Note: Fragment shaders between different faces could parallelized
+					//      because a mutex lock for framebuffer could avoid conflicts
 					tbb::make_filter<int, void>(tbb::filter_mode::parallel,
 						TBBFragmentFilter(PIPELINE_BATCH_SIZE, drawCall, fragmentCache, framebufferMutex)));
 			}
