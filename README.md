@@ -110,7 +110,7 @@ Please check out `examples/` for more details.
 
 <img src="images/MSAA4X.jpg" alt="Logo" width="100%">
 
-- Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend
+- Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend. The cpu usage could reach 100%.
 
 
 
