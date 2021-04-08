@@ -36,6 +36,21 @@ namespace TinyRenderer
 
 	};
 
+	//2x Sampling Point
+	template <typename T>
+	class TRPixelSampler2X : public TRIPixelSampler<T, 2>
+	{
+	public:
+
+		TRPixelSampler2X(const T &value) { samplers.fill(value); }
+
+		static const std::array<glm::vec2, 2> &getSamplingOffsets()
+		{
+			return { glm::vec2(-0.25, -0.25), glm::vec2(+0.25, +0.25) };
+		}
+
+	};
+
 	//4x Sampling Point
 	template <typename T>
 	class TRPixelSampler4X : public TRIPixelSampler<T, 4>
@@ -47,12 +62,14 @@ namespace TinyRenderer
 		static const std::array<glm::vec2, 4> &getSamplingOffsets()
 		{
 			//Sampling points' offset
+			//Note:Rotated grid sampling pattern (rotate 26.6 degree)
+			//Refs: https://en.wikipedia.org/wiki/Supersampling#cite_note-5
 			return
 			{
-				glm::vec2(-0.25, -0.25),
-				glm::vec2(+0.25, -0.25),
-				glm::vec2(+0.25, +0.25),
-				glm::vec2(-0.25, +0.25)
+				glm::vec2(+0.222813, -0.274487),
+				glm::vec2(+0.274487, +0.222813),
+				glm::vec2(-0.222813, +0.274487),
+				glm::vec2(-0.274487, -0.222813)
 			};
 		}
 	};
@@ -62,7 +79,9 @@ namespace TinyRenderer
 #ifdef MSAA4X
 	template<typename T>
 	using TRPixelSampler = TRPixelSampler4X<T>;
-#else 
+	//template<typename T>
+	//using TRPixelSampler = TRPixelSampler2X<T>;
+#else
 	template<typename T>
 	using TRPixelSampler = TRPixelSampler1X<T>;
 #endif
