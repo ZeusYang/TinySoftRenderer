@@ -15,12 +15,16 @@ namespace TinyRenderer
 	using MutexType = tbb::spin_mutex;				//TBB thread mutex type
 	static MutexType FACE_INDEX_MUTEX;				//Face index mutex lock
 	static constexpr int PIPELINE_BATCH_SIZE = 512; //The number of faces processed for each batch
+
 	//The cache for rasterized results. For example: the face i -> FragmentCache[i]
 	using FragmentCache = std::array<std::vector<TRShadingPipeline::QuadFragments>, PIPELINE_BATCH_SIZE>;
 
+	//----------------------------------------------DrawcallSetting----------------------------------------------
 	//Draw call setting which would be utilized in shading parallel pipeline 
-	struct DrawcallSetting final
+	class DrawcallSetting final
 	{
+	public:
+
 		const TRVertexBuffer &vertexBuffer;			//Vertex data buffer
 		const TRIndexBuffer  &indexBuffer;			//Index data buffer
 		TRShadingPipeline *shaderHandler;			//Shader handler
@@ -35,6 +39,43 @@ namespace TinyRenderer
 			viewportMatrix(viewportMat), near(np), far(fp), frameBuffer(fb) {}
 	};
 
+	//----------------------------------------------FramebufferMutex----------------------------------------------
+	//Each point (i,j) of framebuffer have its own mutex lock for avoiding accessing conflict among different threads
+	class FramebufferMutex final
+	{
+	public:
+		FramebufferMutex(int width, int height)
+			: width(width), height(height) 
+		{
+			mutexBuffer.resize(width * height, nullptr);
+			for (int i = 0; i < width * height; ++i)
+			{
+				mutexBuffer[i] = new MutexType();
+			}
+		}
+
+		~FramebufferMutex()
+		{
+			for (auto &mutex : mutexBuffer)
+			{
+				delete mutex;
+				mutex = nullptr;
+			}
+		}
+
+		MutexType &getLocker(const int &x, const int &y)
+		{
+			return *mutexBuffer[y * width + x];
+		}
+
+	public:
+		using MutexBuffer = std::vector<MutexType*>;
+		int width, height;
+		MutexBuffer mutexBuffer;
+	};
+
+	//----------------------------------------------TBBVertexRastFilter----------------------------------------------
+	//Vertex transformation, cliping, culling and rasterization.
 	class TBBVertexRastFilter final
 	{
 	public:
@@ -46,7 +87,7 @@ namespace TinyRenderer
 		{
 			//Note: process the faces in [startIndex, overIndex) parallely
 			int faceIndex = 0;
-			//Fetch the face that needs to be processed.
+			//Fetch the face index that needs to be processed.
 			{
 				//Note: a mutex lock must be herein for accessing to currIndex
 				MutexType::scoped_lock lock(FACE_INDEX_MUTEX);
@@ -145,11 +186,13 @@ namespace TinyRenderer
 		FragmentCache &fragmentCache;
 	};
 
+	//----------------------------------------------TBBFragmentFilter----------------------------------------------
+	//Fragment shader execution
 	class TBBFragmentFilter final
 	{
 	public:
-		explicit TBBFragmentFilter(int bs, const DrawcallSetting &drawcall, FragmentCache &cache)
-			: batchSize(bs), drawCall(drawcall), fragmentCache(cache) {}
+		explicit TBBFragmentFilter(int bs, const DrawcallSetting &drawcall, FragmentCache &cache, FramebufferMutex &fbMutex)
+			: batchSize(bs), drawCall(drawcall), fragmentCache(cache), framebufferMutex(fbMutex) {}
 
 		void operator()(int index) const
 		{
@@ -164,41 +207,49 @@ namespace TinyRenderer
 				if (fragment.spos.x == -1)
 					return;
 
-				//Depth testing for each sampling point (Early Z herein)
-				int cnt = 0;
-				if (drawCall.shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
+				//A mutex locker herein for (x,y) to prevent from simulatenously accessing depth buffer
 				{
-					int samplingNum = TRMaskPixelSampler::getSamplingNum();
-					const auto &coverageDepth = fragment.coverage_depth;
-#pragma unroll
-					for (int s = 0; s < samplingNum; ++s)
+					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragment.spos.x, fragment.spos.y));
+
+					//Depth testing for each sampling point (Early Z strategy herein)
+					int cnt = 0;
+					if (drawCall.shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
 					{
-						if (fragment.coverage[s] == 1 &&
-							drawCall.frameBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
+						int samplingNum = TRMaskPixelSampler::getSamplingNum();
+						const auto &coverageDepth = fragment.coverage_depth;
+#pragma unroll
+						for (int s = 0; s < samplingNum; ++s)
 						{
-							fragment.coverage[s] = 0;//Occuluded
-							++cnt;
+							if (fragment.coverage[s] == 1 &&
+								drawCall.frameBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
+							{
+								fragment.coverage[s] = 0;//Occuluded
+								++cnt;
+							}
+							else if (fragment.coverage[s] == 0)
+							{
+								++cnt;
+							}
 						}
-						else if (fragment.coverage[s] == 0)
-						{
-							++cnt;
-						}
+					}
+
+					//No valid mask, just discard.
+					if (cnt == 4)
+						return;
+
+					//Depth writing
+					if (drawCall.shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					{
+						drawCall.frameBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y,
+							fragment.coverage_depth, fragment.coverage);
 					}
 				}
 
-				//No valid mask, just discard.
-				if (cnt == 4)
-					return;
-
+				//Execute fragment shader, and save the result to frame buffer
 				glm::vec4 fragColor;
 				drawCall.shaderHandler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
 				drawCall.frameBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
 				drawCall.frameBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
-				if (drawCall.shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-				{
-					drawCall.frameBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y,
-						fragment.coverage_depth, fragment.coverage);
-				}
 			};
 
 			//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
@@ -227,9 +278,10 @@ namespace TinyRenderer
 		int batchSize;
 		const DrawcallSetting &drawCall;
 		FragmentCache &fragmentCache;
-
+		FramebufferMutex &framebufferMutex;
 	};
 
+	//----------------------------------------------TRRenderer----------------------------------------------
 
 	TRRenderer::TRRenderer(int width, int height)
 		: m_backBuffer(nullptr), m_frontBuffer(nullptr)
@@ -332,8 +384,10 @@ namespace TinyRenderer
 		m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
 		m_shader_handler->setShininess(drawable->getSpecularExponent());
 
+		//Setting for drawcall
 		static int ntokens = tbb::this_task_arena::max_concurrency() * 128;
 		static FragmentCache fragmentCache;
+		static FramebufferMutex framebufferMutex(m_backBuffer->getWidth(), m_backBuffer->getHeight());
 
 		for (size_t s = 0; s < submeshes.size(); ++s)
 		{
@@ -361,7 +415,7 @@ namespace TinyRenderer
 					//Note: Fragment shaders between different faces should be executed serially out of order
 					//		Because there are race conditions when different threads try access to framebuffer
 					tbb::make_filter<int, void>(tbb::filter_mode::parallel,
-						TBBFragmentFilter(PIPELINE_BATCH_SIZE, drawCall, fragmentCache)));
+						TBBFragmentFilter(PIPELINE_BATCH_SIZE, drawCall, fragmentCache, framebufferMutex)));
 			}
 
 		}

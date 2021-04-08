@@ -41,6 +41,8 @@ namespace TinyRenderer
 		const TRColorBuffer &resolve();
 
 	private:
+	
+
 		TRMaskBuffer m_maskBuffer;			   // Coverage mask
 		TRDepthBuffer m_depthBuffer;           // Z-buffer
 		TRColorBuffer m_colorBuffer;		   // Color buffer
