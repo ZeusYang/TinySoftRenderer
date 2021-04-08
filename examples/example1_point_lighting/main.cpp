@@ -38,7 +38,7 @@ int main(int argc, char* args[])
 	constexpr int width =  666;
 	constexpr int height = 500;
 
-	TRWindowsApp::ptr winApp = TRWindowsApp::getInstance(width, height, "TinySoftRenderer-By Yangwc");
+	TRWindowsApp::ptr winApp = TRWindowsApp::getInstance(width, height, "TinySoftRenderer-By yangwc");
 
 	if (winApp == nullptr)
 	{
