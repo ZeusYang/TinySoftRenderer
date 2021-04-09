@@ -129,6 +129,7 @@ namespace TinyRenderer
 			}
 		}
 	}
+
 	void TRFrameBuffer::writeColorWithMaskAlphaBlending(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask)
 	{
 		if (x >= m_width || y >= m_height)
