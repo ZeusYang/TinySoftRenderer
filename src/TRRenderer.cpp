@@ -207,7 +207,7 @@ namespace TinyRenderer
 				if (fragment.spos.x == -1)
 					return;
 
-				auto coverage = fragment.coverage;
+				auto &coverage = fragment.coverage;
 				const auto &fragCoord = fragment.spos;
 				auto &framebuffer = drawCall.frameBuffer;
 				const auto &shadingState = drawCall.shadingState;
@@ -241,17 +241,29 @@ namespace TinyRenderer
 					//No valid mask, just discard.
 					if (cnt == 4)
 						return;
-
-					//Depth writing
-					if (shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-					{
-						framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.coverage_depth, coverage);
-					}
 				}
 
 				//Execute fragment shader, and save the result to frame buffer
 				glm::vec4 fragColor;
 				drawCall.shaderHandler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+
+				//Alpha to coverage
+				//Note: alpha to coverage only work with MSAA
+				//Refs: http://www.zwqxin.com/archives/opengl/talk-about-alpha-to-coverage.html
+				const int samplingNum = TRMaskPixelSampler::getSamplingNum();
+				if (shadingState.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE && samplingNum >= 4)
+				{
+					int num_cancle = samplingNum  - int(samplingNum * fragColor.a);
+					//None left, just discard in advance
+					if (num_cancle == samplingNum)
+					{
+						return;
+					}
+					for (int c = 0; c < num_cancle; ++c)
+					{
+						coverage[c] = 0;
+					}
+				}
 
 				//Save the rendered result to frame buffer
 				{
@@ -260,15 +272,19 @@ namespace TinyRenderer
 					switch (shadingState.trAlphaBlendMode)
 					{
 					case TRAlphaBlendingMode::TR_ALPHA_DISABLE://No alpha blending
+					case TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE://Or alpha to coverage
 						framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
 						break;
 					case TRAlphaBlendingMode::TR_ALPHA_BLENDING://Alpha blending
 						framebuffer->writeColorWithMaskAlphaBlending(fragCoord.x, fragCoord.y, fragColor, coverage);
 						break;
-					case TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE:
-						break;
 					default:
 						framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
+					}
+					//Depth writing
+					if (shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					{
+						framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.coverage_depth, coverage);
 					}
 				}
 			};
@@ -408,8 +424,8 @@ namespace TinyRenderer
 		m_shader_handler->setTransparency(drawable->getTransparency());
 
 		//Note: For those drawables which need the alpha blending, we should make sure the faces rendered in a fixed order 
-		tbb::filter_mode executeMopde = m_shading_state.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_BLENDING ?
-			tbb::filter_mode::serial_in_order : tbb::filter_mode::parallel;
+		tbb::filter_mode executeMopde = m_shading_state.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_DISABLE ?
+			tbb::filter_mode::parallel : tbb::filter_mode::serial_in_order;
 
 		//Setting for drawcall
 		static int ntokens = tbb::this_task_arena::max_concurrency() * 128;

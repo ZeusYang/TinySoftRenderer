@@ -50,7 +50,7 @@ int main(int argc, char* args[])
 
 	//Load scene
 	TRSceneParser parser;
-	parser.parse("../../scenes/alpha.scene", renderer, generatedMipmap);
+	parser.parse("../../scenes/alpha2coverage.scene", renderer, generatedMipmap);
 
 	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
 		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));

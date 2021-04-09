@@ -178,6 +178,7 @@ namespace TinyRenderer
 	const TRColorBuffer &TRFrameBuffer::resolve()
 	{
 		//MSAA Resolve according to coverage mask
+		//Refs: http://www.zwqxin.com/archives/opengl/talk-about-alpha-to-coverage.html
 		parallelFor((size_t)0, (size_t)(m_width * m_height), [&](const size_t &index)
 		{
 			auto &currentSamper = m_colorBuffer[index];
