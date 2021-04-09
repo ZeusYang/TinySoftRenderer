@@ -103,11 +103,10 @@ Please check out `examples/` for more details.
 - Multi sampling anti-aliasing (MSAA 4X)
 
 <center><img src="images/MSAA4X.jpg" alt="Logo" width="100%"></center>
-- Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend. The cpu usage could reach 100%.
+- Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend. The cpu usage could reach to 100%.
 - Alpha blending
 
 <center><img src="images/alphablending.jpg" alt="Logo" width="70%"></center>
-
 ## ToDo
 
 - Coverage to alpha
