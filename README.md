@@ -108,9 +108,9 @@ Please check out `examples/` for more details.
 
 <img src="images/MSAA4X.jpg" alt="Logo" width="100%">
 
-- Alpha blending
+- Alpha blending, and alpha to coverage (order independent transparency).
 
-<img src="images/alphablending.jpg" alt="Logo" width="70%">
+<img src="images/transparent.jpg" alt="Logo" width="100%">
 
 - Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend. The cpu usage could reach to 100%.
 
@@ -118,11 +118,10 @@ Please check out `examples/` for more details.
 
 ## ToDo
 
-- Coverage to alpha
-
 - More light source type
 
   
+
 
 
 ## License
