@@ -157,8 +157,13 @@ namespace TinyRenderer
 
 				{
 					std::getline(sceneFile, line);
-					bool cullface = parseBool(line);
-					drawable->setCullfaceMode(cullface ? TRCullFaceMode::TR_CULL_BACK : TRCullFaceMode::TR_CULL_DISABLE);
+					std::string cullface = parseStr(line);
+					if (cullface == "back")
+						drawable->setCullfaceMode(TRCullFaceMode::TR_CULL_BACK);
+					else if (cullface == "front")
+						drawable->setCullfaceMode(TRCullFaceMode::TR_CULL_FRONT);
+					else
+						drawable->setCullfaceMode(TRCullFaceMode::TR_CULL_DISABLE);
 				}
 
 				{
@@ -173,9 +178,27 @@ namespace TinyRenderer
 					drawable->setDepthwriteMode(depthwrite ? TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE : TRDepthWriteMode::TR_DEPTH_WRITE_DISABLE);
 				}
 
+				{
+					std::getline(sceneFile, line);
+					std::string alphablend = parseStr(line);
+					if (alphablend == "alphablend")
+						drawable->setAlphablendMode(TRAlphaBlendingMode::TR_ALPHA_BLENDING);
+					else if (alphablend == "alpha2coverage")
+						drawable->setAlphablendMode(TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE);
+					else
+						drawable->setAlphablendMode(TRAlphaBlendingMode::TR_ALPHA_DISABLE);
+				}
+
 				//Material
 				std::getline(sceneFile, line);
 				{
+					{
+						float alpha;
+						std::getline(sceneFile, line);
+						alpha = parseFloat(line);
+						drawable->setTransparency(alpha);
+					}
+
 					{
 						float ns;
 						std::getline(sceneFile, line);

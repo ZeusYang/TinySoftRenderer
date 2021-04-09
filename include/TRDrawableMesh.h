@@ -89,6 +89,7 @@ namespace TinyRenderer
 		void setCullfaceMode(TRCullFaceMode mode) { m_drawing_config.cullfaceMode = mode; }
 		void setDepthtestMode(TRDepthTestMode mode) { m_drawing_config.depthtestMode = mode; }
 		void setDepthwriteMode(TRDepthWriteMode mode) { m_drawing_config.depthwriteMode = mode; }
+		void setAlphablendMode(TRAlphaBlendingMode mode) { m_drawing_config.alphaBlendMode = mode; }
 		void setModelMatrix(const glm::mat4& mat) { m_drawing_config.modelMatrix = mat; }
 		void setLightingMode(TRLightingMode mode) { m_drawing_config.lightingMode = mode; }
 
@@ -99,6 +100,7 @@ namespace TinyRenderer
 		void setSpecularCoff(const glm::vec3 &cof) { m_drawing_material.kS = cof; }
 		void setEmissionCoff(const glm::vec3 &cof) { m_drawing_material.kE = cof; }
 		void setSpecularExponent(const float &cof) { m_drawing_material.shininess = cof; }
+		void setTransparency(const float &alpha) { m_drawing_material.transparency = alpha; }
 
 		//Getter
 		const glm::vec3& getAmbientCoff() const { return m_drawing_material.kA; }
@@ -106,11 +108,13 @@ namespace TinyRenderer
 		const glm::vec3& getSpecularCoff() const { return m_drawing_material.kS; }
 		const glm::vec3& getEmissionCoff() const { return m_drawing_material.kE; }
 		const float& getSpecularExponent() const { return m_drawing_material.shininess; }
+		const float& getTransparency() const { return m_drawing_material.transparency; }
 
 		TRPolygonMode getPolygonMode() const { return m_drawing_config.polygonMode; }
 		TRCullFaceMode getCullfaceMode() const { return m_drawing_config.cullfaceMode; }
 		TRDepthTestMode getDepthtestMode() const { return m_drawing_config.depthtestMode; }
 		TRDepthWriteMode getDepthwriteMode() const { return m_drawing_config.depthwriteMode; }
+		TRAlphaBlendingMode getAlphablendMode() const { return m_drawing_config.alphaBlendMode; }
 		const glm::mat4& getModelMatrix() const { return m_drawing_config.modelMatrix; }
 		TRLightingMode getLightingMode() const { return m_drawing_config.lightingMode; }
 
@@ -130,6 +134,7 @@ namespace TinyRenderer
 			TRCullFaceMode cullfaceMode = TRCullFaceMode::TR_CULL_BACK;
 			TRDepthTestMode depthtestMode = TRDepthTestMode::TR_DEPTH_TEST_ENABLE;
 			TRDepthWriteMode depthwriteMode = TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE;
+			TRAlphaBlendingMode alphaBlendMode = TRAlphaBlendingMode::TR_ALPHA_DISABLE;
 			TRLightingMode lightingMode = TRLightingMode::TR_LIGHTING_ENABLE;
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 		};
@@ -143,6 +148,7 @@ namespace TinyRenderer
 			glm::vec3 kS = glm::vec3(0.0f);//Specular coefficient
 			glm::vec3 kE = glm::vec3(0.0f);//Emission
 			float shininess = 1.0f;		   //Specular highlight exponment
+			float transparency = 1.0f;	   //Transparency
 		};
 		DrawableMaterialCof m_drawing_material;
 

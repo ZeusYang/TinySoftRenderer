@@ -9,6 +9,8 @@
 
 namespace TinyRenderer
 {
+	using uint = unsigned int;
+
 	class TRFrameBuffer final
 	{
 	public:
@@ -28,14 +30,15 @@ namespace TinyRenderer
 		const TRDepthBuffer &getDepthBuffer() const { return m_depthBuffer; }
 		const TRColorBuffer &getColorBuffer() const { return m_colorBuffer; }
 
-		float readDepth(const unsigned int &x, const unsigned int &y, const unsigned int &i) const;
-		TRPixelRGBA readColor(const unsigned int &x, const unsigned int &y, const unsigned int &i) const;
+		float readDepth(const uint &x, const uint &y, const uint &i) const;
+		TRPixelRGBA readColor(const uint &x, const uint &y, const uint &i) const;
 
-		void writeDepth(const unsigned int &x, const unsigned int &y, const unsigned int &i, const float &value);
-		void writeColor(const unsigned int &x, const unsigned int &y, const unsigned int &i, const glm::vec4 &color);
-		void writeCoverageMask(const unsigned int &x, const unsigned int &y, const TRMaskPixelSampler &mask);
-		void writeColorWithMask(const unsigned int &x, const unsigned int &y, const glm::vec4 &color, const TRMaskPixelSampler &mask);
-		void writeDepthWithMask(const unsigned int &x, const unsigned int &y, const TRDepthPixelSampler &depth, const TRMaskPixelSampler &mask);
+		void writeDepth(const uint &x, const uint &y, const uint &i, const float &value);
+		void writeColor(const uint &x, const uint &y, const uint &i, const glm::vec4 &color);
+		void writeCoverageMask(const uint &x, const uint &y, const TRMaskPixelSampler &mask);
+		void writeColorWithMask(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask);
+		void writeColorWithMaskAlphaBlending(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask);
+		void writeDepthWithMask(const uint &x, const uint &y, const TRDepthPixelSampler &depth, const TRMaskPixelSampler &mask);
 
 		//MSAA resolve
 		const TRColorBuffer &resolve();

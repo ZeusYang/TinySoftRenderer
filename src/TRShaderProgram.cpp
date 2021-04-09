@@ -69,7 +69,7 @@ namespace TinyRenderer
 			glm::vec3(0.25f, 0.25f, 0.25f),
 			glm::vec3(0.125f, 0.125f, 0.125f)
 		};
-		auto tex = TRShadingPipeline::getTexture2D(m_diffuse_tex_id);
+		auto& tex = TRShadingPipeline::getTexture2D(m_diffuse_tex_id);
 		int w = 1000, h = 100;
 		if (tex != nullptr)
 		{
@@ -161,14 +161,15 @@ namespace TinyRenderer
 
 		//Fetch the corresponding color 
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy)) : m_kd;
+		glm::vec4 difftexcolor = (m_diffuse_tex_id != -1) ? texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy) : glm::vec4(1.0f);
+		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(difftexcolor) : m_kd;
 		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
 		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
 
 		//No lighting
 		if (!m_lighting_enable)
 		{
-			fragColor = glm::vec4(glow_color, 1.0f);
+			fragColor = glm::vec4(glow_color, difftexcolor.a);
 			return;
 		}
 
@@ -207,7 +208,7 @@ namespace TinyRenderer
 			fragColor.z += (ambient.z + diffuse.z + specular.z) * attenuation;
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y, fragColor.z + glow_color.z, 1.0f);
+		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y, fragColor.z + glow_color.z, difftexcolor.a);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -306,4 +307,20 @@ namespace TinyRenderer
 		}
 	}
 
+	//----------------------------------------------TRAlphaBlendingShadingPipeline----------------------------------------------
+
+	void TRAlphaBlendingShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
+		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
+	{
+		//Default color
+		fragColor = glm::vec4(m_ke, 1.0f);
+
+		if (m_diffuse_tex_id != -1)
+		{
+			fragColor = texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy);
+		}
+
+		fragColor.a *= m_transparency;
+		//fragColor.a = 0;
+	}
 }

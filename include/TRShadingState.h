@@ -54,13 +54,20 @@ namespace TinyRenderer
 		TR_LIGHTING_ENABLE
 	};
 
+	enum TRAlphaBlendingMode
+	{
+		TR_ALPHA_DISABLE,
+		TR_ALPHA_BLENDING,
+		TR_ALPHA_TO_COVERAGE
+	};
+
 	class TRShadingState
 	{
 	public:
-		TRCullFaceMode trCullFaceMode		= TRCullFaceMode::TR_CULL_BACK;
-		TRDepthTestMode trDepthTestMode		= TRDepthTestMode::TR_DEPTH_TEST_ENABLE;
-		TRDepthWriteMode trDepthWriteMode	= TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE;
-
+		TRCullFaceMode trCullFaceMode		 = TRCullFaceMode::TR_CULL_BACK;
+		TRDepthTestMode trDepthTestMode		 = TRDepthTestMode::TR_DEPTH_TEST_ENABLE;
+		TRDepthWriteMode trDepthWriteMode	 = TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE;
+		TRAlphaBlendingMode trAlphaBlendMode = TRAlphaBlendingMode::TR_ALPHA_DISABLE;
 	};
 
 	//Point lights

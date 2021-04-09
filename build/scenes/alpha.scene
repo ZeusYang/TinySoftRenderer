@@ -1,0 +1,180 @@
+Camera:
+	Eye 1.7 0.3 2.3
+	Focus 0.0 0.0 0.0
+	Up 0.0 1.0 0.0
+
+Frustum:
+	Fovy 45.0
+	Near 0.001
+	Nar 1000.0
+		
+Entity:
+	Name Floor
+	Path ../../models/floor/floor.obj
+    Translate 0.0 0.0 0.0
+	Rotation 0.0 0.0 0.0
+	Scale 1.85 1.0 1.85
+	Lighting: true
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 1.2000 1.2000 1.2000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 0.0000 0.0000		
+
+Entity:
+	Name Lawn1
+	Path ../../models/grass/Grass.fbx
+    Translate -0.8 -0.5 -0.5
+	Rotation 0.0 0.0 0.0
+	Scale 0.5 0.5 0.5
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000	
+		
+Entity:
+	Name Lawn2
+	Path ../../models/grass/Grass.fbx
+    Translate 0.6 -0.7 -0.5
+	Rotation 0.0 0.0 0.0
+	Scale 0.3 0.3 0.3
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000
+
+Entity:
+	Name Lawn3
+	Path ../../models/grass/Grass.fbx
+    Translate 0.1 -0.7 -0.3
+	Rotation 0.0 0.0 0.0
+	Scale 0.3 0.3 0.3
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000
+		
+Entity:
+	Name Lawn4
+	Path ../../models/grass/Grass.fbx
+    Translate 0.0 -0.7 0.0
+	Rotation 0.0 0.0 0.0
+	Scale 0.3 0.3 0.3
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000
+
+Entity:
+	Name Lawn5
+	Path ../../models/grass/Grass.fbx
+    Translate -0.7 -0.7 +0.5
+	Rotation 0.0 0.0 0.0
+	Scale 0.3 0.3 0.3
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000
+		
+Entity:
+	Name Lawn6
+	Path ../../models/grass/Grass.fbx
+    Translate +1.0 -0.6 +0.5
+	Rotation 0.0 0.0 0.0
+	Scale 0.4 0.4 0.4
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000
+		
+Entity:
+	Name Lawn7
+	Path ../../models/grass/Grass.fbx
+    Translate -0.1 -0.6 +1.0
+	Rotation 0.0 0.0 0.0
+	Scale 0.4 0.4 0.4
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 1.0000 0.0000
+		
+Entity:
+	Name Mary
+	Path ../../models/mary/Marry.obj
+    Translate 0.7 -1.0 1.2
+	Rotation 0.0 0.0 0.0
+	Scale 0.5 0.5 0.5
+	Lighting: true
+	Cullface: enable
+	Depthtest: true
+	Depthwrite: false
+	Alphablend: alphablend
+	Material:
+		Transparency 0.8
+		Ns 0.000000
+		Ka 1.000000 1.000000 1.000000
+		Kd 0.800000 0.800000 0.800000
+		Ks 0.000000 0.000000 0.000000
+		Ke 0.000000 0.000000 0.000000

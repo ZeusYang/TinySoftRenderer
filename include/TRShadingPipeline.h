@@ -112,6 +112,7 @@ namespace TinyRenderer
 		void setDiffuseCoef(const glm::vec3 &kd) { m_kd = kd; }
 		void setSpecularCoef(const glm::vec3 &ks) { m_ks = ks; }
 		void setEmissionColor(const glm::vec3 &ke) { m_ke = ke; }
+		void setTransparency(const float &alpha) { m_transparency = alpha; }
 		void setDiffuseTexId(const int &id) { m_diffuse_tex_id = id; }
 		void setSpecularTexId(const int &id) { m_specular_tex_id = id; }
 		void setNormalTexId(const int &id) { m_normal_tex_id = id; }
@@ -159,6 +160,7 @@ namespace TinyRenderer
 		glm::vec3 m_kd = glm::vec3(1.0f);
 		glm::vec3 m_ks = glm::vec3(0.0f);
 		glm::vec3 m_ke = glm::vec3(0.0f);
+		float m_transparency = 1.0f;
 		float m_shininess = 0.0f;
 		int m_diffuse_tex_id = -1;
 		int m_specular_tex_id = -1;

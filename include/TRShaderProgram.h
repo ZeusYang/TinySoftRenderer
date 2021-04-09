@@ -89,6 +89,17 @@ namespace TinyRenderer
 		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
 	};
+
+	class TRAlphaBlendingShadingPipeline final : public TR3DShadingPipeline
+	{
+	public:
+		typedef std::shared_ptr<TRAlphaBlendingShadingPipeline> ptr;
+
+		virtual ~TRAlphaBlendingShadingPipeline() = default;
+
+		virtual void fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
+			const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const override;
+	};
 }
 
 #endif

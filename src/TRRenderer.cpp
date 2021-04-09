@@ -207,26 +207,31 @@ namespace TinyRenderer
 				if (fragment.spos.x == -1)
 					return;
 
-				//A mutex locker herein for (x,y) to prevent from simulatenously accessing depth buffer
+				auto coverage = fragment.coverage;
+				const auto &fragCoord = fragment.spos;
+				auto &framebuffer = drawCall.frameBuffer;
+				const auto &shadingState = drawCall.shadingState;
+
+				//A mutex locker herein for (x,y) to prevent from simultanenously accessing depth buffer at the same place
 				{
-					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragment.spos.x, fragment.spos.y));
+					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
 
 					//Depth testing for each sampling point (Early Z strategy herein)
 					int cnt = 0;
-					if (drawCall.shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
+					if (shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
 					{
 						int samplingNum = TRMaskPixelSampler::getSamplingNum();
 						const auto &coverageDepth = fragment.coverage_depth;
 #pragma unroll
 						for (int s = 0; s < samplingNum; ++s)
 						{
-							if (fragment.coverage[s] == 1 &&
-								drawCall.frameBuffer->readDepth(fragment.spos.x, fragment.spos.y, s) > coverageDepth[s])
+							if (coverage[s] == 1 &&
+								framebuffer->readDepth(fragCoord.x, fragCoord.y, s) > coverageDepth[s])
 							{
-								fragment.coverage[s] = 0;//Occuluded
+								coverage[s] = 0;//Occuluded
 								++cnt;
 							}
-							else if (fragment.coverage[s] == 0)
+							else if (coverage[s] == 0)
 							{
 								++cnt;
 							}
@@ -238,18 +243,34 @@ namespace TinyRenderer
 						return;
 
 					//Depth writing
-					if (drawCall.shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+					if (shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
 					{
-						drawCall.frameBuffer->writeDepthWithMask(fragment.spos.x, fragment.spos.y,
-							fragment.coverage_depth, fragment.coverage);
+						framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.coverage_depth, coverage);
 					}
 				}
 
 				//Execute fragment shader, and save the result to frame buffer
 				glm::vec4 fragColor;
 				drawCall.shaderHandler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
-				drawCall.frameBuffer->writeCoverageMask(fragment.spos.x, fragment.spos.y, fragment.coverage);
-				drawCall.frameBuffer->writeColorWithMask(fragment.spos.x, fragment.spos.y, fragColor, fragment.coverage);
+
+				//Save the rendered result to frame buffer
+				{
+					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
+					framebuffer->writeCoverageMask(fragCoord.x, fragCoord.y, coverage);
+					switch (shadingState.trAlphaBlendMode)
+					{
+					case TRAlphaBlendingMode::TR_ALPHA_DISABLE://No alpha blending
+						framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
+						break;
+					case TRAlphaBlendingMode::TR_ALPHA_BLENDING://Alpha blending
+						framebuffer->writeColorWithMaskAlphaBlending(fragCoord.x, fragCoord.y, fragColor, coverage);
+						break;
+					case TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE:
+						break;
+					default:
+						framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
+					}
+				}
 			};
 
 			//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
@@ -374,6 +395,7 @@ namespace TinyRenderer
 		m_shading_state.trCullFaceMode = drawable->getCullfaceMode();
 		m_shading_state.trDepthTestMode = drawable->getDepthtestMode();
 		m_shading_state.trDepthWriteMode = drawable->getDepthwriteMode();
+		m_shading_state.trAlphaBlendMode = drawable->getAlphablendMode();
 
 		//Setup the shading options
 		m_shader_handler->setModelMatrix(drawable->getModelMatrix());
@@ -383,6 +405,11 @@ namespace TinyRenderer
 		m_shader_handler->setSpecularCoef(drawable->getSpecularCoff());
 		m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
 		m_shader_handler->setShininess(drawable->getSpecularExponent());
+		m_shader_handler->setTransparency(drawable->getTransparency());
+
+		//Note: For those drawables which need the alpha blending, we should make sure the faces rendered in a fixed order 
+		tbb::filter_mode executeMopde = m_shading_state.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_BLENDING ?
+			tbb::filter_mode::serial_in_order : tbb::filter_mode::parallel;
 
 		//Setting for drawcall
 		static int ntokens = tbb::this_task_arena::max_concurrency() * 128;
@@ -410,11 +437,11 @@ namespace TinyRenderer
 				int overIndex = glm::min(f + PIPELINE_BATCH_SIZE, faceNum);
 				tbb::parallel_pipeline(ntokens, //Number of tokens
 					//Note: Vertex shader and rasterization could be parallelized
-					tbb::make_filter<void, int>(tbb::filter_mode::parallel,
+					tbb::make_filter<void, int>(executeMopde,
 						TBBVertexRastFilter(PIPELINE_BATCH_SIZE, startIndex, overIndex, drawCall, fragmentCache)) &
 					//Note: Fragment shaders between different faces could parallelized
 					//      because a mutex lock for framebuffer could avoid conflicts
-					tbb::make_filter<int, void>(tbb::filter_mode::parallel,
+					tbb::make_filter<int, void>(executeMopde,
 						TBBFragmentFilter(PIPELINE_BATCH_SIZE, drawCall, fragmentCache, framebufferMutex)));
 			}
 

@@ -50,10 +50,11 @@ int main(int argc, char* args[])
 
 	//Load scene
 	TRSceneParser parser;
-	//parser.parse("../../models/diablo3_pose/diablo3.scene", renderer, generatedMipmap);
-	//parser.parse("../../models/mountain/terrain.scene", renderer, generatedMipmap);
-	parser.parse("../../models/mary/Mary.scene", renderer, generatedMipmap);
-	//parser.parse("../../models/camping-buscraft-ambience/camping.scene", renderer, generatedMipmap);
+	//parser.parse("../../scenes/diablo3.scene", renderer, generatedMipmap);
+	//parser.parse("../../scenes/terrain.scene", renderer, generatedMipmap);
+	parser.parse("../../scenes/mary.scene", renderer, generatedMipmap);
+	//parser.parse("../../scenes/reedemer.scene", renderer, generatedMipmap);
+	//parser.parse("../../scenes/camping.scene", renderer, generatedMipmap);
 
 	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
 		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));

@@ -15,17 +15,17 @@ namespace TinyRenderer
 		m_colorBuffer.resize(m_width * m_height, trBlack);
 	}
 
-	float TRFrameBuffer::readDepth(const unsigned int &x, const unsigned int &y, const unsigned int &i) const
+	float TRFrameBuffer::readDepth(const uint &x, const uint &y, const unsigned int &i) const
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
 			return 0.0f;
 		//Note: i is the sampling point index
 		return m_depthBuffer[y*m_width + x][i];
 	}
 
-	TRPixelRGBA TRFrameBuffer::readColor(const unsigned int &x, const unsigned int &y, const unsigned int &i) const
+	TRPixelRGBA TRFrameBuffer::readColor(const uint &x, const uint &y, const uint &i) const
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
 			return trBlack;
 		//Note: i is the sampling point index
 		return m_colorBuffer[y*m_width + x][i];
@@ -71,17 +71,17 @@ namespace TinyRenderer
 		});
 	}
 
-	void TRFrameBuffer::writeDepth(const unsigned int &x, const unsigned int &y, const unsigned int &i, const float &value)
+	void TRFrameBuffer::writeDepth(const uint &x, const uint &y, const uint &i, const float &value)
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
 			return;
 		//Note: i is the sampling point index
 		m_depthBuffer[y * m_width + x][i] = value;
 	}
 
-	void TRFrameBuffer::writeColor(const unsigned int &x, const unsigned int &y, const unsigned int &i, const glm::vec4 &color)
+	void TRFrameBuffer::writeColor(const uint &x, const uint &y, const uint &i, const glm::vec4 &color)
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
 			return;
 		//Note: i is the sampling point index
 		TRPixelRGBA value;
@@ -93,11 +93,12 @@ namespace TinyRenderer
 		m_colorBuffer[index][i] = value;
 	}
 
-	void TRFrameBuffer::writeCoverageMask(const unsigned int &x, const unsigned int &y, const TRMaskPixelSampler &mask)
+	void TRFrameBuffer::writeCoverageMask(const uint &x, const uint &y, const TRMaskPixelSampler &mask)
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
 			return;
 		int index = y * m_width + x;
+#pragma unroll
 		for (int s = 0; s < mask.getSamplingNum(); ++s)
 		{
 			if (mask[s] == 1)
@@ -107,9 +108,9 @@ namespace TinyRenderer
 		}
 	}
 
-	void TRFrameBuffer::writeColorWithMask(const unsigned int &x, const unsigned int &y, const glm::vec4 &color, const TRMaskPixelSampler &mask)
+	void TRFrameBuffer::writeColorWithMask(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask)
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
 			return;
 		TRPixelRGBA value;
 		value[0] = static_cast<unsigned char>(color.x * 255);//RED
@@ -119,6 +120,7 @@ namespace TinyRenderer
 
 		int index = y * m_width + x;
 		//Only write color if the corresponding mask equals to 1
+#pragma unroll
 		for (int s = 0; s < mask.getSamplingNum(); ++s)
 		{
 			if (mask[s] == 1)
@@ -127,13 +129,42 @@ namespace TinyRenderer
 			}
 		}
 	}
-
-	void TRFrameBuffer::writeDepthWithMask(const unsigned int &x, const unsigned int &y, const TRDepthPixelSampler &depth, const TRMaskPixelSampler &mask)
+	void TRFrameBuffer::writeColorWithMaskAlphaBlending(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask)
 	{
-		if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+		if (x >= m_width || y >= m_height)
+			return;
+		TRPixelRGBA value;
+		value[0] = static_cast<unsigned char>(color.x * 255);//RED
+		value[1] = static_cast<unsigned char>(color.y * 255);//GREEN
+		value[2] = static_cast<unsigned char>(color.z * 255);//BLUE
+		value[3] = static_cast<unsigned char>(255 * color.w);//ALPHA
+
+		//For alpha blending
+		const float src_alpha = color.a;
+		const float des_alpha = 1.0f - src_alpha;
+
+		int index = y * m_width + x;
+		//Only write color if the corresponding mask equals to 1
+#pragma unroll
+		for (int s = 0; s < mask.getSamplingNum(); ++s)
+		{
+			if (mask[s] == 1)
+			{
+				m_colorBuffer[index][s][0] = value[0] * src_alpha + m_colorBuffer[index][s][0] * des_alpha;
+				m_colorBuffer[index][s][1] = value[1] * src_alpha + m_colorBuffer[index][s][1] * des_alpha;
+				m_colorBuffer[index][s][2] = value[2] * src_alpha + m_colorBuffer[index][s][2] * des_alpha;
+				m_colorBuffer[index][s][3] = value[3];
+			}
+		}
+	}
+
+	void TRFrameBuffer::writeDepthWithMask(const uint &x, const uint &y, const TRDepthPixelSampler &depth, const TRMaskPixelSampler &mask)
+	{
+		if (x >= m_width || y >= m_height)
 			return;
 		int index = y * m_width + x;
 		//Only write depth if the corresponding mask equals to 1
+#pragma unroll
 		for (int s = 0; s < mask.getSamplingNum(); ++s)
 		{
 			if (mask[s] == 1)
@@ -152,6 +183,7 @@ namespace TinyRenderer
 			const auto &currentMaskSampler = m_maskBuffer[index];
 			glm::vec4 sum(0.0f);
 			//Average the sampling color for each shaded pixel.
+#pragma unroll
 			for (int s = 0; s < currentSamper.getSamplingNum(); ++s)
 			{
 				if (currentMaskSampler[s] == 1)
@@ -164,9 +196,9 @@ namespace TinyRenderer
 			}
 			sum /= currentSamper.getSamplingNum();
 			TRPixelRGBA value;
-			value[0] = static_cast<unsigned char>(sum.x);
-			value[1] = static_cast<unsigned char>(sum.y);
-			value[2] = static_cast<unsigned char>(sum.z);
+			value[0] = static_cast<unsigned char>(glm::min(sum.x, 255.0f));
+			value[1] = static_cast<unsigned char>(glm::min(sum.y, 255.0f));
+			value[2] = static_cast<unsigned char>(glm::min(sum.z, 255.0f));
 			value[3] = static_cast<unsigned char>(sum.w);
 			currentSamper[0] = value;
 			
