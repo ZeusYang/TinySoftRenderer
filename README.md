@@ -20,8 +20,6 @@
 
 The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. 
 
-<img src="images/demo.jpg" alt="Logo" width="100%">
-
 
 
 ### Built With
@@ -82,17 +80,14 @@ Please check out `examples/` for more details.
 
 <img src="images/raster.jpg" alt="Logo" width="100%">
 
-- Texturing, Nearest texture sampling, Bilinear texture sampling
+- Texture mapping, Nearest texture sampling, Bilinear texture sampling
 
-<img src="images/texture.jpg" alt="Logo" width="100%">
-
-- Phong/Blinn-Phong shading, point lights
+- Phong/Blinn-Phong lighting
+- Light source: point light, spot light, and direcitonal light
 
 <img src="images/lighting.jpg" alt="Logo" width="100%">
 
 - Tiling and morton curve memory layout for texture. (But it turns out that high-frequency address mapping is also time-consuming...) Refs: [link1](https://en.wikipedia.org/wiki/Z-order_curve), [link2](https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/)
-
-<img src="images/zcurve.jpg" alt="Logo" width="50%">
 
 - Mipmap texture, trilinear sampling. Refs: [link1](http://www.aclockworkberry.com/shader-derivative-functions/#footnote_3_1104), [link2](https://en.wikipedia.org/wiki/Mipmap)
 

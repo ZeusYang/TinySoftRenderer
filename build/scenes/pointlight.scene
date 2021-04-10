@@ -12,19 +12,19 @@ PointLight:
 	Name readLight
 	Lightpos 0.0 -0.05 1.2
 	Attenuation 1.0 0.7 1.8
-	Lightcolor 1.9 0.0 0.0
+	Lightcolor 2.5 0.0 0.0
 	
 PointLight:
 	Name greenLight
 	Lightpos 0.87 -0.05 -0.87
 	Attenuation 1.0 0.7 1.8
-	Lightcolor 0.0 1.9 0.0
+	Lightcolor 0.0 2.5 0.0
 	
 PointLight:
 	Name blueLight
 	Lightpos -0.83 -0.05 -0.83
 	Attenuation 1.0 0.7 1.8
-	Lightcolor 0.0 0.0 1.9
+	Lightcolor 0.0 0.0 2.5
 
 Entity:
 	Name Mary
