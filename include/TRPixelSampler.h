@@ -70,10 +70,6 @@ namespace TinyRenderer
 				glm::vec2(+0.375f, -0.125f),
 				glm::vec2(-0.125f, -0.375f),
 				glm::vec2(-0.375f, +0.125f)
-				//glm::vec2(+0.625f, +0.875f),
-				//glm::vec2(+0.875f, +0.375f),
-				//glm::vec2(+0.375f, +0.125f),
-				//glm::vec2(+0.125f, +0.625f)
 			};
 		}
 	};
@@ -108,10 +104,10 @@ namespace TinyRenderer
 #define MSAA4X
 
 #ifdef MSAA4X
-	//template<typename T>
-	//using TRPixelSampler = TRPixelSampler4X<T>;
 	template<typename T>
-	using TRPixelSampler = TRPixelSampler8X<T>;
+	using TRPixelSampler = TRPixelSampler4X<T>;
+	//template<typename T>
+	//using TRPixelSampler = TRPixelSampler8X<T>;
 #else
 	template<typename T>
 	using TRPixelSampler = TRPixelSampler1X<T>;

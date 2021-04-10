@@ -188,7 +188,7 @@ namespace TinyRenderer
 #pragma unroll
 			for (int s = 0; s < currentSamper.getSamplingNum(); ++s)
 			{
-				if (currentMaskSampler[s] == 1)
+				//if (currentMaskSampler[s] == 1)
 				{
 					sum.x += currentSamper[s][0];//RED
 					sum.y += currentSamper[s][1];//GREEN
@@ -204,7 +204,7 @@ namespace TinyRenderer
 			value[3] = static_cast<unsigned char>((sum.w));
 			currentSamper[0] = value;
 			
-		}, TRExecutionPolicy::TR_SERIAL);
+		}, TRExecutionPolicy::TR_PARALLEL);
 		return m_colorBuffer;
 	}
 

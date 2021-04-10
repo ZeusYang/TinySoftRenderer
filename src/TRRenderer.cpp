@@ -213,35 +213,34 @@ namespace TinyRenderer
 				const auto &shadingState = drawCall.shadingState;
 
 				//A mutex locker herein for (x,y) to prevent from simultanenously accessing depth buffer at the same place
-				{
-					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
+				MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
 
-					int num_failed = 0;
-					int samplingNum = TRMaskPixelSampler::getSamplingNum();
-					//Depth testing for each sampling point (Early Z strategy herein)
-					if (shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
-					{
-						const auto &coverageDepth = fragment.coverage_depth;
+				const int samplingNum = TRMaskPixelSampler::getSamplingNum();
+
+				int num_failed = 0;
+				//Depth testing for each sampling point (Early Z strategy herein)
+				if (shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
+				{
+					const auto &coverageDepth = fragment.coverage_depth;
 #pragma unroll
-						for (int s = 0; s < samplingNum; ++s)
+					for (int s = 0; s < samplingNum; ++s)
+					{
+						if (coverage[s] == 1 &&
+							framebuffer->readDepth(fragCoord.x, fragCoord.y, s) >= coverageDepth[s])
 						{
-							if (coverage[s] == 1 &&
-								framebuffer->readDepth(fragCoord.x, fragCoord.y, s) >= coverageDepth[s])
-							{
-								coverage[s] = 0;//Occuluded
-								++num_failed;
-							}
-							else if (coverage[s] == 0)
-							{
-								++num_failed;
-							}
+							coverage[s] = 0;//Occuluded
+							++num_failed;
+						}
+						else if (coverage[s] == 0)
+						{
+							++num_failed;
 						}
 					}
-
-					//No valid mask, just discard.
-					if (num_failed == samplingNum)
-						return;
 				}
+
+				//No valid mask, just discard.
+				if (num_failed == samplingNum)
+					return;
 
 				//Execute fragment shader, and save the result to frame buffer
 				glm::vec4 fragColor;
@@ -250,7 +249,6 @@ namespace TinyRenderer
 				//Alpha to coverage
 				//Note: alpha to coverage only work with MSAA
 				//Refs: http://www.zwqxin.com/archives/opengl/talk-about-alpha-to-coverage.html
-				const int samplingNum = TRMaskPixelSampler::getSamplingNum();
 				if (shadingState.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE && samplingNum >= 4)
 				{
 					int num_cancle = samplingNum  - int(samplingNum * fragColor.a);
@@ -266,27 +264,26 @@ namespace TinyRenderer
 				}
 
 				//Save the rendered result to frame buffer
+				framebuffer->writeCoverageMask(fragCoord.x, fragCoord.y, coverage);
+				switch (shadingState.trAlphaBlendMode)
 				{
-					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
-					framebuffer->writeCoverageMask(fragCoord.x, fragCoord.y, coverage);
-					switch (shadingState.trAlphaBlendMode)
-					{
-					case TRAlphaBlendingMode::TR_ALPHA_DISABLE://No alpha blending
-					case TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE://Or alpha to coverage
-						framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
-						break;
-					case TRAlphaBlendingMode::TR_ALPHA_BLENDING://Alpha blending
-						framebuffer->writeColorWithMaskAlphaBlending(fragCoord.x, fragCoord.y, fragColor, coverage);
-						break;
-					default:
-						framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
-					}
-					//Depth writing
-					if (shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
-					{
-						framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.coverage_depth, coverage);
-					}
+				case TRAlphaBlendingMode::TR_ALPHA_DISABLE://No alpha blending
+				case TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE://Or alpha to coverage
+					framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
+					break;
+				case TRAlphaBlendingMode::TR_ALPHA_BLENDING://Alpha blending
+					framebuffer->writeColorWithMaskAlphaBlending(fragCoord.x, fragCoord.y, fragColor, coverage);
+					break;
+				default:
+					framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
 				}
+
+				//Depth writing
+				if (shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+				{
+					framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.coverage_depth, coverage);
+				}
+				
 			};
 
 			//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
