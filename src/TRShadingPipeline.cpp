@@ -140,10 +140,10 @@ namespace TinyRenderer
 		rasterized_fragments.reserve((bounding_max.y - bounding_min.y) * (bounding_max.x - bounding_min.x));
 
 		//Top left fill rule
-		const float offset = TRMaskPixelSampler::getSamplingNum() == 4 ? 0.0 : 1.0;
-		const int E1_t = (((B.y > A.y) || (A.y == B.y && A.x > B.x)) ? 0 : offset);
-		const int E2_t = (((C.y > B.y) || (B.y == C.y && B.x > C.x)) ? 0 : offset);
-		const int E3_t = (((A.y > C.y) || (C.y == A.y && C.x > A.x)) ? 0 : offset);
+		const float offset = TRMaskPixelSampler::getSamplingNum() >= 4 ? 0.0 : +1.0;
+		const int E1_t = (((B.y > A.y) || (A.y == B.y && A.x < B.x)) ? 0 : offset);
+		const int E2_t = (((C.y > B.y) || (B.y == C.y && B.x < C.x)) ? 0 : offset);
+		const int E3_t = (((A.y > C.y) || (C.y == A.y && C.x < A.x)) ? 0 : offset);
 
 		int Cy1 = F01, Cy2 = F02, Cy3 = F03;
 		const float one_div_delta = 1.0f / (F01 + F02 + F03);
@@ -158,15 +158,15 @@ namespace TinyRenderer
 			return glm::vec3(1.f - (uf.x + uf.y) / uf.z, uf.y / uf.z, uf.x / uf.z);
 		};
 
-		auto sampling_is_inside = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, const int &Cx3, FragmentData &p) -> bool
+		auto sampling_is_inside = [&](const int &x, const int &y, const int &Cx1, const int &Cx2, 
+			const int &Cx3, FragmentData &p) -> bool
 		{
 			//Invalid fragment
 			if (x > bounding_max.x || y > bounding_max.y)
 			{
-				p = glm::ivec2(-1);
+				p.spos = glm::ivec2(-1);
 				return false;
 			}
-
 			bool at_least_one_inside = false;
 			const int samplingNum = TRMaskPixelSampler::getSamplingNum();
 			auto samplingOffsetArray = TRMaskPixelSampler::getSamplingOffsets();

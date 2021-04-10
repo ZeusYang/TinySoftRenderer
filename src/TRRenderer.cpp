@@ -216,30 +216,30 @@ namespace TinyRenderer
 				{
 					MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
 
+					int num_failed = 0;
+					int samplingNum = TRMaskPixelSampler::getSamplingNum();
 					//Depth testing for each sampling point (Early Z strategy herein)
-					int cnt = 0;
 					if (shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
 					{
-						int samplingNum = TRMaskPixelSampler::getSamplingNum();
 						const auto &coverageDepth = fragment.coverage_depth;
 #pragma unroll
 						for (int s = 0; s < samplingNum; ++s)
 						{
 							if (coverage[s] == 1 &&
-								framebuffer->readDepth(fragCoord.x, fragCoord.y, s) > coverageDepth[s])
+								framebuffer->readDepth(fragCoord.x, fragCoord.y, s) >= coverageDepth[s])
 							{
 								coverage[s] = 0;//Occuluded
-								++cnt;
+								++num_failed;
 							}
 							else if (coverage[s] == 0)
 							{
-								++cnt;
+								++num_failed;
 							}
 						}
 					}
 
 					//No valid mask, just discard.
-					if (cnt == 4)
+					if (num_failed == samplingNum)
 						return;
 				}
 

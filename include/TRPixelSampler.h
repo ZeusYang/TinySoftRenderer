@@ -31,7 +31,7 @@ namespace TinyRenderer
 
 		static const std::array<glm::vec2, 1> &getSamplingOffsets()
 		{
-			return { glm::vec2(0.0, 0.0) };
+			return { glm::vec2(0.0f, 0.0f) };
 		}
 
 	};
@@ -46,7 +46,7 @@ namespace TinyRenderer
 
 		static const std::array<glm::vec2, 2> &getSamplingOffsets()
 		{
-			return { glm::vec2(-0.25, -0.25), glm::vec2(+0.25, +0.25) };
+			return { glm::vec2(-0.25f, -0.25f), glm::vec2(+0.25f, +0.25f) };
 		}
 
 	};
@@ -62,14 +62,45 @@ namespace TinyRenderer
 		static const std::array<glm::vec2, 4> &getSamplingOffsets()
 		{
 			//Sampling points' offset
-			//Note:Rotated grid sampling pattern (rotate 26.6 degree)
-			//Refs: https://en.wikipedia.org/wiki/Supersampling#cite_note-5
+			//Note:Rotated grid sampling pattern
+			//Refs: https://mynameismjp.wordpress.com/2012/10/24/msaa-overview/
 			return
 			{
-				glm::vec2(+0.222813, -0.274487),
-				glm::vec2(+0.274487, +0.222813),
-				glm::vec2(-0.222813, +0.274487),
-				glm::vec2(-0.274487, -0.222813)
+				glm::vec2(+0.125f, +0.375f),
+				glm::vec2(+0.375f, -0.125f),
+				glm::vec2(-0.125f, -0.375f),
+				glm::vec2(-0.375f, +0.125f)
+				//glm::vec2(+0.625f, +0.875f),
+				//glm::vec2(+0.875f, +0.375f),
+				//glm::vec2(+0.375f, +0.125f),
+				//glm::vec2(+0.125f, +0.625f)
+			};
+		}
+	};
+
+	//8x Sampling Point
+	template <typename T>
+	class TRPixelSampler8X : public TRIPixelSampler<T, 8>
+	{
+	public:
+
+		TRPixelSampler8X(const T &value) { samplers.fill(value); }
+
+		static const std::array<glm::vec2, 8> &getSamplingOffsets()
+		{
+			//Sampling points' offset
+			//Note:Rotated grid sampling pattern
+			//Refs: https://mynameismjp.wordpress.com/2012/10/24/msaa-overview/
+			return
+			{
+				glm::vec2(-0.375f, +0.375f),
+				glm::vec2(+0.125f, +0.375f),
+				glm::vec2(-0.125f, +0.125f),
+				glm::vec2(+0.375f, +0.125f),
+				glm::vec2(-0.375f, -0.125f),
+				glm::vec2(+0.125f, -0.125f),
+				glm::vec2(-0.125f, -0.375f),
+				glm::vec2(+0.375f, -0.375f)
 			};
 		}
 	};
@@ -77,10 +108,10 @@ namespace TinyRenderer
 #define MSAA4X
 
 #ifdef MSAA4X
-	template<typename T>
-	using TRPixelSampler = TRPixelSampler4X<T>;
 	//template<typename T>
-	//using TRPixelSampler = TRPixelSampler2X<T>;
+	//using TRPixelSampler = TRPixelSampler4X<T>;
+	template<typename T>
+	using TRPixelSampler = TRPixelSampler8X<T>;
 #else
 	template<typename T>
 	using TRPixelSampler = TRPixelSampler1X<T>;

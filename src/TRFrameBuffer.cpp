@@ -116,7 +116,7 @@ namespace TinyRenderer
 		value[0] = static_cast<unsigned char>(color.x * 255);//RED
 		value[1] = static_cast<unsigned char>(color.y * 255);//GREEN
 		value[2] = static_cast<unsigned char>(color.z * 255);//BLUE
-		value[3] = static_cast<unsigned char>(glm::min(255 * color.w, 255.0f));//ALPHA
+		value[3] = static_cast<unsigned char>(255 * color.w);//ALPHA
 
 		int index = y * m_width + x;
 		//Only write color if the corresponding mask equals to 1
@@ -198,13 +198,13 @@ namespace TinyRenderer
 			}
 			sum /= currentSamper.getSamplingNum();
 			TRPixelRGBA value;
-			value[0] = static_cast<unsigned char>(glm::min(sum.x, 255.0f));
-			value[1] = static_cast<unsigned char>(glm::min(sum.y, 255.0f));
-			value[2] = static_cast<unsigned char>(glm::min(sum.z, 255.0f));
-			value[3] = static_cast<unsigned char>(sum.w);
+			value[0] = static_cast<unsigned char>((sum.x));
+			value[1] = static_cast<unsigned char>((sum.y));
+			value[2] = static_cast<unsigned char>((sum.z));
+			value[3] = static_cast<unsigned char>((sum.w));
 			currentSamper[0] = value;
 			
-		}, TRExecutionPolicy::TR_PARALLEL);
+		}, TRExecutionPolicy::TR_SERIAL);
 		return m_colorBuffer;
 	}
 
