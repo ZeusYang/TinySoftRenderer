@@ -40,5 +40,7 @@ target_link_libraries( ${PROJECT_NAME}
 
 # Add sub directories
 add_subdirectory(examples/example1_point_lighting)
-add_subdirectory(examples/example2_alpha_blending)
-add_subdirectory(examples/example3_alpha_to_coverage)
+add_subdirectory(examples/example2_spot_lighting)
+add_subdirectory(examples/example3_directional_lighting)
+add_subdirectory(examples/example4_alpha_blending)
+add_subdirectory(examples/example5_alpha_to_coverage)

@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.5)
 
-project(example3_alpha_to_coverage)
+project(example2_spot_lighting)
 
 # C++ 11 is required
 set(CMAKE_CXX_STANDARD 11)

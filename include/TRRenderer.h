@@ -35,8 +35,8 @@ namespace TinyRenderer
 		void setShaderPipeline(TRShadingPipeline::ptr shader) { m_shader_handler = shader; }
 		void setViewerPos(const glm::vec3 &viewer);
 
-		int addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color);
-		TRPointLight &getPointLight(const int &index);
+		int addLightSource(TRLight::ptr lightSource);
+		TRLight::ptr getLightSource(const int &index);
 
 		//Draw call
 		unsigned int renderAllDrawableMeshes();

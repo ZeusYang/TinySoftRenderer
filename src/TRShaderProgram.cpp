@@ -93,7 +93,8 @@ namespace TinyRenderer
 
 		//Fetch the corresponding color 
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy)) : m_kd;
+		glm::vec4 difftexcolor = (m_diffuse_tex_id != -1) ? texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy) : glm::vec4(1.0f);
+		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(difftexcolor) : m_kd;
 		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
 		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
 
@@ -109,38 +110,36 @@ namespace TinyRenderer
 		glm::vec3 normal = glm::normalize(data.nor);
 		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
 #pragma unroll
-		for (size_t i = 0; i < m_point_lights.size(); ++i)
+		for (size_t i = 0; i < m_lights.size(); ++i)
 		{
-			const auto &light = m_point_lights[i];
-			glm::vec3 lightDir = glm::normalize(light.lightPos - fragPos);
+			const auto &light = m_lights[i];
+			glm::vec3 lightDir = light->direction(fragPos);
 
 			glm::vec3 ambient, diffuse, specular;
 			float attenuation = 1.0f;
 
 			{
 				//Ambient
-				ambient = light.lightColor * amb_color;
+				ambient = light->radiance() * amb_color;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light.lightColor * dif_color * diffCof * m_kd;
+				diffuse = light->radiance() * dif_color * diffCof * m_kd;
 
 				//Phong Specular
 				glm::vec3 reflectDir = glm::reflect(-lightDir, normal);
 				float spec = std::pow(glm::max(glm::dot(viewDir, reflectDir), 0.0f), m_shininess);
-				specular = light.lightColor * spec * spe_color;
+				specular = light->radiance() * spec * spe_color;
 
-				float distance = glm::length(light.lightPos - fragPos);
-				attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * distance +
-					light.attenuation.z * (distance * distance));
+				attenuation = light->attenuation(fragPos);
 			}
 
-			fragColor.x += (ambient.x + diffuse.x + specular.x) * attenuation;
-			fragColor.y += (ambient.y + diffuse.y + specular.y) * attenuation;
-			fragColor.z += (ambient.z + diffuse.z + specular.z) * attenuation;
+			float intensity = light->intensity(lightDir);
+			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * intensity, 0.0f);
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y, fragColor.z + glow_color.z, 1.0f);
+		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
+			fragColor.z + glow_color.z, difftexcolor.a * m_transparency);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -178,37 +177,36 @@ namespace TinyRenderer
 		glm::vec3 normal = glm::normalize(data.nor);
 		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
 #pragma unroll
-		for (size_t i = 0; i < m_point_lights.size(); ++i)
+		for (size_t i = 0; i < m_lights.size(); ++i)
 		{
-			const auto &light = m_point_lights[i];
-			glm::vec3 lightDir = glm::normalize(light.lightPos - fragPos);
+			const auto &light = m_lights[i];
+			glm::vec3 lightDir = light->direction(fragPos);
 
 			glm::vec3 ambient, diffuse, specular;
 			float attenuation = 1.0f;
 			{
 				//Ambient
-				ambient = light.lightColor * amb_color;
+				ambient = light->radiance() * amb_color * m_ka;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light.lightColor * dif_color * diffCof * m_kd;
+				diffuse = light->radiance() * dif_color * diffCof * m_kd;
+				//diffuse = glm::vec3(diffCof);
 
 				//Blin-Phong Specular
 				glm::vec3 halfwayDir = glm::normalize(viewDir + lightDir);
 				float spec = glm::pow(glm::max(glm::dot(halfwayDir, normal), 0.0f), m_shininess);
-				specular = light.lightColor * spec * spe_color;
+				specular = light->radiance() * spec * spe_color;
 
-				float distance = glm::length(light.lightPos - fragPos);
-				attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * distance +
-					light.attenuation.z * (distance * distance));
+				attenuation = light->attenuation(fragPos);
 			}
 
-			fragColor.x += (ambient.x + diffuse.x + specular.x) * attenuation;
-			fragColor.y += (ambient.y + diffuse.y + specular.y) * attenuation;
-			fragColor.z += (ambient.z + diffuse.z + specular.z) * attenuation;
+			float intensity = light->intensity(lightDir);
+			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * intensity, 0.0f);
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y, fragColor.z + glow_color.z, difftexcolor.a);
+		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
+			fragColor.z + glow_color.z, difftexcolor.a * m_transparency);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -241,7 +239,8 @@ namespace TinyRenderer
 
 		//Fetch the corresponding color 
 		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy)) : m_kd;
+		glm::vec4 difftexcolor = (m_diffuse_tex_id != -1) ? texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy) : glm::vec4(1.0f);
+		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(difftexcolor) : m_kd;
 		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
 		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
 
@@ -265,37 +264,35 @@ namespace TinyRenderer
 		glm::vec3 fragPos = glm::vec3(data.pos);
 		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
 #pragma unroll
-		for (size_t i = 0; i < m_point_lights.size(); ++i)
+		for (size_t i = 0; i < m_lights.size(); ++i)
 		{
-			const auto &light = m_point_lights[i];
-			glm::vec3 lightDir = glm::normalize(light.lightPos - fragPos);
+			const auto &light = m_lights[i];
+			glm::vec3 lightDir = light->direction(fragPos);
 
 			glm::vec3 ambient, diffuse, specular;
 			float attenuation = 1.0f;
 			{
 				//Ambient
-				ambient = light.lightColor * amb_color;
+				ambient = light->radiance() * amb_color;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light.lightColor * dif_color * diffCof * m_kd;
+				diffuse = light->radiance() * dif_color * diffCof * m_kd;
 
 				//Blin-Phong Specular
 				glm::vec3 halfwayDir = glm::normalize(viewDir + lightDir);
 				float spec = glm::pow(glm::max(glm::dot(halfwayDir, normal), 0.0f), m_shininess);
-				specular = light.lightColor * spec * spe_color;
+				specular = light->radiance() * spec * spe_color;
 
-				float distance = glm::length(light.lightPos - fragPos);
-				attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * distance +
-					light.attenuation.z * (distance * distance));
+				attenuation = light->attenuation(fragPos);
 			}
 
-			fragColor.x += (ambient.x + diffuse.x + specular.x) * attenuation;
-			fragColor.y += (ambient.y + diffuse.y + specular.y) * attenuation;
-			fragColor.z += (ambient.z + diffuse.z + specular.z) * attenuation;
+			float intensity = light->intensity(lightDir);
+			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * intensity, 0.0f);
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y, fragColor.z + glow_color.z, 1.0f);
+		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
+			fragColor.z + glow_color.z, difftexcolor.a * m_transparency);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -321,6 +318,5 @@ namespace TinyRenderer
 		}
 
 		fragColor.a *= m_transparency;
-		//fragColor.a = 0;
 	}
 }

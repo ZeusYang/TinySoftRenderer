@@ -1,12 +1,12 @@
 Camera:
-	Eye 3.5 2.4 3.0
+	Eye 0.9 0.5 3.0
 	Focus 0.0 0.0 0.0
 	Up 0.0 1.0 0.0
 
 Frustum:
 	Fovy 45.0
 	Near 0.001
-	Nar 100.0
+	Nar 10.0
 	
 PointLight:
 	Name readLight
@@ -27,11 +27,11 @@ PointLight:
 	Lightcolor 0.0 0.0 1.9
 
 Entity:
-	Name Forest
-	Path ../../models/camping/source/full_forest.fbx
-    Translate 0.0 0.0 0.0
+	Name Mary
+	Path ../../models/mary/Marry.obj
+    Translate 0.0 -1.0 0.0
 	Rotation 0.0 0.0 0.0
-	Scale 0.2 0.2 0.2
+	Scale 0.5 0.5 0.5
 	Lighting: true
 	Cullface: back
 	Depthtest: true
@@ -48,9 +48,9 @@ Entity:
 Entity:
 	Name Floor
 	Path ../../models/floor/floor.obj
-    Translate 0.0 1.0 0.0
+    Translate 0.0 0.0 0.0
 	Rotation 0.0 0.0 0.0
-	Scale 1.75 1.0 1.75
+	Scale 1.2 1.0 1.2
 	Lighting: true
 	Cullface: back
 	Depthtest: true
@@ -59,7 +59,7 @@ Entity:
 	Material:
 		Transparency 1.0
 		Ns 0.0000
-		Ka 0.0100 0.0100 0.0100
+		Ka 0.600 0.600 0.600
 		Kd 1.2000 1.2000 1.2000
 		Ks 0.0000 0.0000 0.0000
 		Ke 0.0000 0.0000 0.0000
@@ -69,7 +69,7 @@ Entity:
 	Path ../../models/cube/cube.obj
 	Translate 0.0 -0.05 1.2
 	Rotation 0.0 0.0 0.0
-	Scale 1.0 1.0 1.0
+	Scale 0.5 0.5 0.5
 	Lighting: false
 	Cullface: back
 	Depthtest: true

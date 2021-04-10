@@ -50,7 +50,7 @@ int main(int argc, char* args[])
 
 	//Load scene
 	TRSceneParser parser;
-	parser.parse("../../scenes/pointlight.scene", renderer, generatedMipmap);
+	parser.parse("../../scenes/spotlight.scene", renderer, generatedMipmap);
 
 	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
 		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));
@@ -63,25 +63,18 @@ int main(int argc, char* args[])
 	//Blinn-Phong lighting
 	renderer->setShaderPipeline(std::make_shared<TRBlinnPhongShadingPipeline>());
 
-	TRPointLight::ptr redLight = std::dynamic_pointer_cast<TRPointLight>(renderer->getLightSource(parser.getLight("readLight")));
-	TRPointLight::ptr greenLight = std::dynamic_pointer_cast<TRPointLight>(renderer->getLightSource(parser.getLight("greenLight")));
-	TRPointLight::ptr blueLight = std::dynamic_pointer_cast<TRPointLight>(renderer->getLightSource(parser.getLight("blueLight")));
+	auto& light1 = std::dynamic_pointer_cast<TRSpotLight>(renderer->getLightSource(parser.getLight("spotLight1")));
+	auto& light2 = std::dynamic_pointer_cast<TRSpotLight>(renderer->getLightSource(parser.getLight("spotLight2")));
 
-	glm::mat4 redLightModelMat(1.0f);
-	glm::mat4 greenLightModelMat(1.0f);
-	glm::mat4 blueLightModelMat(1.0f);
-	glm::vec3 &redLightPos = redLight->getLightPos();
-	glm::vec3 &greenLightPos = greenLight->getLightPos();
-	glm::vec3 &blueLightPos = blueLight->getLightPos();
+	glm::vec3& lightPos1 = light1->getLightPos();
+	glm::vec3& lightPos2 = light2->getLightPos();
+	glm::mat4 lightModelMat1(1.0f), lightModelMat2(1.0f);
 
 	glm::vec3 cameraPos = parser.m_scene.cameraPos;
 	glm::vec3 lookAtTarget = parser.m_scene.cameraFocus;
 
-	TRDrawableMesh::ptr redLightMesh = parser.getEntity("RedLight");
-	TRDrawableMesh::ptr greenLightMesh = parser.getEntity("GreenLight");
-	TRDrawableMesh::ptr blueLightMesh = parser.getEntity("BlueLight");
-
-	const auto originMat = redLightMesh->getModelMatrix();
+	TRDrawableMesh::ptr lightMesh1 = parser.getEntity("SpotLight1");
+	TRDrawableMesh::ptr lightMesh2 = parser.getEntity("SpotLight2");
 
 	//Rendering loop
 	while (!winApp->shouldWindowClose())
@@ -106,17 +99,13 @@ int main(int argc, char* args[])
 
 		//Model transformation
 		{
-			redLightModelMat = glm::rotate(glm::mat4(1.0f), (float)deltaTime * 0.0008f, glm::vec3(1, 1, 0));
-			redLightPos = glm::vec3(redLightModelMat * glm::vec4(redLightPos, 1.0f));
-			redLightMesh->setModelMatrix(glm::translate(glm::mat4(1.0f), redLightPos));
-
-			greenLightModelMat = glm::rotate(glm::mat4(1.0f), (float)deltaTime * 0.0008f, glm::vec3(1, 1, 1));
-			greenLightPos = glm::vec3(greenLightModelMat * glm::vec4(greenLightPos, 1.0f));
-			greenLightMesh->setModelMatrix(glm::translate(glm::mat4(1.0f), greenLightPos));
-
-			blueLightModelMat = glm::rotate(glm::mat4(1.0f), (float)deltaTime * 0.0008f, glm::vec3(-1, 1, 1));
-			blueLightPos = glm::vec3(blueLightModelMat * glm::vec4(blueLightPos, 1.0f));
-			blueLightMesh->setModelMatrix(glm::translate(glm::mat4(1.0f), blueLightPos));
+			lightModelMat1 = glm::rotate(glm::mat4(1.0f), (float)deltaTime * 0.001f, glm::vec3(0, 1, 0));
+			lightModelMat2 = glm::rotate(glm::mat4(1.0f), (float)deltaTime * 0.0005f, glm::vec3(0, 1, 0));
+			lightPos1 = glm::vec3(lightModelMat1 * glm::vec4(lightPos1, 1.0f));
+			lightPos2 = glm::vec3(lightModelMat2 * glm::vec4(lightPos2, 1.0f));
+			lightMesh1->setModelMatrix(glm::translate(glm::mat4(1.0f), lightPos1));
+			lightMesh2->setModelMatrix(glm::translate(glm::mat4(1.0f), lightPos2));
+			light2->getSpotDirection() = glm::normalize(glm::vec3(0.0f) - lightPos2);
 		}
 
 		//Camera operation

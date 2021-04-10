@@ -276,6 +276,7 @@ namespace TinyRenderer
 					break;
 				default:
 					framebuffer->writeColorWithMask(fragCoord.x, fragCoord.y, fragColor, coverage);
+					break;
 				}
 
 				//Depth writing
@@ -355,14 +356,14 @@ namespace TinyRenderer
 		m_shader_handler->setViewerPos(viewer);
 	}
 
-	int TRRenderer::addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color)
+	int TRRenderer::addLightSource(TRLight::ptr lightSource)
 	{
-		return TRShadingPipeline::addPointLight(pos, atten, color);
+		return TRShadingPipeline::addLight(lightSource);
 	}
 
-	TRPointLight &TRRenderer::getPointLight(const int &index)
+	TRLight::ptr TRRenderer::getLightSource(const int &index)
 	{
-		return TRShadingPipeline::getPointLight(index);
+		return TRShadingPipeline::getLight(index);
 	}
 
 	unsigned int TRRenderer::renderAllDrawableMeshes()

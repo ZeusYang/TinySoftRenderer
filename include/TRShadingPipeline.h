@@ -6,6 +6,7 @@
 
 #include "glm/glm.hpp"
 
+#include "TRLight.h"
 #include "TRTexture2D.h"
 #include "TRParallelWrapper.h"
 #include "TRPixelSampler.h"
@@ -136,8 +137,8 @@ namespace TinyRenderer
 		//Textures and lights setting
 		static int upload_texture_2D(TRTexture2D::ptr tex);
 		static TRTexture2D::ptr getTexture2D(int index);
-		static int addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color);
-		static TRPointLight &getPointLight(int index);
+		static int addLight(TRLight::ptr lightSource);
+		static TRLight::ptr getLight(int index);
 		static void setViewerPos(const glm::vec3 &viewer) { m_viewer_pos = viewer; }
 
 		//Texture sampling
@@ -152,7 +153,7 @@ namespace TinyRenderer
 
 		//Global shading setttings
 		static std::vector<TRTexture2D::ptr> m_global_texture_units;
-		static std::vector<TRPointLight> m_point_lights;
+		static std::vector<TRLight::ptr> m_lights;
 		static glm::vec3 m_viewer_pos;
 
 		//Material setting

@@ -70,18 +70,6 @@ namespace TinyRenderer
 		TRAlphaBlendingMode trAlphaBlendMode = TRAlphaBlendingMode::TR_ALPHA_DISABLE;
 	};
 
-	//Point lights
-	class TRPointLight
-	{
-	public:
-		glm::vec3 lightPos;//Note: world space position of light source
-		glm::vec3 attenuation;
-		glm::vec3 lightColor;
-
-		TRPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color)
-			: lightPos(pos), attenuation(atten), lightColor(color) {}
-	};
-
 }
 
 #endif

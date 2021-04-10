@@ -6,6 +6,8 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "TRLight.h"
+
 namespace TinyRenderer
 {
 	TRDrawableMesh::ptr TRSceneParser::getEntity(const std::string &name)
@@ -41,7 +43,7 @@ namespace TinyRenderer
 
 			std::stringstream ss;
 			ss << line;
-			
+
 			if (ss.str() == "Camera:")
 			{
 				std::cout << "Camera:=========================================\n";
@@ -107,7 +109,81 @@ namespace TinyRenderer
 					color = parseVec3(line);
 				}
 
-				m_scene.m_lights[name] = renderer->addPointLight(pos, atten, color);
+				TRLight::ptr lightSource = std::make_shared<TRPointLight>(color, pos, atten);
+				m_scene.m_lights[name] = renderer->addLightSource(lightSource);
+			}
+			else if (ss.str() == "SpotLight:")
+			{
+				std::cout << "SpotLight:=====================================\n";
+				std::string name;
+				{
+					std::getline(sceneFile, line);
+					name = parseStr(line);
+				}
+
+				glm::vec3 pos;
+				{
+					std::getline(sceneFile, line);
+					pos = parseVec3(line);
+				}
+
+				glm::vec3 atten;
+				{
+					std::getline(sceneFile, line);
+					atten = parseVec3(line);
+				}
+
+				glm::vec3 color;
+				{
+					std::getline(sceneFile, line);
+					color = parseVec3(line);
+				}
+
+				float innerCutoff;
+				{
+					std::getline(sceneFile, line);
+					innerCutoff = parseFloat(line);
+				}
+
+				float outerCutoff;
+				{
+					std::getline(sceneFile, line);
+					outerCutoff = parseFloat(line);
+				}
+
+				glm::vec3 spotDir;
+				{
+					std::getline(sceneFile, line);
+					spotDir = parseVec3(line);
+				}
+
+				TRLight::ptr lightSource = std::make_shared<TRSpotLight>(color, pos, atten, spotDir,
+					glm::cos(glm::radians(innerCutoff)), glm::cos(glm::radians(outerCutoff)));
+				m_scene.m_lights[name] = renderer->addLightSource(lightSource);
+			}
+			else if (ss.str() == "DirectionalLight:")
+			{
+				std::cout << "DirectionalLight:=====================================\n";
+				std::string name;
+				{
+					std::getline(sceneFile, line);
+					name = parseStr(line);
+				}
+
+				glm::vec3 dir;
+				{
+					std::getline(sceneFile, line);
+					dir = parseVec3(line);
+				}
+
+				glm::vec3 color;
+				{
+					std::getline(sceneFile, line);
+					color = parseVec3(line);
+				}
+
+				TRLight::ptr lightSource = std::make_shared<TRDirectionalLight>(color, dir);
+				m_scene.m_lights[name] = renderer->addLightSource(lightSource);
 			}
 			else if (ss.str() == "Entity:")
 			{

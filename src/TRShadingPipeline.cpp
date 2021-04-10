@@ -82,7 +82,7 @@ namespace TinyRenderer
 	//----------------------------------------------TRShadingPipeline----------------------------------------------
 
 	std::vector<TRTexture2D::ptr> TRShadingPipeline::m_global_texture_units = {};
-	std::vector<TRPointLight> TRShadingPipeline::m_point_lights = {};
+	std::vector<TRLight::ptr> TRShadingPipeline::m_lights = {};
 	glm::vec3 TRShadingPipeline::m_viewer_pos = glm::vec3(0.0f);
 
 	void TRShadingPipeline::rasterize_fill_edge_function(
@@ -300,15 +300,15 @@ namespace TinyRenderer
 		return m_global_texture_units[index];
 	}
 
-	int TRShadingPipeline::addPointLight(glm::vec3 pos, glm::vec3 atten, glm::vec3 color)
+	int TRShadingPipeline::addLight(TRLight::ptr lightSource)
 	{
-		m_point_lights.push_back(TRPointLight(pos, atten, color));
-		return m_point_lights.size() - 1;
+		m_lights.push_back(lightSource);
+		return m_lights.size() - 1;
 	}
 
-	TRPointLight &TRShadingPipeline::getPointLight(int index)
+	TRLight::ptr TRShadingPipeline::getLight(int index)
 	{
-		return m_point_lights[index];
+		return m_lights[index];
 	}
 
 	glm::vec4 TRShadingPipeline::texture2D(const unsigned int &id, const glm::vec2 &uv,

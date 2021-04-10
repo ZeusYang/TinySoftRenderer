@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.5)
 
-project(example2_alpha_blending)
+project(example5_alpha_to_coverage)
 
 # C++ 11 is required
 set(CMAKE_CXX_STANDARD 11)

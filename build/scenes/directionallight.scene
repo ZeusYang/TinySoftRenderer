@@ -1,0 +1,52 @@
+Camera:
+	Eye 3.5 2.4 3.0
+	Focus 0.0 0.7 0.0
+	Up 0.0 1.0 0.0
+
+Frustum:
+	Fovy 45.0
+	Near 0.001
+	Nar 100.0
+	
+DirectionalLight:
+	Name light1
+	Lightdir 1.0 2.0 -0.5
+	Lightcolor 1.0 1.0 1.0
+
+Entity:
+	Name Forest
+	Path ../../models/camping/source/full_forest.fbx
+    Translate 0.0 0.0 0.0
+	Rotation 0.0 0.0 0.0
+	Scale 0.2 0.2 0.2
+	Lighting: true
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: disable
+	Material:
+		Transparency 1.0
+		Ns 0.000000
+		Ka 0.100000 0.100000 0.100000
+		Kd 0.800000 0.800000 0.800000
+		Ks 0.000000 0.000000 0.000000
+		Ke 0.000000 0.000000 0.000000
+		
+Entity:
+	Name Floor
+	Path ../../models/floor/floor.obj
+    Translate 0.0 0.99 0.0
+	Rotation 0.0 0.0 0.0
+	Scale 1.75 1.0 1.75
+	Lighting: true
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: alphablend
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.0100 0.0100 0.0100
+		Kd 1.0000 1.0000 1.0000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 0.0000 0.0000
