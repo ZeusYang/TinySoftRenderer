@@ -88,11 +88,14 @@ Please check out `examples/` for more details.
 
 <img src="images/lighting.jpg" alt="Logo" width="100%">
 
-- Mipmap texture mapping, trilinear sampling. Refs: [link1](http://www.aclockworkberry.com/shader-derivative-functions/#footnote_3_1104), [link2](https://en.wikipedia.org/wiki/Mipmap)
+- Mipmap texture mapping, and trilinear sampling. Refs: [link1](http://www.aclockworkberry.com/shader-derivative-functions/#footnote_3_1104), [link2](https://en.wikipedia.org/wiki/Mipmap)
 
 <img src="images/mipmap.jpg" alt="Logo" width="100%">
 
 - Tangent space normal mapping.
+
+<img src="images/normalmapping.jpg" alt="Logo" width="100%">
+
 - Reinhard tone mapping (from HDR -> LDR).
 
 <img src="images/tonemapping.jpg" alt="Logo" width="100%">
@@ -112,9 +115,8 @@ Please check out `examples/` for more details.
 ## ToDo
 
 - Per drawable shader.
-- Fix the normal mapping bug.
 
-
+  
 
 ## License
 

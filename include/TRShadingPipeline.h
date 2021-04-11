@@ -21,13 +21,13 @@ namespace TinyRenderer
 		struct FragmentData;
 		struct VertexData
 		{
-			glm::vec4 pos;  //World space position
-			glm::vec3 col;  //World space color
+			glm::vec3 pos;  //World space position
 			glm::vec3 nor;  //World space normal
 			glm::vec2 tex;	//World space texture coordinate
 			glm::vec4 cpos; //Clip space position
 			glm::ivec2 spos;//Screen space position
 			glm::mat3 TBN;  //Tangent, bitangent, normal matrix
+			bool needInterpolatedTBN = false;
 			float rhw;
 
 			VertexData() = default;
@@ -46,8 +46,7 @@ namespace TinyRenderer
 		struct FragmentData
 		{
 		public:
-			glm::vec4 pos;  //World space position
-			glm::vec3 col;  //World space color
+			glm::vec3 pos;  //World space position
 			glm::vec3 nor;  //World space normal
 			glm::vec2 tex;	//World space texture coordinate
 			glm::ivec2 spos;//Screen space position

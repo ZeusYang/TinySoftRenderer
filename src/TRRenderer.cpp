@@ -111,7 +111,6 @@ namespace TinyRenderer
 			for (int i = 0; i < 3; ++i)
 			{
 				v[i].pos = vertexBuffer[indexBuffer[faceIndex + i]].vpositions;
-				v[i].col = vertexBuffer[indexBuffer[faceIndex + i]].vcolors;
 				v[i].nor = vertexBuffer[indexBuffer[faceIndex + i]].vnormals;
 				v[i].tex = vertexBuffer[indexBuffer[faceIndex + i]].vtexcoords;
 				v[i].TBN[0] = vertexBuffer[indexBuffer[faceIndex + i]].vtangent;

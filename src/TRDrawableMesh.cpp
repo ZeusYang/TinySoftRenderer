@@ -52,7 +52,7 @@ namespace TinyRenderer
 			{
 				TRVertex vertex;
 				// positions
-				vertex.vpositions = glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f);
+				vertex.vpositions = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 				// normals
 				if (mesh->HasNormals())
 				{

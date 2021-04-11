@@ -1,0 +1,106 @@
+Config: 
+	Exposure: 2.0f
+
+Camera:
+	Eye -0.3 0.0 -2.9
+	Focus 0.0 0.0 0.0
+	Up 0.0 1.0 0.0
+
+Frustum:
+	Fovy 45.0
+	Near 0.001
+	Nar 10.0
+	
+PointLight:
+	Name readLight
+	Lightpos 0.87 -0.05 -0.87
+	Attenuation 1.0 0.7 1.8
+	Lightcolor 1.9 0.0 0.0
+	
+PointLight:
+	Name greenLight
+	Lightpos 0.0 -0.05 1.2
+	Attenuation 1.0 0.7 1.8
+	Lightcolor 0.0 1.9 0.0
+	
+PointLight:
+	Name blueLight
+	Lightpos -0.83 -0.05 -0.83
+	Attenuation 1.0 0.7 1.8
+	Lightcolor 0.0 0.0 1.9
+
+Entity:
+	Name Helmet
+	Path ../../models/helmet/helmet.obj
+    Translate 0.0 0.0 0.0
+	Rotation 0.0 0.0 0.0
+	Scale 1.0 1.0 1.0
+	Lighting: true
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: disable
+	Material:
+		Transparency 1.0
+		Ns 2.0000
+		Ka 0.800 0.800 0.800
+		Kd 0.8000 0.8000 0.8000
+		Ks 0.8000 0.8000 0.8000
+		Ke 0.0000 0.0000 0.0000
+		
+Entity:
+	Name RedLight
+	Path ../../models/cube/cube.obj
+	Translate 0.87 -0.05 -0.87
+	Rotation 0.0 0.0 0.0
+	Scale 1.0 1.0 1.0
+	Lighting: false
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: disable
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0 0 0
+		Kd 0 0 0
+		Ks 0 0 0
+		Ke 1.0 0 0
+	
+Entity:
+	Name GreenLight
+	Path ../../models/cube/cube.obj
+	Translate 0.0 -0.05 1.2
+	Rotation 0.0 0.0 0.0
+	Scale 1.0 1.0 1.0
+	Lighting: false
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: disable
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0 0 0
+		Kd 0 0 0
+		Ks 0 0 0
+		Ke 0 1.0 0
+
+Entity:
+	Name BlueLight
+	Path ../../models/cube/cube.obj
+	Translate -0.83 -0.05 -0.83
+	Rotation 0.0 0.0 0.0
+	Scale 1.0 1.0 1.0
+	Lighting: false
+	Cullface: back
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: disable
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0 0 0
+		Kd 0 0 0
+		Ks 0 0 0
+		Ke 0 0 1.0		

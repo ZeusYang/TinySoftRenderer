@@ -7,9 +7,9 @@ namespace TinyRenderer
 	void TR3DShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//Local space -> World space -> Camera space -> Project space
-		vertex.pos = m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f);
+		vertex.pos = glm::vec3(m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f));
 		vertex.nor = glm::normalize(m_inv_trans_model_matrix * vertex.nor);
-		vertex.cpos = m_view_project_matrix * vertex.pos;
+		vertex.cpos = m_view_project_matrix * glm::vec4(vertex.pos, 1.0f);
 	}
 
 	void TR3DShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
@@ -24,7 +24,7 @@ namespace TinyRenderer
 	void TRDoNothingShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//do nothing at all
-		vertex.cpos = vertex.pos;
+		vertex.cpos = glm::vec4(vertex.pos, 1.0f);
 	}
 
 	void TRDoNothingShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
@@ -219,13 +219,14 @@ namespace TinyRenderer
 	void TRBlinnPhongNormalMapShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//Local space -> World space -> Camera space -> Project space
-		vertex.pos = m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f);
+		vertex.pos = glm::vec3(m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f));
 		vertex.nor = glm::normalize(m_inv_trans_model_matrix * vertex.nor);
-		vertex.cpos = m_view_project_matrix * vertex.pos;
+		vertex.cpos = m_view_project_matrix * glm::vec4(vertex.pos, 1.0f);
 
 		glm::vec3 T = glm::normalize(m_inv_trans_model_matrix * vertex.TBN[0]);
 		glm::vec3 B = glm::normalize(m_inv_trans_model_matrix * vertex.TBN[1]);
 		vertex.TBN = glm::mat3(T, B, vertex.nor);
+		vertex.needInterpolatedTBN = true;
 	}
 
 	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,

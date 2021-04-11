@@ -15,8 +15,7 @@ namespace TinyRenderer
 	{
 	public:
 
-		glm::vec4 vpositions = glm::vec4(0, 0, 0, 1);
-		glm::vec4 vcolors    = glm::vec4(1, 1, 1, 1);
+		glm::vec3 vpositions = glm::vec3(0, 0, 0);
 		glm::vec2 vtexcoords = glm::vec2(0, 0);
 		glm::vec3 vnormals   = glm::vec3(0, 1, 0);
 

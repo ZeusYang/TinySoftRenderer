@@ -17,15 +17,16 @@ namespace TinyRenderer
 		//Linear interpolation
 		VertexData result;
 		result.pos = (1.0f - frac) * v0.pos + frac * v1.pos;
-		result.col = (1.0f - frac) * v0.col + frac * v1.col;
 		result.nor = (1.0f - frac) * v0.nor + frac * v1.nor;
 		result.tex = (1.0f - frac) * v0.tex + frac * v1.tex;
 		result.cpos = (1.0f - frac) * v0.cpos + frac * v1.cpos;
 		result.spos.x = (1.0f - frac) * v0.spos.x + frac * v1.spos.x;
 		result.spos.y = (1.0f - frac) * v0.spos.y + frac * v1.spos.y;
 		result.rhw = (1.0f - frac) * v0.rhw + frac * v1.rhw;
-
-		result.TBN = v0.TBN;
+		if (v0.needInterpolatedTBN)
+		{
+			result.TBN = (1.0f - frac) * v0.TBN + frac * v1.TBN;
+		}
 
 		return result;
 	}
@@ -38,14 +39,16 @@ namespace TinyRenderer
 	{
 		FragmentData result;
 		result.pos = w.x * v0.pos + w.y * v1.pos + w.z * v2.pos;
-		result.col = w.x * v0.col + w.y * v1.col + w.z * v2.col;
 		result.nor = w.x * v0.nor + w.y * v1.nor + w.z * v2.nor;
 		result.tex = w.x * v0.tex + w.y * v1.tex + w.z * v2.tex;
 		result.rhw = w.x * v0.rhw + w.y * v1.rhw + w.z * v2.rhw;
 		result.spos.x = w.x * v0.spos.x + w.y * v1.spos.x + w.z * v2.spos.x;
 		result.spos.y = w.x * v0.spos.y + w.y * v1.spos.y + w.z * v2.spos.y;
 
-		result.TBN = v0.TBN;
+		if (v0.needInterpolatedTBN)
+		{
+			result.TBN = w.x * v0.TBN + w.y * v1.TBN + w.z * v2.TBN;
+		}
 
 		return result;
 	}
@@ -63,8 +66,6 @@ namespace TinyRenderer
 		v.pos *= v.rhw;
 		v.tex *= v.rhw;
 		v.nor *= v.rhw;
-		v.col *= v.rhw;
-
 	}
 
 	void TRShadingPipeline::FragmentData::aftPrespCorrection(FragmentData &v)
@@ -75,8 +76,6 @@ namespace TinyRenderer
 		v.pos *= w;
 		v.tex *= w;
 		v.nor *= w;
-		v.col *= w;
-
 	}
 
 	//----------------------------------------------TRShadingPipeline----------------------------------------------
