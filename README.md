@@ -101,7 +101,7 @@ Please check out `examples/` for more details.
 
 <img src="images/MSAA4X.jpg" alt="Logo" width="100%">
 
-- Alpha blending, and alpha to coverage (order independent transparency).
+- Alpha blending, and alpha to coverage algorithm based on MSAA (order independent transparency).
 
 <img src="images/transparent.jpg" alt="Logo" width="100%">
 
