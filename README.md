@@ -76,29 +76,29 @@ Please check out `examples/` for more details.
 ## Features
 
 - Affine and perspective correct per vertex parameter interpolation.
+- Screen space back face culling (more robust compared to implementation in ndc space).
+- Z-buffering (Reversed z) and depth testing for 3D rendering.
+- Sutherland Hodgeman Homogeneous Cliping. Refs: [link1](https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf), [link2](https://fabiensanglard.net/polygon_codec/)
 - Accelerated edge function based triangle rasterization. Refs: [link](http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf)
 
 <img src="images/raster.jpg" alt="Logo" width="100%">
 
-- Texture mapping, Nearest texture sampling, Bilinear texture sampling
-
-- Phong/Blinn-Phong lighting
+- Texture mapping, Nearest texture sampling, Bilinear texture sampling.
+- Tiling and morton curve memory layout for texture. (But it turns out that high-frequency address mapping is also time-consuming...) Refs: [link1](https://en.wikipedia.org/wiki/Z-order_curve), [link2](https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/)
+- Phong/Blinn-Phong illumination model
 - Light source: point light, spot light, and direcitonal light
 
 <img src="images/lighting.jpg" alt="Logo" width="100%">
-
-- Tiling and morton curve memory layout for texture. (But it turns out that high-frequency address mapping is also time-consuming...) Refs: [link1](https://en.wikipedia.org/wiki/Z-order_curve), [link2](https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/)
 
 - Mipmap texture, trilinear sampling. Refs: [link1](http://www.aclockworkberry.com/shader-derivative-functions/#footnote_3_1104), [link2](https://en.wikipedia.org/wiki/Mipmap)
 
 <img src="images/mipmap.jpg" alt="Logo" width="100%">
 
-- Sutherland Hodgeman Homogeneous Cliping. Refs: [link1](https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf), [link2](https://fabiensanglard.net/polygon_codec/)
+- Tangent Space Normal Mapping.
+- Reinhard tone mapping (from HDR -> LDR).
 
-- Screen space back face culling (more robust compared to implementation in ndc space).
+<img src="images/tonemapping.jpg" alt="Logo" width="100%">
 
-- Tangent Space Normal Mapping
-- Z-buffering (Reversed z)
 - Multi sampling anti-aliasing (MSAA 4X)
 
 <img src="images/MSAA4X.jpg" alt="Logo" width="100%">
@@ -113,9 +113,8 @@ Please check out `examples/` for more details.
 
 ## ToDo
 
-- More light source type
+- Per drawable shader
 
-  
 
 
 
