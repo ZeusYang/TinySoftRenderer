@@ -21,7 +21,7 @@ SpotLight:
 	Name spotLight2
 	Lightpos 1.5 -0.95 0.0
 	Attenuation 1.0 0.7 1.8
-	Lightcolor 2.0 1.643 0.0
+	Lightcolor 3.0 2.443 0.0
 	InnerCutoff 32.5
 	OuterCutoff 47.5
 	SpotDir -1.0 0.0 0.0
