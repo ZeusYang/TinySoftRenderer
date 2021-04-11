@@ -74,6 +74,8 @@ Please note that copy **external/dlls/*.dll** (for example: SDL2.dll) to the cor
 
 Please check out `examples/` for more details. 
 
+<img src="images/example.jpg" alt="Logo" width="100%">
+
 
 
 ## Features
