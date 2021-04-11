@@ -1,0 +1,10 @@
+# Blender MTL File: 'newLamp.blend'
+# Material Count: 1
+
+newmtl None
+Ns 0
+Ka 0.000000 0.000000 0.000000
+Kd 0.0 0.0 0.0
+Ks 0.0 0.0 0.0
+map_Kd lamp.png
+map_Ke lamp_e.png
