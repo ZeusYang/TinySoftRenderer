@@ -77,29 +77,27 @@ Please check out `examples/` for more details.
 
 - Affine and perspective correct per vertex parameter interpolation.
 - Screen space back face culling (more robust compared to implementation in ndc space).
-- Z-buffering (Reversed z) and depth testing for 3D rendering.
-- Sutherland Hodgeman Homogeneous Cliping. Refs: [link1](https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf), [link2](https://fabiensanglard.net/polygon_codec/)
-- Accelerated edge function based triangle rasterization. Refs: [link](http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf)
+- Z-buffering (reversed z) and depth testing for 3D rendering.
+- Sutherland Hodgeman homogeneous cliping. Refs: [link1](https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf), [link2](https://fabiensanglard.net/polygon_codec/)
+- Accelerated edge function-based triangle rasterization (Implement top left fill rule). Refs: [link](http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf)
 
-<img src="images/raster.jpg" alt="Logo" width="100%">
-
-- Texture mapping, Nearest texture sampling, Bilinear texture sampling.
-- Tiling and morton curve memory layout for texture. (But it turns out that high-frequency address mapping is also time-consuming...) Refs: [link1](https://en.wikipedia.org/wiki/Z-order_curve), [link2](https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/)
-- Phong/Blinn-Phong illumination model
-- Light source: point light, spot light, and direcitonal light
+- Texture mapping, nearest texture sampling, and bilinear texture sampling.
+- Tiling and morton curve memory layout for accessing to texture. (But it turns out that high-frequency address mapping is also time-consuming...) Refs: [link1](https://en.wikipedia.org/wiki/Z-order_curve), [link2](https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/)
+- Implement Phong/Blinn-Phong illumination algorithm.
+- Regular light source for lighting: point light source, spot light source, and direcitonal light source.
 
 <img src="images/lighting.jpg" alt="Logo" width="100%">
 
-- Mipmap texture, trilinear sampling. Refs: [link1](http://www.aclockworkberry.com/shader-derivative-functions/#footnote_3_1104), [link2](https://en.wikipedia.org/wiki/Mipmap)
+- Mipmap texture mapping, trilinear sampling. Refs: [link1](http://www.aclockworkberry.com/shader-derivative-functions/#footnote_3_1104), [link2](https://en.wikipedia.org/wiki/Mipmap)
 
 <img src="images/mipmap.jpg" alt="Logo" width="100%">
 
-- Tangent Space Normal Mapping.
+- Tangent space normal mapping.
 - Reinhard tone mapping (from HDR -> LDR).
 
 <img src="images/tonemapping.jpg" alt="Logo" width="100%">
 
-- Multi sampling anti-aliasing (MSAA 4X)
+- Multi sampling anti-aliasing (MSAA 4X, and MSAA 8X)
 
 <img src="images/MSAA4X.jpg" alt="Logo" width="100%">
 
@@ -113,8 +111,8 @@ Please check out `examples/` for more details.
 
 ## ToDo
 
-- Per drawable shader
-
+- Per drawable shader.
+- Fix the normal mapping bug.
 
 
 
