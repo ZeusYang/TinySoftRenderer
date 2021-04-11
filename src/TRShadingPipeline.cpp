@@ -26,6 +26,7 @@ namespace TinyRenderer
 		if (v0.needInterpolatedTBN)
 		{
 			result.TBN = (1.0f - frac) * v0.TBN + frac * v1.TBN;
+			result.needInterpolatedTBN = true;
 		}
 
 		return result;
