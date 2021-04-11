@@ -139,6 +139,7 @@ namespace TinyRenderer
 		static TRTexture2D::ptr getTexture2D(int index);
 		static int addLight(TRLight::ptr lightSource);
 		static TRLight::ptr getLight(int index);
+		static void setExposure(const float &exposure) { m_exposure = exposure; }
 		static void setViewerPos(const glm::vec3 &viewer) { m_viewer_pos = viewer; }
 
 		//Texture sampling
@@ -155,6 +156,7 @@ namespace TinyRenderer
 		static std::vector<TRTexture2D::ptr> m_global_texture_units;
 		static std::vector<TRLight::ptr> m_lights;
 		static glm::vec3 m_viewer_pos;
+		static float m_exposure;
 
 		//Material setting
 		glm::vec3 m_ka = glm::vec3(0.0f);

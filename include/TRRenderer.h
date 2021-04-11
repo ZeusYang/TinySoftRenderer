@@ -37,6 +37,7 @@ namespace TinyRenderer
 
 		int addLightSource(TRLight::ptr lightSource);
 		TRLight::ptr getLightSource(const int &index);
+		void setExposure(const float &exposure);
 
 		//Draw call
 		unsigned int renderAllDrawableMeshes();

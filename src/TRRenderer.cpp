@@ -356,15 +356,11 @@ namespace TinyRenderer
 		m_shader_handler->setViewerPos(viewer);
 	}
 
-	int TRRenderer::addLightSource(TRLight::ptr lightSource)
-	{
-		return TRShadingPipeline::addLight(lightSource);
-	}
+	int TRRenderer::addLightSource(TRLight::ptr lightSource) { return TRShadingPipeline::addLight(lightSource); }
 
-	TRLight::ptr TRRenderer::getLightSource(const int &index)
-	{
-		return TRShadingPipeline::getLight(index);
-	}
+	TRLight::ptr TRRenderer::getLightSource(const int &index) { return TRShadingPipeline::getLight(index); }
+
+	void TRRenderer::setExposure(const float &exposure) { TRShadingPipeline::setExposure(exposure); }
 
 	unsigned int TRRenderer::renderAllDrawableMeshes()
 	{

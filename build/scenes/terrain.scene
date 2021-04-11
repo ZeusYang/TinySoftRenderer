@@ -1,3 +1,6 @@
+Config: 
+	Exposure: 1.0f
+
 Camera:
 	Eye -3.0 2.0 -8.0
 	Focus 0.0 0.0 0.0
@@ -45,59 +48,3 @@ Entity:
 		Ks 0.000000 0.000000 0.000000
 		Ke 0.0 0.0 0.0
 		
-Entity:
-	Name RedLight
-	Path ../../models/cube/cube.obj
-	Translate 0.0 -0.05 1.2
-	Rotation 0.0 0.0 0.0
-	Scale 1.0 1.0 1.0
-	Lighting: false
-	Cullface: back
-	Depthtest: true
-	Depthwrite: true
-	Alphablend: disable
-	Material:
-		Transparency 1.0
-		Ns 0.0000
-		Ka 0 0 0
-		Kd 0 0 0
-		Ks 0 0 0
-		Ke 1.0 0 0
-	
-Entity:
-	Name GreenLight
-	Path ../../models/cube/cube.obj
-	Translate 0.87 -0.05 -0.87
-	Rotation 0.0 0.0 0.0
-	Scale 1.0 1.0 1.0
-	Lighting: false
-	Cullface: back
-	Depthtest: true
-	Depthwrite: true
-	Alphablend: disable
-	Material:
-		Transparency 1.0
-		Ns 0.0000
-		Ka 0 0 0
-		Kd 0 0 0
-		Ks 0 0 0
-		Ke 0 1.0 0
-
-Entity:
-	Name BlueLight
-	Path ../../models/cube/cube.obj
-	Translate -0.83 -0.05 -0.83
-	Rotation 0.0 0.0 0.0
-	Scale 1.0 1.0 1.0
-	Lighting: false
-	Cullface: back
-	Depthtest: true
-	Depthwrite: true
-	Alphablend: disable
-	Material:
-		Transparency 1.0
-		Ns 0.0000
-		Ka 0 0 0
-		Kd 0 0 0
-		Ks 0 0 0
-		Ke 0 0 1.0		

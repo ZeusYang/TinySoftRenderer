@@ -1,3 +1,6 @@
+Config: 
+	Exposure: 2.0f
+
 Camera:
 	Eye 0.8 0.0 3.7
 	Focus 0.0 0.0 0.0

@@ -84,6 +84,7 @@ namespace TinyRenderer
 	std::vector<TRTexture2D::ptr> TRShadingPipeline::m_global_texture_units = {};
 	std::vector<TRLight::ptr> TRShadingPipeline::m_lights = {};
 	glm::vec3 TRShadingPipeline::m_viewer_pos = glm::vec3(0.0f);
+	float TRShadingPipeline::m_exposure = 1.0f;
 
 	void TRShadingPipeline::rasterize_fill_edge_function(
 		const VertexData &v0,

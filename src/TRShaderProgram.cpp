@@ -145,9 +145,7 @@ namespace TinyRenderer
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
 		{
 			glm::vec3 hdrColor(fragColor);
-			fragColor.x = 1.0f - glm::exp(-hdrColor.x * 2.0f);
-			fragColor.y = 1.0f - glm::exp(-hdrColor.y * 2.0f);
-			fragColor.z = 1.0f - glm::exp(-hdrColor.z * 2.0f);
+			fragColor = glm::vec4(glm::vec3(1.0f - glm::exp(-hdrColor * m_exposure)), fragColor.a);
 		}
 	}
 
@@ -212,9 +210,7 @@ namespace TinyRenderer
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
 		{
 			glm::vec3 hdrColor(fragColor);
-			fragColor.x = 1.0f - glm::exp(-hdrColor.x * 2.0f);
-			fragColor.y = 1.0f - glm::exp(-hdrColor.y * 2.0f);
-			fragColor.z = 1.0f - glm::exp(-hdrColor.z * 2.0f);
+			fragColor = glm::vec4(glm::vec3(1.0f - glm::exp(-hdrColor * m_exposure)), fragColor.a);
 		}
 	}
 
@@ -298,9 +294,7 @@ namespace TinyRenderer
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
 		{
 			glm::vec3 hdrColor(fragColor);
-			fragColor.x = 1.0f - glm::exp(-hdrColor.x * 2.0f);
-			fragColor.y = 1.0f - glm::exp(-hdrColor.y * 2.0f);
-			fragColor.z = 1.0f - glm::exp(-hdrColor.z * 2.0f);
+			fragColor = glm::vec4(glm::vec3(1.0f - glm::exp(-hdrColor * m_exposure)), fragColor.a);
 		}
 	}
 

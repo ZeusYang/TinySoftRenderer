@@ -43,8 +43,19 @@ namespace TinyRenderer
 
 			std::stringstream ss;
 			ss << line;
-
-			if (ss.str() == "Camera:")
+			std::string header;
+			ss >> header;
+			if (header == "Config:")
+			{
+				std::cout << "Config:=========================================\n";
+				float exposure = 1.0f;
+				{
+					std::getline(sceneFile, line);
+					exposure = parseFloat(line);
+				}
+				renderer->setExposure(exposure);
+			}
+			else if (header == "Camera:")
 			{
 				std::cout << "Camera:=========================================\n";
 				{
@@ -64,7 +75,7 @@ namespace TinyRenderer
 
 
 			}
-			else if (ss.str() == "Frustum:")
+			else if (header == "Frustum:")
 			{
 				std::cout << "Frustum:========================================\n";
 				{
@@ -82,7 +93,7 @@ namespace TinyRenderer
 					m_scene.frustumFar = parseFloat(line);
 				}
 			}
-			else if (ss.str() == "PointLight:")
+			else if (header == "PointLight:")
 			{
 				std::cout << "PointLight:=====================================\n";
 				std::string name;
@@ -112,7 +123,7 @@ namespace TinyRenderer
 				TRLight::ptr lightSource = std::make_shared<TRPointLight>(color, pos, atten);
 				m_scene.m_lights[name] = renderer->addLightSource(lightSource);
 			}
-			else if (ss.str() == "SpotLight:")
+			else if (header == "SpotLight:")
 			{
 				std::cout << "SpotLight:=====================================\n";
 				std::string name;
@@ -161,7 +172,7 @@ namespace TinyRenderer
 					glm::cos(glm::radians(innerCutoff)), glm::cos(glm::radians(outerCutoff)));
 				m_scene.m_lights[name] = renderer->addLightSource(lightSource);
 			}
-			else if (ss.str() == "DirectionalLight:")
+			else if (header == "DirectionalLight:")
 			{
 				std::cout << "DirectionalLight:=====================================\n";
 				std::string name;
@@ -185,7 +196,7 @@ namespace TinyRenderer
 				TRLight::ptr lightSource = std::make_shared<TRDirectionalLight>(color, dir);
 				m_scene.m_lights[name] = renderer->addLightSource(lightSource);
 			}
-			else if (ss.str() == "Entity:")
+			else if (header == "Entity:")
 			{
 				std::cout << "Entity:=========================================\n";
 				std::string name;
