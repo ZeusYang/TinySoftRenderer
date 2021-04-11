@@ -114,7 +114,9 @@ Please check out `examples/` for more details.
 
 ## ToDo
 
-- Per drawable shader.
+- Physically based lighting model
+
+- Per drawable shader
 
   
 
