@@ -16,9 +16,12 @@
 
 
 
+
 ## About The Project
 
-The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a deeper understanding of the three-dimensional rendering process. 
+The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a thorough understanding of the three-dimensional rendering process. 
+
+<img src="images/logo.jpg" alt="Logo" width="100%">
 
 
 
@@ -37,7 +40,7 @@ This project was totally refactored based on previous naive version I built 2 ye
 
 ### Prerequisites
 
-At present, I build it on Windows platform. Please make sure your system is equipped with the following softwares.  
+ I build this project on Windows platform. Please make sure your system is equipped with the following softwares.  
 
 - [cmake](https://cmake.org/)：at least version 3.5
 
@@ -111,14 +114,6 @@ Please check out `examples/` for more details.
 - Multi-thread parallelization using [tbb](https://github.com/oneapi-src/oneTBB) as backend. The cpu usage could reach to 100%.
 
 
-
-## ToDo
-
-- Physically based lighting model
-
-- Per drawable shader
-
-  
 
 ## License
 
