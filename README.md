@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/ZeusYang/TinySoftRenderer">
-    <img src="images/logo.jpg" alt="Logo" height="150">
+    <img src="images/logo.jpg" alt="Logo" height="200">
   </a>
   <h3 align="center">TinySoftRenderer</h3>
 <p align="center">
@@ -12,6 +12,7 @@
     <a href="https://github.com/ZeusYang/TinySoftRenderer/blob/master/images/demo.gif">View Demo</a>
     <a href="https://github.com/ZeusYang/TinySoftRenderer/issues">Report Bug</a>
   </p>
+
 
 
 
