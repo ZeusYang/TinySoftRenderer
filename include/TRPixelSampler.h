@@ -106,6 +106,7 @@ namespace TinyRenderer
 #ifdef MSAA4X
 	template<typename T>
 	using TRPixelSampler = TRPixelSampler4X<T>;
+	//Note: MSAA 8X is a little time-consuming
 	//template<typename T>
 	//using TRPixelSampler = TRPixelSampler8X<T>;
 #else

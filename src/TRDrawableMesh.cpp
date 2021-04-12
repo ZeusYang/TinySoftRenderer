@@ -31,6 +31,7 @@ namespace TinyRenderer
 		std::vector<unsigned int>().swap(m_indices);
 	}
 
+	//----------------------------------------------AssimpImporterWrapper----------------------------------------------
 	class AssimpImporterWrapper final
 	{
 	public:
@@ -141,6 +142,8 @@ namespace TinyRenderer
 			}
 		}
 	};
+
+	//----------------------------------------------TRDrawableMesh----------------------------------------------
 
 	void TRDrawableMesh::importMeshFromFile(const std::string &path, bool generatedMipmap)
 	{

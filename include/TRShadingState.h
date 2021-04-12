@@ -21,13 +21,6 @@ namespace TinyRenderer
 		TR_LINEAR
 	};
 
-	//Polygon mode
-	enum TRPolygonMode
-	{
-		TR_TRIANGLE_WIRE,
-		TR_TRIANGLE_FILL
-	};
-
 	//Cull back face mode
 	enum TRCullFaceMode
 	{

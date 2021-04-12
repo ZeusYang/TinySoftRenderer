@@ -84,7 +84,6 @@ namespace TinyRenderer
 
 		void clear();
 
-		void setPolygonMode(TRPolygonMode mode) { m_drawing_config.polygonMode = mode; }
 		void setCullfaceMode(TRCullFaceMode mode) { m_drawing_config.cullfaceMode = mode; }
 		void setDepthtestMode(TRDepthTestMode mode) { m_drawing_config.depthtestMode = mode; }
 		void setDepthwriteMode(TRDepthWriteMode mode) { m_drawing_config.depthwriteMode = mode; }
@@ -109,7 +108,6 @@ namespace TinyRenderer
 		const float& getSpecularExponent() const { return m_drawing_material.shininess; }
 		const float& getTransparency() const { return m_drawing_material.transparency; }
 
-		TRPolygonMode getPolygonMode() const { return m_drawing_config.polygonMode; }
 		TRCullFaceMode getCullfaceMode() const { return m_drawing_config.cullfaceMode; }
 		TRDepthTestMode getDepthtestMode() const { return m_drawing_config.depthtestMode; }
 		TRDepthWriteMode getDepthwriteMode() const { return m_drawing_config.depthwriteMode; }
@@ -129,7 +127,6 @@ namespace TinyRenderer
 		//Configuration
 		struct DrawableConfig
 		{
-			TRPolygonMode polygonMode = TRPolygonMode::TR_TRIANGLE_FILL;
 			TRCullFaceMode cullfaceMode = TRCullFaceMode::TR_CULL_BACK;
 			TRDepthTestMode depthtestMode = TRDepthTestMode::TR_DEPTH_TEST_ENABLE;
 			TRDepthWriteMode depthwriteMode = TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE;

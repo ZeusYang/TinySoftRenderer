@@ -377,7 +377,7 @@ namespace TinyRenderer
 
 		for (size_t m = 0; m < m_drawableMeshes.size(); ++m)
 		{
-			renderDrawableMesh(m);
+			num_triangles += renderDrawableMesh(m);
 		}
 
 		//MSAA resolve stage
@@ -396,7 +396,7 @@ namespace TinyRenderer
 		if (index >= m_drawableMeshes.size())
 			return 0;
 
-		//unsigned int num_triangles = 0;
+		unsigned int num_triangles = 0;
 		const auto &drawable = m_drawableMeshes[index];
 		const auto &submeshes = drawable->getDrawableSubMeshes();
 
@@ -429,6 +429,7 @@ namespace TinyRenderer
 		{
 			const auto &submesh = submeshes[s];
 			int faceNum = submesh.getIndices().size() / 3;
+			num_triangles += faceNum;
 
 			//Texture setting
 			m_shader_handler->setDiffuseTexId(submesh.getDiffuseMapTexId());
@@ -456,7 +457,7 @@ namespace TinyRenderer
 
 		}
 
-		return 0;
+		return num_triangles;
 	}
 
 	unsigned char* TRRenderer::commitRenderedColorBuffer()
