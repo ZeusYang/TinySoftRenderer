@@ -269,7 +269,26 @@ Entity:
 		Transparency 1.0
 		Ns 0.0000
 		Ka 0.300 0.300 0.300
-		Kd 1.0000 1.0000 1.0000
+		Kd 0.6000 0.6000 0.6000
+		Ks 0.0000 0.0000 0.0000
+		Ke 0.0000 0.0000 0.0000	
+
+Entity:
+	Name Lawn
+	Path ../../models/flower/flower.obj
+    Translate 1.9 0.0 0.0
+	Rotation 0.0 0.0 0.0
+	Scale 0.17 0.17 0.17
+	Lighting: true
+	Cullface: disable
+	Depthtest: true
+	Depthwrite: true
+	Alphablend: alpha2coverage
+	Material:
+		Transparency 1.0
+		Ns 0.0000
+		Ka 0.300 0.300 0.300
+		Kd 0.6000 0.6000 0.6000
 		Ks 0.0000 0.0000 0.0000
 		Ke 0.0000 0.0000 0.0000	
 		
