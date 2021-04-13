@@ -263,7 +263,6 @@ namespace TinyRenderer
 				}
 
 				//Save the rendered result to frame buffer
-				framebuffer->writeCoverageMask(fragCoord.x, fragCoord.y, coverage);
 				switch (shadingState.trAlphaBlendMode)
 				{
 				case TRAlphaBlendingMode::TR_ALPHA_DISABLE://No alpha blending

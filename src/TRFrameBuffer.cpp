@@ -10,7 +10,6 @@ namespace TinyRenderer
 	TRFrameBuffer::TRFrameBuffer(int width, int height)
 		: m_width(width), m_height(height)
 	{
-		m_maskBuffer.resize(m_width * m_height, 0);
 		m_depthBuffer.resize(m_width * m_height, 1.0f);
 		m_colorBuffer.resize(m_width * m_height, trBlack);
 	}
@@ -36,7 +35,6 @@ namespace TinyRenderer
 		parallelFor((size_t)0, (size_t)(m_width * m_height), [&](const size_t &index)
 		{
 			m_depthBuffer[index] = depth;
-			m_maskBuffer[index] = 0;
 		});
 	}
 
@@ -50,7 +48,6 @@ namespace TinyRenderer
 
 		parallelFor((size_t)0, (size_t)(m_width * m_height), [&](const size_t &index)
 		{
-			m_maskBuffer[index] = 0;
 			m_colorBuffer[index] = clearColor;
 		});
 	}
@@ -65,7 +62,6 @@ namespace TinyRenderer
 
 		parallelFor((size_t)0, (size_t)(m_width * m_height), [&](const size_t &index)
 		{
-			m_maskBuffer[index] = 0;
 			m_depthBuffer[index] = depth;
 			m_colorBuffer[index] = clearColor;
 		});
@@ -91,21 +87,6 @@ namespace TinyRenderer
 		value[3] = static_cast<unsigned char>(glm::min(255 * color.w, 255.0f));//ALPHA
 		int index = y * m_width + x;
 		m_colorBuffer[index][i] = value;
-	}
-
-	void TRFrameBuffer::writeCoverageMask(const uint &x, const uint &y, const TRMaskPixelSampler &mask)
-	{
-		if (x >= m_width || y >= m_height)
-			return;
-		int index = y * m_width + x;
-#pragma unroll
-		for (int s = 0; s < mask.getSamplingNum(); ++s)
-		{
-			if (mask[s] == 1)
-			{
-				m_maskBuffer[index][s] = 1;
-			}
-		}
 	}
 
 	void TRFrameBuffer::writeColorWithMask(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask)
@@ -182,13 +163,11 @@ namespace TinyRenderer
 		parallelFor((size_t)0, (size_t)(m_width * m_height), [&](const size_t &index)
 		{
 			auto &currentSamper = m_colorBuffer[index];
-			const auto &currentMaskSampler = m_maskBuffer[index];
 			glm::vec4 sum(0.0f);
 			//Average the sampling color for each shaded pixel.
 #pragma unroll
 			for (int s = 0; s < currentSamper.getSamplingNum(); ++s)
 			{
-				//if (currentMaskSampler[s] == 1)
 				{
 					sum.x += currentSamper[s][0];//RED
 					sum.y += currentSamper[s][1];//GREEN

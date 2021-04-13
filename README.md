@@ -14,10 +14,6 @@
   </p>
 
 
-
-
-
-
 ## About The Project
 
 The original intention of building such a 3D rendering system from scratch without any help of graphics library is to get a thorough understanding of the three-dimensional rendering process. 

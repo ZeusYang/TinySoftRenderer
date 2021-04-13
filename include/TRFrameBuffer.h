@@ -35,7 +35,6 @@ namespace TinyRenderer
 
 		void writeDepth(const uint &x, const uint &y, const uint &i, const float &value);
 		void writeColor(const uint &x, const uint &y, const uint &i, const glm::vec4 &color);
-		void writeCoverageMask(const uint &x, const uint &y, const TRMaskPixelSampler &mask);
 		void writeColorWithMask(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask);
 		void writeColorWithMaskAlphaBlending(const uint &x, const uint &y, const glm::vec4 &color, const TRMaskPixelSampler &mask);
 		void writeDepthWithMask(const uint &x, const uint &y, const TRDepthPixelSampler &depth, const TRMaskPixelSampler &mask);
@@ -45,8 +44,6 @@ namespace TinyRenderer
 
 	private:
 	
-
-		TRMaskBuffer m_maskBuffer;			   // Coverage mask
 		TRDepthBuffer m_depthBuffer;           // Z-buffer
 		TRColorBuffer m_colorBuffer;		   // Color buffer
 		unsigned int m_width, m_height;
