@@ -120,22 +120,22 @@ namespace TinyRenderer
 
 			{
 				//Ambient
-				ambient = light->radiance() * amb_color;
+				ambient = light->intensity() * amb_color;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light->radiance() * dif_color * diffCof * m_kd;
+				diffuse = light->intensity() * dif_color * diffCof * m_kd;
 
 				//Phong Specular
 				glm::vec3 reflectDir = glm::reflect(-lightDir, normal);
 				float spec = std::pow(glm::max(glm::dot(viewDir, reflectDir), 0.0f), m_shininess);
-				specular = light->radiance() * spec * spe_color;
+				specular = light->intensity() * spec * spe_color;
 
 				attenuation = light->attenuation(fragPos);
 			}
 
-			float intensity = light->intensity(lightDir);
-			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * intensity, 0.0f);
+			float cutoff = light->cutoff(lightDir);
+			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * cutoff, 0.0f);
 		}
 
 		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
@@ -184,23 +184,23 @@ namespace TinyRenderer
 			float attenuation = 1.0f;
 			{
 				//Ambient
-				ambient = light->radiance() * amb_color * m_ka;
+				ambient = light->intensity() * amb_color * m_ka;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light->radiance() * dif_color * diffCof * m_kd;
+				diffuse = light->intensity() * dif_color * diffCof * m_kd;
 				//diffuse = glm::vec3(diffCof);
 
 				//Blin-Phong Specular
 				glm::vec3 halfwayDir = glm::normalize(viewDir + lightDir);
 				float spec = glm::pow(glm::max(glm::dot(halfwayDir, normal), 0.0f), m_shininess);
-				specular = light->radiance() * spec * spe_color;
+				specular = light->intensity() * spec * spe_color;
 
 				attenuation = light->attenuation(fragPos);
 			}
 
-			float intensity = light->intensity(lightDir);
-			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * intensity, 0.0f);
+			float cutoff = light->cutoff(lightDir);
+			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * cutoff, 0.0f);
 		}
 
 		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
@@ -270,22 +270,22 @@ namespace TinyRenderer
 			float attenuation = 1.0f;
 			{
 				//Ambient
-				ambient = light->radiance() * amb_color;
+				ambient = light->intensity() * amb_color;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light->radiance() * dif_color * diffCof * m_kd;
+				diffuse = light->intensity() * dif_color * diffCof * m_kd;
 
 				//Blin-Phong Specular
 				glm::vec3 halfwayDir = glm::normalize(viewDir + lightDir);
 				float spec = glm::pow(glm::max(glm::dot(halfwayDir, normal), 0.0f), m_shininess);
-				specular = light->radiance() * spec * spe_color;
+				specular = light->intensity() * spec * spe_color;
 
 				attenuation = light->attenuation(fragPos);
 			}
 
-			float intensity = light->intensity(lightDir);
-			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * intensity, 0.0f);
+			float cutoff = light->cutoff(lightDir);
+			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * cutoff, 0.0f);
 		}
 
 		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,

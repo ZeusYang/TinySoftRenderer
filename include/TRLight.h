@@ -13,17 +13,17 @@ namespace TinyRenderer
 	public:
 		typedef std::shared_ptr<TRLight> ptr;
 
-		TRLight() : m_radiance(glm::vec3(1.0f)) {}
-		TRLight(const glm::vec3 &radiance) : m_radiance(radiance) {}
+		TRLight() : m_intensity(glm::vec3(1.0f)) {}
+		TRLight(const glm::vec3 &intensity) : m_intensity(intensity) {}
 		virtual ~TRLight() = default;
 
-		const glm::vec3 &radiance() const { return m_radiance; }
+		const glm::vec3 &intensity() const { return m_intensity; }
 		virtual float attenuation(const glm::vec3 &fragPos) const = 0;
-		virtual float intensity(const glm::vec3 &lightDir) const = 0;
+		virtual float cutoff(const glm::vec3 &lightDir) const = 0;
 		virtual glm::vec3 direction(const glm::vec3 &fragPos) const = 0;
 
 	protected:
-		glm::vec3 m_radiance;
+		glm::vec3 m_intensity;
 	};
 
 	//Point light source
@@ -32,8 +32,8 @@ namespace TinyRenderer
 	public:
 		typedef std::shared_ptr<TRPointLight> ptr;
 
-		TRPointLight(const glm::vec3 &radiance, const glm::vec3 &lightPos, const glm::vec3 &atten)
-			: TRLight(radiance), m_lightPos(lightPos), m_attenuation(atten) { }
+		TRPointLight(const glm::vec3 &intensity, const glm::vec3 &lightPos, const glm::vec3 &atten)
+			: TRLight(intensity), m_lightPos(lightPos), m_attenuation(atten) { }
 
 		virtual float attenuation(const glm::vec3 &fragPos) const override
 		{
@@ -47,7 +47,7 @@ namespace TinyRenderer
 			return glm::normalize(m_lightPos - fragPos);
 		}
 
-		virtual float intensity(const glm::vec3 &lightDir) const override { return 1.0f; }
+		virtual float cutoff(const glm::vec3 &lightDir) const override { return 1.0f; }
 
 		glm::vec3 &getLightPos() { return m_lightPos; }
 
@@ -63,11 +63,11 @@ namespace TinyRenderer
 	public:
 		typedef std::shared_ptr<TRSpotLight> ptr;
 
-		TRSpotLight(const glm::vec3 &radiance, const glm::vec3 &lightPos, const glm::vec3 &atten, const glm::vec3 &dir,
-			const float &innerCutoff, const float &outerCutoff) : TRPointLight(radiance, lightPos, atten),
+		TRSpotLight(const glm::vec3 &intensity, const glm::vec3 &lightPos, const glm::vec3 &atten, const glm::vec3 &dir,
+			const float &innerCutoff, const float &outerCutoff) : TRPointLight(intensity, lightPos, atten),
 			m_spotDir(glm::normalize(dir)), m_innerCutoff(innerCutoff), m_outerCutoff(outerCutoff) { }
 
-		virtual float intensity(const glm::vec3 &lightDir) const override
+		virtual float cutoff(const glm::vec3 &lightDir) const override
 		{
 			float theta = glm::dot(lightDir, -m_spotDir);
 			static const float epsilon = m_innerCutoff - m_outerCutoff;
@@ -89,12 +89,12 @@ namespace TinyRenderer
 	public:
 		typedef std::shared_ptr<TRDirectionalLight> ptr;
 
-		TRDirectionalLight(const glm::vec3 &radiance, const glm::vec3 &dir)
-			: TRLight(radiance), m_lightDir(glm::normalize(dir)) { }
+		TRDirectionalLight(const glm::vec3 &intensity, const glm::vec3 &dir)
+			: TRLight(intensity), m_lightDir(glm::normalize(dir)) { }
 
 		virtual float attenuation(const glm::vec3 &fragPos) const override { return 1.0f; }
 		virtual glm::vec3 direction(const glm::vec3 &fragPos) const override { return m_lightDir; }
-		virtual float intensity(const glm::vec3 &lightDir) const override { return 1.0f; }
+		virtual float cutoff(const glm::vec3 &lightDir) const override { return 1.0f; }
 
 	private:
 		glm::vec3 m_lightDir;
