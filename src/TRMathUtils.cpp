@@ -55,6 +55,7 @@ namespace TinyRenderer
 	glm::mat4 TRMathUtils::calcOrthoProjectMatrix(float left, float right, float bottom, float top, float near, float far)
 	{
 		//Setup orthogonal matrix (camera space -> homogeneous space)
+		glm::ortho();
 		glm::mat4 pMat;
 		pMat[0][0] = 2.0f / (right - left); pMat[0][1] = 0.0f;              pMat[0][2] = 0.0f;                   pMat[0][3] = 0.0f;
 		pMat[1][0] = 0.0f;				  pMat[1][1] = 2.0f / (top - bottom); pMat[1][2] = 0.0f;                   pMat[1][3] = 0.0f;
