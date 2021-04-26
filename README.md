@@ -121,7 +121,8 @@ int main(int argc, char* args[])
 		auto numTriangles = renderer->renderAllDrawableMeshes();
 
 		//Display to screen
-		double deltaTime = winApp->updateScreenSurface(renderer->commitRenderedColorBuffer(), width,  height, 3, numTriangles);
+		double deltaTime = winApp->updateScreenSurface(renderer->commitRenderedColorBuffer(),
+                                                       width,  height, 3, numTriangles);
 
 	}
 
