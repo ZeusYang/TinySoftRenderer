@@ -73,6 +73,64 @@ Please check out `examples/` for more details.
 
 <img src="images/example.jpg" alt="Logo" width="100%">
 
+```C++
+int main(int argc, char* args[])
+{
+	constexpr int width =  666;
+	constexpr int height = 500;
+
+	TRWindowsApp::ptr winApp = TRWindowsApp::getInstance(width, height, "TinySoftRenderer-By yangwc");
+
+	if (winApp == nullptr)
+	{
+		return -1;
+	}
+
+	bool generatedMipmap = true;
+	TRRenderer::ptr renderer = std::make_shared<TRRenderer>(width, height);
+
+	//Load scene
+	TRSceneParser parser;
+	parser.parse("../../scenes/complicatedscene.scene", renderer, generatedMipmap);
+
+	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
+		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));
+	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(parser.m_scene.frustumFovy,
+		static_cast<float>(width) / height, parser.m_scene.frustumNear, parser.m_scene.frustumFar),
+		parser.m_scene.frustumNear, parser.m_scene.frustumFar);
+
+	winApp->readyToStart();
+
+	//Blinn-Phong lighting
+	renderer->setShaderPipeline(std::make_shared<TRBlinnPhongShadingPipeline>());
+
+	glm::vec3 cameraPos = parser.m_scene.cameraPos;
+	glm::vec3 lookAtTarget = parser.m_scene.cameraFocus;
+
+	//Rendering loop
+	while (!winApp->shouldWindowClose())
+	{
+		//Process event
+		winApp->processEvent();
+
+		//Clear frame buffer (both color buffer and depth buffer)
+		renderer->clearColorAndDepth(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.0f);
+
+		//Draw call
+		renderer->setViewerPos(cameraPos);
+		auto numTriangles = renderer->renderAllDrawableMeshes();
+
+		//Display to screen
+		double deltaTime = winApp->updateScreenSurface(renderer->commitRenderedColorBuffer(), width,  height, 3, numTriangles);
+
+	}
+
+	renderer->unloadDrawableMesh();
+
+	return 0;
+}
+```
+
 
 
 ## Features
