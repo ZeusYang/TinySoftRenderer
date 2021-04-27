@@ -10,10 +10,14 @@
 #include "tbb/parallel_pipeline.h"
 #include "tbb/task_arena.h"
 
+#include <mutex>
+#include <atomic>
+#include <thread>
+
+
 namespace TinyRenderer
 {
 	using MutexType = tbb::spin_mutex;				//TBB thread mutex type
-	static MutexType FACE_INDEX_MUTEX;				//Face index mutex lock
 	static constexpr int PIPELINE_BATCH_SIZE = 512; //The number of faces processed for each batch
 
 	//The cache for rasterized results. For example: the face i -> FragmentCache[i]
@@ -79,9 +83,12 @@ namespace TinyRenderer
 	class TBBVertexRastFilter final
 	{
 	public:
-		explicit TBBVertexRastFilter(int bs, int &startIndex, int &overIndex, const DrawcallSetting &drawcall,
-			FragmentCache &cache) : batchSize(bs), startIndex(startIndex), overIndex(overIndex), currIndex(startIndex),
-			drawCall(drawcall), fragmentCache(cache) {}
+		explicit TBBVertexRastFilter(int bs, int startIndex, int overIndex, const DrawcallSetting &drawcall,
+			FragmentCache &cache) : batchSize(bs), startIndex(startIndex), overIndex(overIndex),
+			drawCall(drawcall), fragmentCache(cache) 
+		{
+			currIndex.store(startIndex);
+		}
 
 		int operator()(tbb::flow_control &fc) const
 		{
@@ -89,15 +96,12 @@ namespace TinyRenderer
 			int faceIndex = 0;
 			//Fetch the face index that needs to be processed.
 			{
-				//Note: a mutex lock must be herein for accessing to currIndex
-				MutexType::scoped_lock lock(FACE_INDEX_MUTEX);
-				if (currIndex >= overIndex)
+				//Note: an atomic add herein for excusively accesing the face
+				if ((faceIndex = currIndex.fetch_add(1)) >= overIndex)
 				{
 					fc.stop();//Exceed range, stop the processing flow
 					return -1;
 				}
-				faceIndex = currIndex;
-				++currIndex;
 			}
 
 			//The fragment cache index
@@ -179,11 +183,15 @@ namespace TinyRenderer
 		int batchSize;
 		const int startIndex;
 		const int overIndex;
-		int &currIndex;
 		const DrawcallSetting &drawCall;
+
+		//this is for excessively accessing to face among threads
+		static std::atomic<int> currIndex;
 
 		FragmentCache &fragmentCache;
 	};
+
+	std::atomic<int> TBBVertexRastFilter::currIndex;
 
 	//----------------------------------------------TBBFragmentFilter----------------------------------------------
 	//Fragment shader execution
