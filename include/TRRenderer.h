@@ -31,8 +31,8 @@ namespace TinyRenderer
 		//Setting
 		void setViewMatrix(const glm::mat4 &view) { m_viewMatrix = view; }
 		void setModelMatrix(const glm::mat4 &model) { m_modelMatrix = model; }
-		void setProjectMatrix(const glm::mat4 &project, float near, float far) { m_projectMatrix = project;m_frustum_near_far = glm::vec2(near, far); }
-		void setShaderPipeline(TRShadingPipeline::ptr shader) { m_shader_handler = shader; }
+		void setProjectMatrix(const glm::mat4 &project, float near, float far) { m_projectMatrix = project;m_frustumNearFar = glm::vec2(near, far); }
+		void setShaderPipeline(TRShadingPipeline::ptr shader) { m_shaderHandler = shader; }
 		void setViewerPos(const glm::vec3 &viewer);
 
 		int addLightSource(TRLight::ptr lightSource);
@@ -58,7 +58,7 @@ namespace TinyRenderer
 	private:
 
 		//Cliping auxiliary functions
-		static std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgeman_aux(
+		static std::vector<TRShadingPipeline::VertexData> clipingSutherlandHodgemanAux(
 			const std::vector<TRShadingPipeline::VertexData> &polygon,
 			const int &axis, 
 			const int &side);
@@ -74,13 +74,13 @@ namespace TinyRenderer
 		glm::mat4 m_projectMatrix = glm::mat4(1.0f);			//From camera space -> clip space
 		glm::mat4 m_viewportMatrix = glm::mat4(1.0f);			//From ndc space    -> screen space
 
-		TRShadingState m_shading_state;
+		TRShadingState m_shadingState;
 
 		//Near plane & far plane
-		glm::vec2 m_frustum_near_far;
+		glm::vec2 m_frustumNearFar;
 
 		//Shader pipeline handler
-		TRShadingPipeline::ptr m_shader_handler = nullptr;
+		TRShadingPipeline::ptr m_shaderHandler = nullptr;
 
 		//Double buffers
 		TRFrameBuffer::ptr m_backBuffer;                      // The frame buffer that's goint to be written.

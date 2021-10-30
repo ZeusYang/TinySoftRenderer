@@ -13,7 +13,7 @@
 namespace TinyRenderer
 {
 	TRDrawableSubMesh::TRDrawableSubMesh(const TRDrawableSubMesh& mesh)
-		: m_vertices(mesh.m_vertices), m_indices(mesh.m_indices), m_drawing_material(mesh.m_drawing_material) {}
+		: m_vertices(mesh.m_vertices), m_indices(mesh.m_indices), m_drawingMaterial(mesh.m_drawingMaterial) {}
 
 	TRDrawableSubMesh& TRDrawableSubMesh::operator=(const TRDrawableSubMesh& mesh)
 	{
@@ -21,7 +21,7 @@ namespace TinyRenderer
 			return *this;
 		m_vertices = mesh.m_vertices;
 		m_indices = mesh.m_indices;
-		m_drawing_material = mesh.m_drawing_material;
+		m_drawingMaterial = mesh.m_drawingMaterial;
 		return *this;
 	}
 
@@ -53,26 +53,26 @@ namespace TinyRenderer
 			{
 				TRVertex vertex;
 				// positions
-				vertex.vpositions = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+				vertex.m_vpositions = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 				// normals
 				if (mesh->HasNormals())
 				{
-					vertex.vnormals = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+					vertex.m_vnormals = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 				}
 				// texture coordinates
 				if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 				{
 					// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 					// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-					vertex.vtexcoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+					vertex.m_vtexcoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 					// tangent
-					vertex.vtangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+					vertex.m_vtangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
 					// bitangent
-					vertex.vbitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+					vertex.m_vbitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
 				}
 				else
 				{
-					vertex.vtexcoords = glm::vec2(0.0f, 0.0f);
+					vertex.m_vtexcoords = glm::vec2(0.0f, 0.0f);
 				}
 
 				vertices.push_back(vertex);
@@ -90,7 +90,7 @@ namespace TinyRenderer
 			// process materials
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			auto load_func = [&](aiTextureType type) -> int
+			auto loadFunc = [&](aiTextureType type) -> int
 			{
 				for (int i = 0; i < material->GetTextureCount(type); ++i)
 				{
@@ -105,7 +105,7 @@ namespace TinyRenderer
 					{
 						TRTexture2D::ptr diffTex = std::make_shared<TRTexture2D>(generatedMipmap);
 						bool success = diffTex->loadTextureFromFile(directory + '/' + str.C_Str());
-						auto texId = TRShadingPipeline::upload_texture_2D(diffTex);
+						auto texId = TRShadingPipeline::uploadTexture2D(diffTex);
 						textureDict.insert({ str.C_Str(), texId });
 						return texId;
 					}
@@ -114,10 +114,10 @@ namespace TinyRenderer
 			};
 
 			//Texture maps
-			drawable.setDiffuseMapTexId(load_func(aiTextureType_DIFFUSE));
-			drawable.setSpecularMapTexId(load_func(aiTextureType_SPECULAR));
-			drawable.setNormalMapTexId(load_func(aiTextureType_HEIGHT));
-			drawable.setGlowMapTexId(load_func(aiTextureType_EMISSIVE));
+			drawable.setDiffuseMapTexId(loadFunc(aiTextureType_DIFFUSE));
+			drawable.setSpecularMapTexId(loadFunc(aiTextureType_SPECULAR));
+			drawable.setNormalMapTexId(loadFunc(aiTextureType_HEIGHT));
+			drawable.setGlowMapTexId(loadFunc(aiTextureType_EMISSIVE));
 
 			drawable.setVertices(vertices);
 			drawable.setIndices(indices);

@@ -16,17 +16,17 @@ namespace TinyRenderer
 	{
 		//Linear interpolation
 		VertexData result;
-		result.pos = (1.0f - frac) * v0.pos + frac * v1.pos;
-		result.nor = (1.0f - frac) * v0.nor + frac * v1.nor;
-		result.tex = (1.0f - frac) * v0.tex + frac * v1.tex;
-		result.cpos = (1.0f - frac) * v0.cpos + frac * v1.cpos;
-		result.spos.x = (1.0f - frac) * v0.spos.x + frac * v1.spos.x;
-		result.spos.y = (1.0f - frac) * v0.spos.y + frac * v1.spos.y;
-		result.rhw = (1.0f - frac) * v0.rhw + frac * v1.rhw;
-		if (v0.needInterpolatedTBN)
+		result.m_pos = (1.0f - frac) * v0.m_pos + frac * v1.m_pos;
+		result.m_nor = (1.0f - frac) * v0.m_nor + frac * v1.m_nor;
+		result.m_tex = (1.0f - frac) * v0.m_tex + frac * v1.m_tex;
+		result.m_cpos = (1.0f - frac) * v0.m_cpos + frac * v1.m_cpos;
+		result.m_spos.x = (1.0f - frac) * v0.m_spos.x + frac * v1.m_spos.x;
+		result.m_spos.y = (1.0f - frac) * v0.m_spos.y + frac * v1.m_spos.y;
+		result.m_rhw = (1.0f - frac) * v0.m_rhw + frac * v1.m_rhw;
+		if (v0.m_needInterpolatedTBN)
 		{
-			result.TBN = (1.0f - frac) * v0.TBN + frac * v1.TBN;
-			result.needInterpolatedTBN = true;
+			result.m_tbn = (1.0f - frac) * v0.m_tbn + frac * v1.m_tbn;
+			result.m_needInterpolatedTBN = true;
 		}
 
 		return result;
@@ -39,16 +39,16 @@ namespace TinyRenderer
 		const glm::vec3 &w)
 	{
 		FragmentData result;
-		result.pos = w.x * v0.pos + w.y * v1.pos + w.z * v2.pos;
-		result.nor = w.x * v0.nor + w.y * v1.nor + w.z * v2.nor;
-		result.tex = w.x * v0.tex + w.y * v1.tex + w.z * v2.tex;
-		result.rhw = w.x * v0.rhw + w.y * v1.rhw + w.z * v2.rhw;
-		result.spos.x = w.x * v0.spos.x + w.y * v1.spos.x + w.z * v2.spos.x;
-		result.spos.y = w.x * v0.spos.y + w.y * v1.spos.y + w.z * v2.spos.y;
+		result.m_pos = w.x * v0.m_pos + w.y * v1.m_pos + w.z * v2.m_pos;
+		result.m_nor = w.x * v0.m_nor + w.y * v1.m_nor + w.z * v2.m_nor;
+		result.m_tex = w.x * v0.m_tex + w.y * v1.m_tex + w.z * v2.m_tex;
+		result.m_rhw = w.x * v0.m_rhw + w.y * v1.m_rhw + w.z * v2.m_rhw;
+		result.m_spos.x = w.x * v0.m_spos.x + w.y * v1.m_spos.x + w.z * v2.m_spos.x;
+		result.m_spos.y = w.x * v0.m_spos.y + w.y * v1.m_spos.y + w.z * v2.m_spos.y;
 
-		if (v0.needInterpolatedTBN)
+		if (v0.m_needInterpolatedTBN)
 		{
-			result.TBN = w.x * v0.TBN + w.y * v1.TBN + w.z * v2.TBN;
+			result.m_tbn = w.x * v0.m_tbn + w.y * v1.m_tbn + w.z * v2.m_tbn;
 		}
 
 		return result;
@@ -63,35 +63,35 @@ namespace TinyRenderer
 	{
 		//Perspective correction: the world space properties should be multipy by 1/w before rasterization
 		//https://zhuanlan.zhihu.com/p/144331875
-		v.rhw = 1.0f / v.cpos.w;
-		v.pos *= v.rhw;
-		v.tex *= v.rhw;
-		v.nor *= v.rhw;
+		v.m_rhw = 1.0f / v.m_cpos.w;
+		v.m_pos *= v.m_rhw;
+		v.m_tex *= v.m_rhw;
+		v.m_nor *= v.m_rhw;
 	}
 
 	void TRShadingPipeline::FragmentData::aftPrespCorrection(FragmentData &v)
 	{
 		//Perspective correction: the world space properties should be multipy by w after rasterization
 		//https://zhuanlan.zhihu.com/p/144331875
-		float w = 1.0f / v.rhw;
-		v.pos *= w;
-		v.tex *= w;
-		v.nor *= w;
+		float w = 1.0f / v.m_rhw;
+		v.m_pos *= w;
+		v.m_tex *= w;
+		v.m_nor *= w;
 	}
 
 	//----------------------------------------------TRShadingPipeline----------------------------------------------
 
-	std::vector<TRTexture2D::ptr> TRShadingPipeline::m_global_texture_units = {};
+	std::vector<TRTexture2D::ptr> TRShadingPipeline::m_globalTextureUnits = {};
 	std::vector<TRLight::ptr> TRShadingPipeline::m_lights = {};
-	glm::vec3 TRShadingPipeline::m_viewer_pos = glm::vec3(0.0f);
+	glm::vec3 TRShadingPipeline::m_viewerPos = glm::vec3(0.0f);
 	float TRShadingPipeline::m_exposure = 1.0f;
 
-	void TRShadingPipeline::rasterize_fill_edge_function(
+	void TRShadingPipeline::rasterizeFillEdgeFunction(
 		const VertexData &v0,
 		const VertexData &v1,
 		const VertexData &v2,
-		const unsigned int &screen_width,
-		const unsigned int &screene_height,
+		const unsigned int &screenWidth,
+		const unsigned int &screenHeight,
 		std::vector<QuadFragments> &rasterized_fragments)
 	{
 		//Edge function rasterization algorithm
@@ -101,18 +101,18 @@ namespace TinyRenderer
 		//	   http://acta.uni-obuda.hu/Mileff_Nehez_Dudra_63.pdf
 
 		VertexData v[] = { v0, v1, v2 };
-		glm::ivec2 bounding_min;
-		glm::ivec2 bounding_max;
-		bounding_min.x = std::max(std::min(v0.spos.x, std::min(v1.spos.x, v2.spos.x)), 0);
-		bounding_min.y = std::max(std::min(v0.spos.y, std::min(v1.spos.y, v2.spos.y)), 0);
-		bounding_max.x = std::min(std::max(v0.spos.x, std::max(v1.spos.x, v2.spos.x)), (int)screen_width - 1);
-		bounding_max.y = std::min(std::max(v0.spos.y, std::max(v1.spos.y, v2.spos.y)), (int)screene_height - 1);
+		glm::ivec2 boundingMin;
+		glm::ivec2 boundingMax;
+		boundingMin.x = std::max(std::min(v0.m_spos.x, std::min(v1.m_spos.x, v2.m_spos.x)), 0);
+		boundingMin.y = std::max(std::min(v0.m_spos.y, std::min(v1.m_spos.y, v2.m_spos.y)), 0);
+		boundingMax.x = std::min(std::max(v0.m_spos.x, std::max(v1.m_spos.x, v2.m_spos.x)), (int)screenWidth - 1);
+		boundingMax.y = std::min(std::max(v0.m_spos.y, std::max(v1.m_spos.y, v2.m_spos.y)), (int)screenHeight - 1);
 
 		//Adjust the order
 		{
 			int orient = 0;
-			auto e1 = v1.spos - v0.spos;
-			auto e2 = v2.spos - v0.spos;
+			auto e1 = v1.m_spos - v0.m_spos;
+			auto e2 = v2.m_spos - v0.m_spos;
 			orient = e1.x * e2.y - e1.y * e2.x;
 			if (orient > 0)
 			{
@@ -120,9 +120,9 @@ namespace TinyRenderer
 			}
 		}
 
-		const glm::ivec2 &A = v[0].spos;
-		const glm::ivec2 &B = v[1].spos;
-		const glm::ivec2 &C = v[2].spos;
+		const glm::ivec2 &A = v[0].m_spos;
+		const glm::ivec2 &B = v[1].m_spos;
+		const glm::ivec2 &C = v[2].m_spos;
 
 		const int I01 = A.y - B.y, I02 = B.y - C.y, I03 = C.y - A.y;
 		const int J01 = B.x - A.x, J02 = C.x - B.x, J03 = A.x - C.x;
@@ -130,15 +130,15 @@ namespace TinyRenderer
 		const int K02 = B.x * C.y - B.y * C.x;
 		const int K03 = C.x * A.y - C.y * A.x;
 
-		int F01 = I01 * bounding_min.x + J01 * bounding_min.y + K01;
-		int F02 = I02 * bounding_min.x + J02 * bounding_min.y + K02;
-		int F03 = I03 * bounding_min.x + J03 * bounding_min.y + K03;
+		int F01 = I01 * boundingMin.x + J01 * boundingMin.y + K01;
+		int F02 = I02 * boundingMin.x + J02 * boundingMin.y + K02;
+		int F03 = I03 * boundingMin.x + J03 * boundingMin.y + K03;
 
 		//Degenerated to a line or a point
 		if (F01 + F02 + F03 == 0)
 			return;
 
-		rasterized_fragments.reserve((bounding_max.y - bounding_min.y) * (bounding_max.x - bounding_min.x));
+		rasterized_fragments.reserve((boundingMax.y - boundingMin.y) * (boundingMax.x - boundingMin.x));
 
 		//Top left fill rule
 		const float offset = TRMaskPixelSampler::getSamplingNum() >= 4 ? 0.0 : +1.0;
@@ -153,8 +153,8 @@ namespace TinyRenderer
 		auto barycentericWeight = [&](const float &x, const float &y) -> glm::vec3
 		{
 			glm::vec3 s[2];
-			s[0] = glm::vec3(v[2].spos.x - v[0].spos.x, v[1].spos.x - v[0].spos.x, v[0].spos.x - x);
-			s[1] = glm::vec3(v[2].spos.y - v[0].spos.y, v[1].spos.y - v[0].spos.y, v[0].spos.y - y);
+			s[0] = glm::vec3(v[2].m_spos.x - v[0].m_spos.x, v[1].m_spos.x - v[0].m_spos.x, v[0].m_spos.x - x);
+			s[1] = glm::vec3(v[2].m_spos.y - v[0].m_spos.y, v[1].m_spos.y - v[0].m_spos.y, v[0].m_spos.y - y);
 			auto uf = glm::cross(s[0], s[1]);
 			return glm::vec3(1.f - (uf.x + uf.y) / uf.z, uf.y / uf.z, uf.x / uf.z);
 		};
@@ -163,12 +163,12 @@ namespace TinyRenderer
 			const int &Cx3, FragmentData &p) -> bool
 		{
 			//Invalid fragment
-			if (x > bounding_max.x || y > bounding_max.y)
+			if (x > boundingMax.x || y > boundingMax.y)
 			{
-				p.spos = glm::ivec2(-1);
+				p.m_spos = glm::ivec2(-1);
 				return false;
 			}
-			bool at_least_one_inside = false;
+			bool atLeastOneInside = false;
 			const int samplingNum = TRMaskPixelSampler::getSamplingNum();
 			auto samplingOffsetArray = TRMaskPixelSampler::getSamplingOffsets();
 #pragma unroll
@@ -182,98 +182,98 @@ namespace TinyRenderer
 				//Note: Counter-clockwise winding order
 				if ((E1 + E1_t) <= 0 && (E2 + E2_t) <= 0 && (E3 + E3_t) <= 0)
 				{
-					at_least_one_inside = true;
-					p.coverage[s] = 1;//Covered
+					atLeastOneInside = true;
+					p.m_coverage[s] = 1;//Covered
 					//Note: each sampling point should have its own depth
 					glm::vec3 uvw = glm::vec3(E2, E3, E1) * one_div_delta;
-					p.coverage_depth[s] = VertexData::barycentricLerp(v[0].rhw, v[1].rhw, v[2].rhw, uvw);
+					p.m_coverageDepth[s] = VertexData::barycentricLerp(v[0].m_rhw, v[1].m_rhw, v[2].m_rhw, uvw);
 				}
 			}
 
-			if (!at_least_one_inside)
+			if (!atLeastOneInside)
 			{
-				p.spos = glm::ivec2(-1);
+				p.m_spos = glm::ivec2(-1);
 			}
-			return at_least_one_inside;
+			return atLeastOneInside;
 		};
 
-		for(int y = bounding_min.y;y <= bounding_max.y;y += 2)
+		for(int y = boundingMin.y;y <= boundingMax.y;y += 2)
 		{
 			int Cx1 = Cy1, Cx2 = Cy2, Cx3 = Cy3;
 #pragma unroll 4
-			for (int x = bounding_min.x; x <= bounding_max.x; x += 2)
+			for (int x = boundingMin.x; x <= boundingMax.x; x += 2)
 			{
 				//2x2 fragments block
 				QuadFragments group;
-				bool inside0 = sampling_is_inside(x, y, Cx1, Cx2, Cx3, group.fragments[0]);
-				bool inside1 = sampling_is_inside(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03, group.fragments[1]);
-				bool inside2 = sampling_is_inside(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.fragments[2]);
-				bool inside3 = sampling_is_inside(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03, group.fragments[3]);
+				bool inside0 = sampling_is_inside(x, y, Cx1, Cx2, Cx3, group.m_fragments[0]);
+				bool inside1 = sampling_is_inside(x + 1, y, Cx1 + I01, Cx2 + I02, Cx3 + I03, group.m_fragments[1]);
+				bool inside2 = sampling_is_inside(x, y + 1, Cx1 + J01, Cx2 + J02, Cx3 + J03, group.m_fragments[2]);
+				bool inside3 = sampling_is_inside(x + 1, y + 1, Cx1 + J01 + I01, Cx2 + J02 + I02, Cx3 + J03 + I03, group.m_fragments[3]);
 				//Note: at least one of them is inside the triangle.
 				if (inside0 || inside1 || inside2 || inside3)
 				{
 					if (!inside0)//Invalid fragment
 					{
-						group.fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y));
-						group.fragments[0].spos = glm::ivec2(-1);
+						group.m_fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y));
+						group.m_fragments[0].m_spos = glm::ivec2(-1);
 					}
 					else
 					{
 						glm::vec3 uvw(Cx2, Cx3, Cx1);
-						auto coverage = group.fragments[0].coverage;
-						auto coverage_depth = group.fragments[0].coverage_depth;
-						group.fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
-						group.fragments[0].spos = glm::ivec2(x, y);
-						group.fragments[0].coverage = coverage;
-						group.fragments[0].coverage_depth = coverage_depth;
+						auto coverage = group.m_fragments[0].m_coverage;
+						auto coverage_depth = group.m_fragments[0].m_coverageDepth;
+						group.m_fragments[0] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.m_fragments[0].m_spos = glm::ivec2(x, y);
+						group.m_fragments[0].m_coverage = coverage;
+						group.m_fragments[0].m_coverageDepth = coverage_depth;
 					}
 
 					if (!inside1)//Invalid fragment
 					{
-						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y));
-						group.fragments[1].spos = glm::ivec2(-1);
+						group.m_fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y));
+						group.m_fragments[1].m_spos = glm::ivec2(-1);
 					}
 					else
 					{
 						glm::vec3 uvw(Cx2 + I02, Cx3 + I03, Cx1 + I01);
-						auto coverage = group.fragments[1].coverage;
-						auto coverage_depth = group.fragments[1].coverage_depth;
-						group.fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
-						group.fragments[1].spos = glm::ivec2(x + 1, y);
-						group.fragments[1].coverage = coverage;
-						group.fragments[1].coverage_depth = coverage_depth;
+						auto coverage = group.m_fragments[1].m_coverage;
+						auto coverage_depth = group.m_fragments[1].m_coverageDepth;
+						group.m_fragments[1] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.m_fragments[1].m_spos = glm::ivec2(x + 1, y);
+						group.m_fragments[1].m_coverage = coverage;
+						group.m_fragments[1].m_coverageDepth = coverage_depth;
 					}
 
 					if (!inside2)//Invalid fragment
 					{
-						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y + 1));
-						group.fragments[2].spos = glm::ivec2(-1);
+						group.m_fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x, y + 1));
+						group.m_fragments[2].m_spos = glm::ivec2(-1);
 					}
 					else
 					{
 						glm::vec3 uvw(Cx2 + J02, Cx3 + J03, Cx1 + J01);
-						auto coverage = group.fragments[2].coverage;
-						auto coverage_depth = group.fragments[2].coverage_depth;
-						group.fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
-						group.fragments[2].spos = glm::ivec2(x, y + 1);
-						group.fragments[2].coverage = coverage;
-						group.fragments[2].coverage_depth = coverage_depth;
+						auto coverage = group.m_fragments[2].m_coverage;
+						auto coverage_depth = group.m_fragments[2].m_coverageDepth;
+						group.m_fragments[2] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.m_fragments[2].m_spos = glm::ivec2(x, y + 1);
+						group.m_fragments[2].m_coverage = coverage;
+						group.m_fragments[2].m_coverageDepth = coverage_depth;
 					}
 
 					if (!inside3)//Invalid fragment
 					{
-						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y + 1));
-						group.fragments[3].spos = glm::ivec2(-1);
+						group.m_fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], barycentericWeight(x + 1, y + 1));
+						group.m_fragments[3].m_spos = glm::ivec2(-1);
 					}
 					else
 					{
 						glm::vec3 uvw(Cx2 + J02 + I02, Cx3 + J03 + I03, Cx1 + J01 + I01);
-						auto coverage = group.fragments[3].coverage;
-						auto coverage_depth = group.fragments[3].coverage_depth;
-						group.fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
-						group.fragments[3].spos = glm::ivec2(x + 1, y + 1);
-						group.fragments[3].coverage = coverage;
-						group.fragments[3].coverage_depth = coverage_depth;
+						auto coverage = group.m_fragments[3].m_coverage;
+						auto coverage_depth = group.m_fragments[3].m_coverageDepth;
+						group.m_fragments[3] = VertexData::barycentricLerp(v[0], v[1], v[2], uvw * one_div_delta);
+						group.m_fragments[3].m_spos = glm::ivec2(x + 1, y + 1);
+						group.m_fragments[3].m_coverage = coverage;
+						group.m_fragments[3].m_coverageDepth = coverage_depth;
 					}
 
 					rasterized_fragments.push_back(group);
@@ -284,21 +284,21 @@ namespace TinyRenderer
 		}
 	}
 
-	int TRShadingPipeline::upload_texture_2D(TRTexture2D::ptr tex)
+	int TRShadingPipeline::uploadTexture2D(TRTexture2D::ptr tex)
 	{
 		if (tex != nullptr)
 		{
-			m_global_texture_units.push_back(tex);
-			return m_global_texture_units.size() - 1;
+			m_globalTextureUnits.push_back(tex);
+			return m_globalTextureUnits.size() - 1;
 		}
 		return -1;
 	}
 
 	TRTexture2D::ptr TRShadingPipeline::getTexture2D(int index)
 	{
-		if (index < 0 || index >= m_global_texture_units.size())
+		if (index < 0 || index >= m_globalTextureUnits.size())
 			return nullptr;
-		return m_global_texture_units[index];
+		return m_globalTextureUnits[index];
 	}
 
 	int TRShadingPipeline::addLight(TRLight::ptr lightSource)
@@ -315,9 +315,9 @@ namespace TinyRenderer
 	glm::vec4 TRShadingPipeline::texture2D(const unsigned int &id, const glm::vec2 &uv,
 		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 	{
-		if (id < 0 || id >= m_global_texture_units.size())
+		if (id < 0 || id >= m_globalTextureUnits.size())
 			return glm::vec4(0.0f);
-		const auto &texture = m_global_texture_units[id];
+		const auto &texture = m_globalTextureUnits[id];
 		if (texture->isGeneratedMipmap())
 		{
 			//Calculate lod level

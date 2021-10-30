@@ -55,9 +55,9 @@ namespace TinyRenderer
 		virtual ~TRTilingTextureHolder() = default;
 
 	private:
-		//Change the blockSize, you should also change the corresponding code in xyToIndex
-		static constexpr int blockSize = 4;
-		static constexpr int blockSize_2 = 16;
+		//Change the k_blockSize, you should also change the corresponding code in xyToIndex
+		static constexpr int k_blockSize = 4;
+		static constexpr int k_blockSize2 = 16;
 
 		int m_widthInTiles = 0;
 		int m_heightInTiles = 0;
@@ -78,8 +78,8 @@ namespace TinyRenderer
 
 	private:
 		//Block size for tiling
-		static constexpr int blockSize = 32; //Note: block size should not exceed 256
-		static constexpr int blockSize_2 = 1024;
+		static constexpr int k_blockSize = 32; //Note: block size should not exceed 256
+		static constexpr int k_blockSize2 = 1024;
 		static constexpr int bits = 5;
 
 		int m_widthInTiles = 0;

@@ -85,10 +85,10 @@ namespace TinyRenderer
 	TRTilingTextureHolder::TRTilingTextureHolder(unsigned char *data, std::uint16_t width, std::uint16_t height, int channel)
 		: TRTextureHolder(width, height)
 	{
-		m_widthInTiles = (width + blockSize - 1) / blockSize;
-		m_heightInTiles = (height + blockSize - 1) / blockSize;
+		m_widthInTiles = (width + k_blockSize - 1) / k_blockSize;
+		m_heightInTiles = (height + k_blockSize - 1) / k_blockSize;
 		//Padding
-		unsigned int nElements = m_widthInTiles * m_heightInTiles * blockSize_2;
+		unsigned int nElements = m_widthInTiles * m_heightInTiles * k_blockSize2;
 		TRTextureHolder::loadTexture(nElements, data, width, height, channel);
 	}
 
@@ -96,7 +96,7 @@ namespace TinyRenderer
 	{
 		//Tiling address mapping
 		//Note: this is naive version
-		//return ((int)(y / blockSize) * m_widthInTiles + (int)(x / blockSize)) * blockSize_2 + (y % blockSize) * blockSize + x % blockSize;
+		//return ((int)(y / k_blockSize) * m_widthInTiles + (int)(x / k_blockSize)) * k_blockSize2 + (y % k_blockSize) * k_blockSize + x % k_blockSize;
 		//Note: this is optimized version
 		return (((int)(y >> 2) * m_widthInTiles + (int)(x >> 2)) << 4) + ((y & 3) << 2) + (x & 3);
 	}
@@ -106,19 +106,19 @@ namespace TinyRenderer
 	TRZCurveTilingTextureHolder::TRZCurveTilingTextureHolder(unsigned char *data, std::uint16_t width, std::uint16_t height, int channel)
 		: TRTextureHolder(width, height)
 	{
-		m_widthInTiles = (width + blockSize - 1) / blockSize;
-		m_heightInTiles = (height + blockSize - 1) / blockSize;
+		m_widthInTiles = (width + k_blockSize - 1) / k_blockSize;
+		m_heightInTiles = (height + k_blockSize - 1) / k_blockSize;
 		//Padding
-		unsigned int nElements = m_widthInTiles * m_heightInTiles * blockSize_2;
+		unsigned int nElements = m_widthInTiles * m_heightInTiles * k_blockSize2;
 		TRTextureHolder::loadTexture(nElements, data, width, height, channel);
 	}
 
 	unsigned int TRZCurveTilingTextureHolder::xyToIndex(const std::uint16_t &x, const std::uint16_t &y) const
 	{
 		//Address mapping
-		std::uint8_t rx = x & (blockSize - 1), ry = y & (blockSize - 1);
+		std::uint8_t rx = x & (k_blockSize - 1), ry = y & (k_blockSize - 1);
 		std::uint16_t ri = 0;
 		TRZCurveTilingTextureHolder::encodeMortonCurve(rx, ry, ri);
-		return ((y >> bits) * m_widthInTiles + (x  >> bits)) * blockSize_2 + ri;
+		return ((y >> bits) * m_widthInTiles + (x  >> bits)) * k_blockSize2 + ri;
 	}
 }

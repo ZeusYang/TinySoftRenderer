@@ -60,17 +60,17 @@ namespace TinyRenderer
 				std::cout << "Camera:=========================================\n";
 				{
 					std::getline(sceneFile, line);
-					m_scene.cameraPos = parseVec3(line);
+					m_scene.m_cameraPos = parseVec3(line);
 				}
 
 				{
 					std::getline(sceneFile, line);
-					m_scene.cameraFocus = parseVec3(line);
+					m_scene.m_cameraFocus = parseVec3(line);
 				}
 
 				{
 					std::getline(sceneFile, line);
-					m_scene.cameraUp = parseVec3(line);
+					m_scene.m_cameraUp = parseVec3(line);
 				}
 
 
@@ -80,17 +80,17 @@ namespace TinyRenderer
 				std::cout << "Frustum:========================================\n";
 				{
 					std::getline(sceneFile, line);
-					m_scene.frustumFovy = parseFloat(line);
+					m_scene.m_frustumFovy = parseFloat(line);
 				}
 
 				{
 					std::getline(sceneFile, line);
-					m_scene.frustumNear = parseFloat(line);
+					m_scene.m_frustumNear = parseFloat(line);
 				}
 
 				{
 					std::getline(sceneFile, line);
-					m_scene.frustumFar = parseFloat(line);
+					m_scene.m_frustumFar = parseFloat(line);
 				}
 			}
 			else if (header == "PointLight:")

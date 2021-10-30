@@ -125,8 +125,8 @@ namespace TinyRenderer
 	using TRDepthBuffer = std::vector<TRDepthPixelSampler>;
 	using TRColorBuffer = std::vector<TRColorPixelSampler>;
 
-	constexpr TRPixelRGBA trWhite = { 255, 255, 255 ,255 };
-	constexpr TRPixelRGBA trBlack = { 0, 0, 0, 0 };
+	constexpr TRPixelRGBA k_trWhite = { 255, 255, 255 ,255 };
+	constexpr TRPixelRGBA k_trBlack = { 0, 0, 0, 0 };
 }
 
 #endif

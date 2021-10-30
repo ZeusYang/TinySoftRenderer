@@ -12,25 +12,25 @@ namespace TinyRenderer
 	//----------------------------------------------TRTexture2D----------------------------------------------
 
 	TRTexture2D::TRTexture2D() :
-		m_generate_mipmap(false),
-		m_warp_mode(TRTextureWarpMode::TR_MIRRORED_REPEAT),
-		m_filtering_mode(TRTextureFilterMode::TR_LINEAR) {}
+		m_generateMipmap(false),
+		m_warpMode(TRTextureWarpMode::TR_MIRRORED_REPEAT),
+		m_filteringMode(TRTextureFilterMode::TR_LINEAR) {}
 	
 	TRTexture2D::TRTexture2D(bool generatedMipmap) :
-		m_generate_mipmap(generatedMipmap),
-		m_warp_mode(TRTextureWarpMode::TR_MIRRORED_REPEAT),
-		m_filtering_mode(TRTextureFilterMode::TR_LINEAR) {}
+		m_generateMipmap(generatedMipmap),
+		m_warpMode(TRTextureWarpMode::TR_MIRRORED_REPEAT),
+		m_filteringMode(TRTextureFilterMode::TR_LINEAR) {}
 
-	void TRTexture2D::setWarpingMode(TRTextureWarpMode mode) { m_warp_mode = mode; }
-	void TRTexture2D::setFilteringMode(TRTextureFilterMode mode) { m_filtering_mode = mode; }
+	void TRTexture2D::setWarpingMode(TRTextureWarpMode mode) { m_warpMode = mode; }
+	void TRTexture2D::setFilteringMode(TRTextureFilterMode mode) { m_filteringMode = mode; }
 
 	bool TRTexture2D::loadTextureFromFile(
 		const std::string &filepath,
 		TRTextureWarpMode warpMode,
 		TRTextureFilterMode filterMode)
 	{
-		m_warp_mode = warpMode;
-		m_filtering_mode = filterMode;
+		m_warpMode = warpMode;
+		m_filteringMode = filterMode;
 		std::vector<TRTextureHolder::ptr>().swap(m_texHolders);
 
 		unsigned char *pixels = nullptr;
@@ -85,7 +85,7 @@ namespace TinyRenderer
 		pixels = nullptr;
 
 		//Generate resolution pyramid for mipmap
-		if (m_generate_mipmap)
+		if (m_generateMipmap)
 		{
 			generateMipmap(raw, width, height, channel);
 		}
@@ -105,7 +105,7 @@ namespace TinyRenderer
 		bool reAlloc = false;
 
 		//Find the first greater number which equals to 2^n
-		static auto first_greater_pow_of_2 = [](const int &num) -> int
+		static auto firstGreaterPowOf2 = [](const int &num) -> int
 		{
 			int base = num - 1;
 			base |= (base >> 1);
@@ -115,8 +115,8 @@ namespace TinyRenderer
 			base |= (base >> 16);
 			return base + 1;
 		};
-		int nw = first_greater_pow_of_2(width);
-		int nh = first_greater_pow_of_2(height);
+		int nw = firstGreaterPowOf2(width);
+		int nh = firstGreaterPowOf2(height);
 
 		//Note: need to make sure that width and height equal to 2^n
 		if (nw != width || nh != height || nw != nh)
@@ -127,7 +127,7 @@ namespace TinyRenderer
 			reAlloc = true;
 			rawData = new unsigned char[nw * nh * channel];
 
-			auto read_pixels = [&](const int &x, const int &y, unsigned char &r, unsigned char &g, unsigned char &b, unsigned char &a) -> void
+			auto readPixels = [&](const int &x, const int &y, unsigned char &r, unsigned char &g, unsigned char &b, unsigned char &a) -> void
 			{
 				int tx = (x >= width) ? (width - 1) : x;
 				int ty = (y >= height) ? (height - 1) : y;
@@ -148,10 +148,10 @@ namespace TinyRenderer
 					int fx = x - ix, fy = y - iy;
 
 					unsigned char p[4][4];
-					read_pixels(ix, iy, p[0][0], p[0][1], p[0][2], p[0][3]);
-					read_pixels(ix + 1, iy, p[1][0], p[1][1], p[1][2], p[1][3]);
-					read_pixels(ix, iy + 1, p[2][0], p[2][1], p[2][2], p[2][3]);
-					read_pixels(ix + 1, iy + 1, p[3][0], p[3][1], p[3][2], p[3][3]);
+					readPixels(ix, iy, p[0][0], p[0][1], p[0][2], p[0][3]);
+					readPixels(ix + 1, iy, p[1][0], p[1][1], p[1][2], p[1][3]);
+					readPixels(ix, iy + 1, p[2][0], p[2][1], p[2][2], p[2][3]);
+					readPixels(ix + 1, iy + 1, p[3][0], p[3][1], p[3][2], p[3][3]);
 
 					float w0 = (1.0f - fx) * (1.0f - fy), w1 = fx * (1.0f - fy);
 					float w2 = (1.0f - fx) * fy, w3 = fx * fy;
@@ -244,7 +244,7 @@ namespace TinyRenderer
 		{
 			if (u < 0 || u > 1.0f)
 			{
-				switch (m_warp_mode)
+				switch (m_warpMode)
 				{
 				case TRTextureWarpMode::TR_REPEAT:
 					u = (u > 0) ? (u - (int)u) : (1.0f - ((int)u - u));
@@ -263,7 +263,7 @@ namespace TinyRenderer
 
 			if (v < 0 || v > 1.0f)
 			{
-				switch (m_warp_mode)
+				switch (m_warpMode)
 				{
 				case TRTextureWarpMode::TR_REPEAT:
 					v = (v > 0) ? (v - (int)v) : (1.0f - ((int)v - v));
@@ -283,15 +283,15 @@ namespace TinyRenderer
 
 		glm::vec4 texel(1.0f);
 		//No mipmap: just sampling at the first level
-		if (!m_generate_mipmap)
+		if (!m_generateMipmap)
 		{
-			switch (m_filtering_mode)
+			switch (m_filteringMode)
 			{
 			case TRTextureFilterMode::TR_NEAREST:
-				texel = TRTexture2DSampler::textureSampling_nearest(m_texHolders[0], glm::vec2(u, v));
+				texel = TRTexture2DSampler::textureSamplingNearest(m_texHolders[0], glm::vec2(u, v));
 				break;
 			case TRTextureFilterMode::TR_LINEAR:
-				texel = TRTexture2DSampler::textureSampling_bilinear(m_texHolders[0], glm::vec2(u, v));
+				texel = TRTexture2DSampler::textureSamplingBilinear(m_texHolders[0], glm::vec2(u, v));
 				break;
 			default:
 				break;
@@ -303,17 +303,17 @@ namespace TinyRenderer
 			glm::vec4 texel1(1.0f), texel2(1.0f);
 			unsigned int level1 = glm::min((unsigned int)level, (unsigned int)m_texHolders.size() - 1);
 			unsigned int level2 = glm::min((unsigned int)(level + 1), (unsigned int)m_texHolders.size() - 1);
-			switch (m_filtering_mode)
+			switch (m_filteringMode)
 			{
 			case TRTextureFilterMode::TR_NEAREST:
 				if (level1 != level2)
 				{
-					texel1 = TRTexture2DSampler::textureSampling_nearest(m_texHolders[level1], glm::vec2(u, v));
-					texel2 = TRTexture2DSampler::textureSampling_nearest(m_texHolders[level2], glm::vec2(u, v));
+					texel1 = TRTexture2DSampler::textureSamplingNearest(m_texHolders[level1], glm::vec2(u, v));
+					texel2 = TRTexture2DSampler::textureSamplingNearest(m_texHolders[level2], glm::vec2(u, v));
 				}
 				else
 				{
-					texel1 = TRTexture2DSampler::textureSampling_nearest(m_texHolders[level1], glm::vec2(u, v));
+					texel1 = TRTexture2DSampler::textureSamplingNearest(m_texHolders[level1], glm::vec2(u, v));
 					texel2 = texel1;
 				}
 				break;
@@ -321,12 +321,12 @@ namespace TinyRenderer
 				//Trilinear interpolation
 				if (level1 != level2)
 				{
-					texel1 = TRTexture2DSampler::textureSampling_bilinear(m_texHolders[level1], glm::vec2(u, v));
-					texel2 = TRTexture2DSampler::textureSampling_bilinear(m_texHolders[level2], glm::vec2(u, v));
+					texel1 = TRTexture2DSampler::textureSamplingBilinear(m_texHolders[level1], glm::vec2(u, v));
+					texel2 = TRTexture2DSampler::textureSamplingBilinear(m_texHolders[level2], glm::vec2(u, v));
 				}
 				else
 				{
-					texel1 = TRTexture2DSampler::textureSampling_bilinear(m_texHolders[level1], glm::vec2(u, v));
+					texel1 = TRTexture2DSampler::textureSamplingBilinear(m_texHolders[level1], glm::vec2(u, v));
 					texel2 = texel1;
 				}
 				break;
@@ -341,7 +341,7 @@ namespace TinyRenderer
 
 	//----------------------------------------------TRTexture2DSampler----------------------------------------------
 
-	glm::vec4 TRTexture2DSampler::textureSampling_nearest(TRTextureHolder::ptr texture, glm::vec2 uv)
+	glm::vec4 TRTexture2DSampler::textureSamplingNearest(TRTextureHolder::ptr texture, glm::vec2 uv)
 	{
 		//Perform nearest sampling procedure
 		unsigned char r, g, b, a = 255;
@@ -354,7 +354,7 @@ namespace TinyRenderer
 		return glm::vec4(r, g, b, a) * denom;
 	}
 
-	glm::vec4 TRTexture2DSampler::textureSampling_bilinear(TRTextureHolder::ptr texture, glm::vec2 uv)
+	glm::vec4 TRTexture2DSampler::textureSamplingBilinear(TRTextureHolder::ptr texture, glm::vec2 uv)
 	{
 		//Perform bilinear sampling procedure
 		const auto &w = texture->getWidth();

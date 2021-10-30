@@ -10,10 +10,10 @@ namespace TinyRenderer
 		glm::mat4 vpMat;
 		float hwidth = width * 0.5f;
 		float hheight = height * 0.5f;
-		vpMat[0][0] = hwidth; vpMat[0][1] = 0.0f;    vpMat[0][2] = 0.0f; vpMat[0][3] = 0.0f;
+		vpMat[0][0] = hwidth; vpMat[0][1] = 0.0f;     vpMat[0][2] = 0.0f; vpMat[0][3] = 0.0f;
 		vpMat[1][0] = 0.0f;	  vpMat[1][1] = -hheight; vpMat[1][2] = 0.0f; vpMat[1][3] = 0.0f;
-		vpMat[2][0] = 0.0f;   vpMat[2][1] = 0.0f;    vpMat[2][2] = 1.0f; vpMat[2][3] = 0.0f;
-		vpMat[3][0] = hwidth; vpMat[3][1] = hheight; vpMat[3][2] = 0.0f; vpMat[3][3] = 0.0f;
+		vpMat[2][0] = 0.0f;   vpMat[2][1] = 0.0f;     vpMat[2][2] = 1.0f; vpMat[2][3] = 0.0f;
+		vpMat[3][0] = hwidth; vpMat[3][1] = hheight;  vpMat[3][2] = 0.0f; vpMat[3][3] = 0.0f;
 		return vpMat;
 	}
 
@@ -45,9 +45,9 @@ namespace TinyRenderer
 		const float tanHalfFovy = std::tan(rFovy * 0.5f);
 		float f_n = far - near;
 		pMat[0][0] = 1.0f / (aspect*tanHalfFovy); pMat[0][1] = 0.0f;				pMat[0][2] = 0.0f;					pMat[0][3] = 0.0f;
-		pMat[1][0] = 0.0f;						pMat[1][1] = 1.0f / tanHalfFovy;  pMat[1][2] = 0.0f;					pMat[1][3] = 0.0f;
-		pMat[2][0] = 0.0f;						pMat[2][1] = 0.0f;			    pMat[2][2] = -(far + near) / f_n;		pMat[2][3] = -1.0f;
-		pMat[3][0] = 0.0f;						pMat[3][1] = 0.0f;				pMat[3][2] = -2.0f*near*far / f_n;	pMat[3][3] = 0.0f;
+		pMat[1][0] = 0.0f;						  pMat[1][1] = 1.0f / tanHalfFovy;  pMat[1][2] = 0.0f;					pMat[1][3] = 0.0f;
+		pMat[2][0] = 0.0f;						  pMat[2][1] = 0.0f;			    pMat[2][2] = -(far + near) / f_n;	pMat[2][3] = -1.0f;
+		pMat[3][0] = 0.0f;						  pMat[3][1] = 0.0f;				pMat[3][2] = -2.0f*near*far / f_n;	pMat[3][3] = 0.0f;
 
 		return pMat;
 	}
@@ -56,10 +56,10 @@ namespace TinyRenderer
 	{
 		//Setup orthogonal matrix (camera space -> homogeneous space)
 		glm::mat4 pMat;
-		pMat[0][0] = 2.0f / (right - left); pMat[0][1] = 0.0f;              pMat[0][2] = 0.0f;                   pMat[0][3] = 0.0f;
-		pMat[1][0] = 0.0f;				  pMat[1][1] = 2.0f / (top - bottom); pMat[1][2] = 0.0f;                   pMat[1][3] = 0.0f;
-		pMat[2][0] = 0.0f;                pMat[2][1] = 0.0f;              pMat[2][2] = -2.0f / (far - near);       pMat[2][3] = 0.0f;
-		pMat[3][0] = 0.0f;                pMat[3][1] = 0.0f;              pMat[3][2] = -(far + near) / (far - near); pMat[3][3] = 1.0f;
+		pMat[0][0] = 2.0f / (right - left); pMat[0][1] = 0.0f;                  pMat[0][2] = 0.0f;                         pMat[0][3] = 0.0f;
+		pMat[1][0] = 0.0f;				    pMat[1][1] = 2.0f / (top - bottom); pMat[1][2] = 0.0f;                         pMat[1][3] = 0.0f;
+		pMat[2][0] = 0.0f;                  pMat[2][1] = 0.0f;                  pMat[2][2] = -2.0f / (far - near);         pMat[2][3] = 0.0f;
+		pMat[3][0] = 0.0f;                  pMat[3][1] = 0.0f;                  pMat[3][2] = -(far + near) / (far - near); pMat[3][3] = 1.0f;
 		return pMat;
 	}
 }

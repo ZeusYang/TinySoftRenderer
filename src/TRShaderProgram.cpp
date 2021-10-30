@@ -7,16 +7,16 @@ namespace TinyRenderer
 	void TR3DShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//Local space -> World space -> Camera space -> Project space
-		vertex.pos = glm::vec3(m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f));
-		vertex.nor = glm::normalize(m_inv_trans_model_matrix * vertex.nor);
-		vertex.cpos = m_view_project_matrix * glm::vec4(vertex.pos, 1.0f);
+		vertex.m_pos = glm::vec3(m_modelMatrix * glm::vec4(vertex.m_pos.x, vertex.m_pos.y, vertex.m_pos.z, 1.0f));
+		vertex.m_nor = glm::normalize(m_invTransModelMatrix * vertex.m_nor);
+		vertex.m_cpos = m_viewProjectMatrix * glm::vec4(vertex.m_pos, 1.0f);
 	}
 
 	void TR3DShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Just return the color.
-		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
+		fragColor = glm::vec4(data.m_tex, 0.0, 1.0f);
 	}
 
 	//----------------------------------------------TRDoNothingShadingPipeline----------------------------------------------
@@ -24,14 +24,14 @@ namespace TinyRenderer
 	void TRDoNothingShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//do nothing at all
-		vertex.cpos = glm::vec4(vertex.pos, 1.0f);
+		vertex.m_cpos = glm::vec4(vertex.m_pos, 1.0f);
 	}
 
 	void TRDoNothingShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
 		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Just return the color.
-		fragColor = glm::vec4(data.tex, 0.0, 1.0f);
+		fragColor = glm::vec4(data.m_tex, 0.0, 1.0f);
 	}
 
 	//----------------------------------------------TRTextureShadingPipeline----------------------------------------------
@@ -40,11 +40,11 @@ namespace TinyRenderer
 		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Default color
-		fragColor = glm::vec4(m_ke, 1.0f);
+		fragColor = glm::vec4(m_kE, 1.0f);
 
-		if (m_diffuse_tex_id != -1)
+		if (m_diffuseTexId != -1)
 		{
-			fragColor = texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy);
+			fragColor = texture2D(m_diffuseTexId, data.m_tex, dUVdx, dUVdy);
 		}
 	}
 
@@ -69,7 +69,7 @@ namespace TinyRenderer
 			glm::vec3(0.25f, 0.25f, 0.25f),
 			glm::vec3(0.125f, 0.125f, 0.125f)
 		};
-		auto& tex = TRShadingPipeline::getTexture2D(m_diffuse_tex_id);
+		auto& tex = TRShadingPipeline::getTexture2D(m_diffuseTexId);
 		int w = 1000, h = 100;
 		if (tex != nullptr)
 		{
@@ -92,23 +92,23 @@ namespace TinyRenderer
 		fragColor = glm::vec4(0.0f);
 
 		//Fetch the corresponding color 
-		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		glm::vec4 difftexcolor = (m_diffuse_tex_id != -1) ? texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy) : glm::vec4(1.0f);
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(difftexcolor) : m_kd;
-		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
-		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
+		glm::vec3 ambColor, difColor, speColor, glowColor;
+		glm::vec4 difftexcolor = (m_diffuseTexId != -1) ? texture2D(m_diffuseTexId, data.m_tex, dUVdx, dUVdy) : glm::vec4(1.0f);
+		ambColor = difColor = (m_diffuseTexId != -1) ? glm::vec3(difftexcolor) : m_kD;
+		speColor = (m_specularTexId != -1) ? glm::vec3(texture2D(m_specularTexId, data.m_tex, dUVdx, dUVdy)) : m_kS;
+		glowColor = (m_glowTexId != -1) ? glm::vec3(texture2D(m_glowTexId, data.m_tex, dUVdx, dUVdy)) : m_kE;
 
 		//No lighting
-		if (!m_lighting_enable)
+		if (!m_lightingEnable)
 		{
-			fragColor = glm::vec4(glow_color, 1.0f);
+			fragColor = glm::vec4(glowColor, 1.0f);
 			return;
 		}
 
 		//Calculate the lighting
-		glm::vec3 fragPos = glm::vec3(data.pos);
-		glm::vec3 normal = glm::normalize(data.nor);
-		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
+		glm::vec3 fragPos = glm::vec3(data.m_pos);
+		glm::vec3 normal = glm::normalize(data.m_nor);
+		glm::vec3 viewDir = glm::normalize(m_viewerPos - fragPos);
 #pragma unroll
 		for (size_t i = 0; i < m_lights.size(); ++i)
 		{
@@ -120,16 +120,16 @@ namespace TinyRenderer
 
 			{
 				//Ambient
-				ambient = light->intensity() * amb_color;
+				ambient = light->intensity() * ambColor;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light->intensity() * dif_color * diffCof * m_kd;
+				diffuse = light->intensity() * difColor * diffCof * m_kD;
 
 				//Phong Specular
 				glm::vec3 reflectDir = glm::reflect(-lightDir, normal);
 				float spec = std::pow(glm::max(glm::dot(viewDir, reflectDir), 0.0f), m_shininess);
-				specular = light->intensity() * spec * spe_color;
+				specular = light->intensity() * spec * speColor;
 
 				attenuation = light->attenuation(fragPos);
 			}
@@ -138,8 +138,8 @@ namespace TinyRenderer
 			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * cutoff, 0.0f);
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
-			fragColor.z + glow_color.z, difftexcolor.a * m_transparency);
+		fragColor = glm::vec4(fragColor.x + glowColor.x, fragColor.y + glowColor.y,
+			fragColor.z + glowColor.z, difftexcolor.a * m_transparency);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -157,23 +157,23 @@ namespace TinyRenderer
 		fragColor = glm::vec4(0.0f);
 
 		//Fetch the corresponding color 
-		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		glm::vec4 difftexcolor = (m_diffuse_tex_id != -1) ? texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy) : glm::vec4(1.0f);
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(difftexcolor) : m_kd;
-		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
-		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
+		glm::vec3 ambColor, difColor, speColor, glowColor;
+		glm::vec4 difftexcolor = (m_diffuseTexId != -1) ? texture2D(m_diffuseTexId, data.m_tex, dUVdx, dUVdy) : glm::vec4(1.0f);
+		ambColor = difColor = (m_diffuseTexId != -1) ? glm::vec3(difftexcolor) : m_kD;
+		speColor = (m_specularTexId != -1) ? glm::vec3(texture2D(m_specularTexId, data.m_tex, dUVdx, dUVdy)) : m_kS;
+		glowColor = (m_glowTexId != -1) ? glm::vec3(texture2D(m_glowTexId, data.m_tex, dUVdx, dUVdy)) : m_kE;
 
 		//No lighting
-		if (!m_lighting_enable)
+		if (!m_lightingEnable)
 		{
-			fragColor = glm::vec4(glow_color, difftexcolor.a);
+			fragColor = glm::vec4(glowColor, difftexcolor.a);
 			return;
 		}
 
 		//Calculate the lighting
-		glm::vec3 fragPos = glm::vec3(data.pos);
-		glm::vec3 normal = glm::normalize(data.nor);
-		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
+		glm::vec3 fragPos = glm::vec3(data.m_pos);
+		glm::vec3 normal = glm::normalize(data.m_nor);
+		glm::vec3 viewDir = glm::normalize(m_viewerPos - fragPos);
 #pragma unroll
 		for (size_t i = 0; i < m_lights.size(); ++i)
 		{
@@ -184,17 +184,17 @@ namespace TinyRenderer
 			float attenuation = 1.0f;
 			{
 				//Ambient
-				ambient = light->intensity() * amb_color * m_ka;
+				ambient = light->intensity() * ambColor * m_kA;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light->intensity() * dif_color * diffCof * m_kd;
+				diffuse = light->intensity() * difColor * diffCof * m_kD;
 				//diffuse = glm::vec3(diffCof);
 
 				//Blin-Phong Specular
 				glm::vec3 halfwayDir = glm::normalize(viewDir + lightDir);
 				float spec = glm::pow(glm::max(glm::dot(halfwayDir, normal), 0.0f), m_shininess);
-				specular = light->intensity() * spec * spe_color;
+				specular = light->intensity() * spec * speColor;
 
 				attenuation = light->attenuation(fragPos);
 			}
@@ -203,8 +203,8 @@ namespace TinyRenderer
 			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * cutoff, 0.0f);
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
-			fragColor.z + glow_color.z, difftexcolor.a * m_transparency);
+		fragColor = glm::vec4(fragColor.x + glowColor.x, fragColor.y + glowColor.y,
+			fragColor.z + glowColor.z, difftexcolor.a * m_transparency);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -219,14 +219,14 @@ namespace TinyRenderer
 	void TRBlinnPhongNormalMapShadingPipeline::vertexShader(VertexData &vertex) const
 	{
 		//Local space -> World space -> Camera space -> Project space
-		vertex.pos = glm::vec3(m_model_matrix * glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0f));
-		vertex.nor = glm::normalize(m_inv_trans_model_matrix * vertex.nor);
-		vertex.cpos = m_view_project_matrix * glm::vec4(vertex.pos, 1.0f);
+		vertex.m_pos = glm::vec3(m_modelMatrix * glm::vec4(vertex.m_pos.x, vertex.m_pos.y, vertex.m_pos.z, 1.0f));
+		vertex.m_nor = glm::normalize(m_invTransModelMatrix * vertex.m_nor);
+		vertex.m_cpos = m_viewProjectMatrix * glm::vec4(vertex.m_pos, 1.0f);
 
-		glm::vec3 T = glm::normalize(m_inv_trans_model_matrix * vertex.TBN[0]);
-		glm::vec3 B = glm::normalize(m_inv_trans_model_matrix * vertex.TBN[1]);
-		vertex.TBN = glm::mat3(T, B, vertex.nor);
-		vertex.needInterpolatedTBN = true;
+		glm::vec3 T = glm::normalize(m_invTransModelMatrix * vertex.m_tbn[0]);
+		glm::vec3 B = glm::normalize(m_invTransModelMatrix * vertex.m_tbn[1]);
+		vertex.m_tbn = glm::mat3(T, B, vertex.m_nor);
+		vertex.m_needInterpolatedTBN = true;
 	}
 
 	void TRBlinnPhongNormalMapShadingPipeline::fragmentShader(const FragmentData &data, glm::vec4 &fragColor,
@@ -235,31 +235,31 @@ namespace TinyRenderer
 		fragColor = glm::vec4(0.0f);
 
 		//Fetch the corresponding color 
-		glm::vec3 amb_color, dif_color, spe_color, glow_color;
-		glm::vec4 difftexcolor = (m_diffuse_tex_id != -1) ? texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy) : glm::vec4(1.0f);
-		amb_color = dif_color = (m_diffuse_tex_id != -1) ? glm::vec3(difftexcolor) : m_kd;
-		spe_color = (m_specular_tex_id != -1) ? glm::vec3(texture2D(m_specular_tex_id, data.tex, dUVdx, dUVdy)) : m_ks;
-		glow_color = (m_glow_tex_id != -1) ? glm::vec3(texture2D(m_glow_tex_id, data.tex, dUVdx, dUVdy)) : m_ke;
+		glm::vec3 ambColor, difColor, speColor, glowColor;
+		glm::vec4 difftexcolor = (m_diffuseTexId != -1) ? texture2D(m_diffuseTexId, data.m_tex, dUVdx, dUVdy) : glm::vec4(1.0f);
+		ambColor = difColor = (m_diffuseTexId != -1) ? glm::vec3(difftexcolor) : m_kD;
+		speColor = (m_specularTexId != -1) ? glm::vec3(texture2D(m_specularTexId, data.m_tex, dUVdx, dUVdy)) : m_kS;
+		glowColor = (m_glowTexId != -1) ? glm::vec3(texture2D(m_glowTexId, data.m_tex, dUVdx, dUVdy)) : m_kE;
 
 		//No lighting
-		if (!m_lighting_enable)
+		if (!m_lightingEnable)
 		{
-			fragColor = glm::vec4(glow_color, 1.0f);
+			fragColor = glm::vec4(glowColor, 1.0f);
 			return;
 		}
 
 		//Normal
-		glm::vec3 normal = data.nor;
-		if (m_normal_tex_id != -1)
+		glm::vec3 normal = data.m_nor;
+		if (m_normalTexId != -1)
 		{
-			normal = glm::vec3(texture2D(m_normal_tex_id, data.tex, dUVdx, dUVdy)) * 2.0f - glm::vec3(1.0f);
-			normal = data.TBN * normal;
+			normal = glm::vec3(texture2D(m_normalTexId, data.m_tex, dUVdx, dUVdy)) * 2.0f - glm::vec3(1.0f);
+			normal = data.m_tbn * normal;
 		}
 		normal = glm::normalize(normal);
 
 		//Calculate the lighting
-		glm::vec3 fragPos = glm::vec3(data.pos);
-		glm::vec3 viewDir = glm::normalize(m_viewer_pos - fragPos);
+		glm::vec3 fragPos = glm::vec3(data.m_pos);
+		glm::vec3 viewDir = glm::normalize(m_viewerPos - fragPos);
 #pragma unroll
 		for (size_t i = 0; i < m_lights.size(); ++i)
 		{
@@ -270,16 +270,16 @@ namespace TinyRenderer
 			float attenuation = 1.0f;
 			{
 				//Ambient
-				ambient = light->intensity() * amb_color;
+				ambient = light->intensity() * ambColor;
 
 				//Diffuse
 				float diffCof = glm::max(glm::dot(normal, lightDir), 0.0f);
-				diffuse = light->intensity() * dif_color * diffCof * m_kd;
+				diffuse = light->intensity() * difColor * diffCof * m_kD;
 
 				//Blin-Phong Specular
 				glm::vec3 halfwayDir = glm::normalize(viewDir + lightDir);
 				float spec = glm::pow(glm::max(glm::dot(halfwayDir, normal), 0.0f), m_shininess);
-				specular = light->intensity() * spec * spe_color;
+				specular = light->intensity() * spec * speColor;
 
 				attenuation = light->attenuation(fragPos);
 			}
@@ -288,8 +288,8 @@ namespace TinyRenderer
 			fragColor += glm::vec4((ambient + diffuse + specular) * attenuation * cutoff, 0.0f);
 		}
 
-		fragColor = glm::vec4(fragColor.x + glow_color.x, fragColor.y + glow_color.y,
-			fragColor.z + glow_color.z, difftexcolor.a * m_transparency);
+		fragColor = glm::vec4(fragColor.x + glowColor.x, fragColor.y + glowColor.y,
+			fragColor.z + glowColor.z, difftexcolor.a * m_transparency);
 
 		//Tone mapping: HDR -> LDR
 		//Refs: https://learnopengl.com/Advanced-Lighting/HDR
@@ -305,11 +305,11 @@ namespace TinyRenderer
 		const glm::vec2 &dUVdx, const glm::vec2 &dUVdy) const
 	{
 		//Default color
-		fragColor = glm::vec4(m_ke, 1.0f);
+		fragColor = glm::vec4(m_kE, 1.0f);
 
-		if (m_diffuse_tex_id != -1)
+		if (m_diffuseTexId != -1)
 		{
-			fragColor = texture2D(m_diffuse_tex_id, data.tex, dUVdx, dUVdy);
+			fragColor = texture2D(m_diffuseTexId, data.m_tex, dUVdx, dUVdy);
 		}
 
 		fragColor.a *= m_transparency;

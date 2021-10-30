@@ -29,18 +29,18 @@ namespace TinyRenderer
 	{
 	public:
 
-		const TRVertexBuffer &vertexBuffer;			//Vertex data buffer
-		const TRIndexBuffer  &indexBuffer;			//Index data buffer
-		TRShadingPipeline *shaderHandler;			//Shader handler
-		const TRShadingState &shadingState;			//Shading state
-		const glm::mat4 &viewportMatrix;			//Viewport transformation matrix
-		float near, far;							//Near plane and far plane of frustum
-		TRFrameBuffer *frameBuffer;					//Framebuffer 
+		const TRVertexBuffer &m_vertexBuffer;			//Vertex data buffer
+		const TRIndexBuffer  &m_indexBuffer;			//Index data buffer
+		TRShadingPipeline *m_shaderHandler;			//Shader handler
+		const TRShadingState &m_shadingState;			//Shading state
+		const glm::mat4 &m_viewportMatrix;			//Viewport transformation matrix
+		float m_near, m_far;							//Near plane and far plane of frustum
+		TRFrameBuffer *m_frameBuffer;					//Framebuffer 
 
 		explicit DrawcallSetting(const TRVertexBuffer &vbo, const TRIndexBuffer &ibo, TRShadingPipeline *handler,
 			const TRShadingState &state, const glm::mat4 &viewportMat, float np, float fp, TRFrameBuffer *fb)
-			: vertexBuffer(vbo), indexBuffer(ibo), shaderHandler(handler), shadingState(state),
-			viewportMatrix(viewportMat), near(np), far(fp), frameBuffer(fb) {}
+			: m_vertexBuffer(vbo), m_indexBuffer(ibo), m_shaderHandler(handler), m_shadingState(state),
+			m_viewportMatrix(viewportMat), m_near(np), m_far(fp), m_frameBuffer(fb) {}
 	};
 
 	//----------------------------------------------FramebufferMutex----------------------------------------------
@@ -49,18 +49,18 @@ namespace TinyRenderer
 	{
 	public:
 		FramebufferMutex(int width, int height)
-			: width(width), height(height) 
+			: m_width(width), m_height(height)
 		{
-			mutexBuffer.resize(width * height, nullptr);
+			m_mutexBuffer.resize(width * height, nullptr);
 			for (int i = 0; i < width * height; ++i)
 			{
-				mutexBuffer[i] = new MutexType();
+				m_mutexBuffer[i] = new MutexType();
 			}
 		}
 
 		~FramebufferMutex()
 		{
-			for (auto &mutex : mutexBuffer)
+			for (auto &mutex : m_mutexBuffer)
 			{
 				delete mutex;
 				mutex = nullptr;
@@ -69,13 +69,13 @@ namespace TinyRenderer
 
 		MutexType &getLocker(const int &x, const int &y)
 		{
-			return *mutexBuffer[y * width + x];
+			return *m_mutexBuffer[y * m_width + x];
 		}
 
 	public:
 		using MutexBuffer = std::vector<MutexType*>;
-		int width, height;
-		MutexBuffer mutexBuffer;
+		int m_width, m_height;
+		MutexBuffer m_mutexBuffer;
 	};
 
 	//----------------------------------------------TBBVertexRastFilter----------------------------------------------
@@ -84,10 +84,10 @@ namespace TinyRenderer
 	{
 	public:
 		explicit TBBVertexRastFilter(int bs, int startIndex, int overIndex, const DrawcallSetting &drawcall,
-			FragmentCache &cache) : batchSize(bs), startIndex(startIndex), overIndex(overIndex),
-			drawCall(drawcall), fragmentCache(cache) 
+			FragmentCache &cache) : m_batchSize(bs), m_startIndex(startIndex), m_overIndex(overIndex),
+			m_drawCall(drawcall), m_fragmentCache(cache)
 		{
-			currIndex.store(startIndex);
+			m_currIndex.store(startIndex);
 		}
 
 		int operator()(tbb::flow_control &fc) const
@@ -97,7 +97,7 @@ namespace TinyRenderer
 			//Fetch the face index that needs to be processed.
 			{
 				//Note: an atomic add herein for excusively accesing the face
-				if ((faceIndex = currIndex.fetch_add(1)) >= overIndex)
+				if ((faceIndex = m_currIndex.fetch_add(1)) >= m_overIndex)
 				{
 					fc.stop();//Exceed range, stop the processing flow
 					return -1;
@@ -105,30 +105,30 @@ namespace TinyRenderer
 			}
 
 			//The fragment cache index
-			int order = faceIndex - startIndex;
+			int order = faceIndex - m_startIndex;
 			faceIndex *= 3;
 
 			TRShadingPipeline::VertexData v[3];
-			const auto &indexBuffer = drawCall.indexBuffer;
-			const auto &vertexBuffer = drawCall.vertexBuffer;
+			const auto &indexBuffer = m_drawCall.m_indexBuffer;
+			const auto &vertexBuffer = m_drawCall.m_vertexBuffer;
 #pragma unroll 3
 			for (int i = 0; i < 3; ++i)
 			{
-				v[i].pos = vertexBuffer[indexBuffer[faceIndex + i]].vpositions;
-				v[i].nor = vertexBuffer[indexBuffer[faceIndex + i]].vnormals;
-				v[i].tex = vertexBuffer[indexBuffer[faceIndex + i]].vtexcoords;
-				v[i].TBN[0] = vertexBuffer[indexBuffer[faceIndex + i]].vtangent;
-				v[i].TBN[1] = vertexBuffer[indexBuffer[faceIndex + i]].vbitangent;
+				v[i].m_pos = vertexBuffer[indexBuffer[faceIndex + i]].m_vpositions;
+				v[i].m_nor = vertexBuffer[indexBuffer[faceIndex + i]].m_vnormals;
+				v[i].m_tex = vertexBuffer[indexBuffer[faceIndex + i]].m_vtexcoords;
+				v[i].m_tbn[0] = vertexBuffer[indexBuffer[faceIndex + i]].m_vtangent;
+				v[i].m_tbn[1] = vertexBuffer[indexBuffer[faceIndex + i]].m_vbitangent;
 			}
 
 			//Vertex shader stage
-			drawCall.shaderHandler->vertexShader(v[0]);
-			drawCall.shaderHandler->vertexShader(v[1]);
-			drawCall.shaderHandler->vertexShader(v[2]);
+			m_drawCall.m_shaderHandler->vertexShader(v[0]);
+			m_drawCall.m_shaderHandler->vertexShader(v[1]);
+			m_drawCall.m_shaderHandler->vertexShader(v[2]);
 
 			//Homogeneous space cliping
 			std::vector<TRShadingPipeline::VertexData> clipped_vertices;
-			clipped_vertices = TRRenderer::clipingSutherlandHodgeman(v[0], v[1], v[2], drawCall.near, drawCall.far);
+			clipped_vertices = TRRenderer::clipingSutherlandHodgeman(v[0], v[1], v[2], m_drawCall.m_near, m_drawCall.m_far);
 			if (clipped_vertices.empty())
 			{
 				return -1; //Totally outside
@@ -138,7 +138,7 @@ namespace TinyRenderer
 			for (auto &vert : clipped_vertices)
 			{
 				TRShadingPipeline::VertexData::prePerspCorrection(vert);
-				vert.cpos *= vert.rhw;
+				vert.m_cpos *= vert.m_rhw;
 			}
 
 			int num_verts = clipped_vertices.size();
@@ -148,19 +148,19 @@ namespace TinyRenderer
 				TRShadingPipeline::VertexData vert[3] = { clipped_vertices[0], clipped_vertices[i + 1], clipped_vertices[i + 2] };
 
 				//Transform to screen space
-				vert[0].spos = glm::ivec2(drawCall.viewportMatrix * vert[0].cpos + glm::vec4(0.5f));
-				vert[1].spos = glm::ivec2(drawCall.viewportMatrix * vert[1].cpos + glm::vec4(0.5f));
-				vert[2].spos = glm::ivec2(drawCall.viewportMatrix * vert[2].cpos + glm::vec4(0.5f));
+				vert[0].m_spos = glm::ivec2(m_drawCall.m_viewportMatrix * vert[0].m_cpos + glm::vec4(0.5f));
+				vert[1].m_spos = glm::ivec2(m_drawCall.m_viewportMatrix * vert[1].m_cpos + glm::vec4(0.5f));
+				vert[2].m_spos = glm::ivec2(m_drawCall.m_viewportMatrix * vert[2].m_cpos + glm::vec4(0.5f));
 
 				//Backface culling
-				if (shouldCulled(vert[0].spos, vert[1].spos, vert[2].spos, drawCall.shadingState.trCullFaceMode))
+				if (shouldCulled(vert[0].m_spos, vert[1].m_spos, vert[2].m_spos, m_drawCall.m_shadingState.m_trCullFaceMode))
 				{
 					continue;
 				}
 
 				//Rasterization
-				TRShadingPipeline::rasterize_fill_edge_function(vert[0], vert[1], vert[2],
-					drawCall.frameBuffer->getWidth(), drawCall.frameBuffer->getHeight(), fragmentCache[order]);
+				TRShadingPipeline::rasterizeFillEdgeFunction(vert[0], vert[1], vert[2],
+					m_drawCall.m_frameBuffer->getWidth(), m_drawCall.m_frameBuffer->getHeight(), m_fragmentCache[order]);
 			}
 
 			return order;
@@ -180,18 +180,18 @@ namespace TinyRenderer
 		}
 
 	private:
-		int batchSize;
-		const int startIndex;
-		const int overIndex;
-		const DrawcallSetting &drawCall;
+		int m_batchSize;
+		const int m_startIndex;
+		const int m_overIndex;
+		const DrawcallSetting &m_drawCall;
 
 		//this is for excessively accessing to face among threads
-		static std::atomic<int> currIndex;
+		static std::atomic<int> m_currIndex;
 
-		FragmentCache &fragmentCache;
+		FragmentCache &m_fragmentCache;
 	};
 
-	std::atomic<int> TBBVertexRastFilter::currIndex;
+	std::atomic<int> TBBVertexRastFilter::m_currIndex;
 
 	//----------------------------------------------TBBFragmentFilter----------------------------------------------
 	//Fragment shader execution
@@ -199,36 +199,36 @@ namespace TinyRenderer
 	{
 	public:
 		explicit TBBFragmentFilter(int bs, const DrawcallSetting &drawcall, FragmentCache &cache, FramebufferMutex &fbMutex)
-			: batchSize(bs), drawCall(drawcall), fragmentCache(cache), framebufferMutex(fbMutex) {}
+			: m_batchSize(bs), m_drawCall(drawcall), m_fragmentCache(cache), m_framebufferMutex(fbMutex) {}
 
 		void operator()(int index) const
 		{
 			//No fragments
-			if (index == -1 || fragmentCache[index].empty())
+			if (index == -1 || m_fragmentCache[index].empty())
 				return;
 
 			//Fragment shader & Depth testing
 			auto fragment_func = [&](TRShadingPipeline::FragmentData &fragment, const glm::vec2 &dUVdx, const glm::vec2 &dUVdy)
 			{
 				//Note: spos.x equals -1 -> invalid fragment
-				if (fragment.spos.x == -1)
+				if (fragment.m_spos.x == -1)
 					return;
 
-				auto &coverage = fragment.coverage;
-				const auto &fragCoord = fragment.spos;
-				auto &framebuffer = drawCall.frameBuffer;
-				const auto &shadingState = drawCall.shadingState;
+				auto &coverage = fragment.m_coverage;
+				const auto &fragCoord = fragment.m_spos;
+				auto &framebuffer = m_drawCall.m_frameBuffer;
+				const auto &shadingState = m_drawCall.m_shadingState;
 
 				//A mutex locker herein for (x,y) to prevent from simultanenously accessing depth buffer at the same place
-				MutexType::scoped_lock lock(framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
+				MutexType::scoped_lock lock(m_framebufferMutex.getLocker(fragCoord.x, fragCoord.y));
 
 				const int samplingNum = TRMaskPixelSampler::getSamplingNum();
 
 				int num_failed = 0;
 				//Depth testing for each sampling point (Early Z strategy herein)
-				if (shadingState.trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
+				if (shadingState.m_trDepthTestMode == TRDepthTestMode::TR_DEPTH_TEST_ENABLE)
 				{
-					const auto &coverageDepth = fragment.coverage_depth;
+					const auto &coverageDepth = fragment.m_coverageDepth;
 #pragma unroll
 					for (int s = 0; s < samplingNum; ++s)
 					{
@@ -251,12 +251,12 @@ namespace TinyRenderer
 
 				//Execute fragment shader, and save the result to frame buffer
 				glm::vec4 fragColor;
-				drawCall.shaderHandler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
+				m_drawCall.m_shaderHandler->fragmentShader(fragment, fragColor, dUVdx, dUVdy);
 
 				//Alpha to coverage
 				//Note: alpha to coverage only work with MSAA
 				//Refs: http://www.zwqxin.com/archives/opengl/talk-about-alpha-to-coverage.html
-				if (shadingState.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE && samplingNum >= 4)
+				if (shadingState.m_trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE && samplingNum >= 4)
 				{
 					int num_cancle = samplingNum  - int(samplingNum * fragColor.a);
 					//None left, just discard in advance
@@ -271,7 +271,7 @@ namespace TinyRenderer
 				}
 
 				//Save the rendered result to frame buffer
-				switch (shadingState.trAlphaBlendMode)
+				switch (shadingState.m_trAlphaBlendMode)
 				{
 				case TRAlphaBlendingMode::TR_ALPHA_DISABLE://No alpha blending
 				case TRAlphaBlendingMode::TR_ALPHA_TO_COVERAGE://Or alpha to coverage
@@ -286,17 +286,17 @@ namespace TinyRenderer
 				}
 
 				//Depth writing
-				if (shadingState.trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
+				if (shadingState.m_trDepthWriteMode == TRDepthWriteMode::TR_DEPTH_WRITE_ENABLE)
 				{
-					framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.coverage_depth, coverage);
+					framebuffer->writeDepthWithMask(fragCoord.x, fragCoord.y, fragment.m_coverageDepth, coverage);
 				}
 				
 			};
 
 			//Note: 2x2 fragment block as an execution unit for calculating dFdx, dFdy.
-			parallelFor((size_t)0, (size_t)fragmentCache[index].size(), [&](const size_t &f)
+			parallelFor((size_t)0, (size_t)m_fragmentCache[index].size(), [&](const size_t &f)
 			{
-				auto &block = fragmentCache[index][f];
+				auto &block = m_fragmentCache[index][f];
 
 				//Perspective correction restore
 				block.aftPrespCorrectionForBlocks();
@@ -305,21 +305,21 @@ namespace TinyRenderer
 				glm::vec2 dUVdx(block.dUdx(), block.dVdx());
 				glm::vec2 dUVdy(block.dUdy(), block.dVdy());
 
-				fragment_func(block.fragments[0], dUVdx, dUVdy);
-				fragment_func(block.fragments[1], dUVdx, dUVdy);
-				fragment_func(block.fragments[2], dUVdx, dUVdy);
-				fragment_func(block.fragments[3], dUVdx, dUVdy);
+				fragment_func(block.m_fragments[0], dUVdx, dUVdy);
+				fragment_func(block.m_fragments[1], dUVdx, dUVdy);
+				fragment_func(block.m_fragments[2], dUVdx, dUVdy);
+				fragment_func(block.m_fragments[3], dUVdx, dUVdy);
 
 			}, TRExecutionPolicy::TR_PARALLEL);
 
-			fragmentCache[index].clear();
+			m_fragmentCache[index].clear();
 		}
 
 	private:
-		int batchSize;
-		const DrawcallSetting &drawCall;
-		FragmentCache &fragmentCache;
-		FramebufferMutex &framebufferMutex;
+		int m_batchSize;
+		const DrawcallSetting &m_drawCall;
+		FragmentCache &m_fragmentCache;
+		FramebufferMutex &m_framebufferMutex;
 	};
 
 	//----------------------------------------------TRRenderer----------------------------------------------
@@ -357,9 +357,9 @@ namespace TinyRenderer
 
 	void TRRenderer::setViewerPos(const glm::vec3 &viewer)
 	{
-		if (m_shader_handler == nullptr)
+		if (m_shaderHandler == nullptr)
 			return;
-		m_shader_handler->setViewerPos(viewer);
+		m_shaderHandler->setViewerPos(viewer);
 	}
 
 	int TRRenderer::addLightSource(TRLight::ptr lightSource) { return TRShadingPipeline::addLight(lightSource); }
@@ -370,14 +370,14 @@ namespace TinyRenderer
 
 	unsigned int TRRenderer::renderAllDrawableMeshes()
 	{
-		if (m_shader_handler == nullptr)
+		if (m_shaderHandler == nullptr)
 		{
-			m_shader_handler = std::make_shared<TR3DShadingPipeline>();
+			m_shaderHandler = std::make_shared<TR3DShadingPipeline>();
 		}
 
 		//Load the matrices
-		m_shader_handler->setModelMatrix(m_modelMatrix);
-		m_shader_handler->setViewProjectMatrix(m_projectMatrix * m_viewMatrix);
+		m_shaderHandler->setModelMatrix(m_modelMatrix);
+		m_shaderHandler->setViewProjectMatrix(m_projectMatrix * m_viewMatrix);
 
 		//Draw a mesh step by step
 		unsigned int num_triangles = 0;
@@ -408,23 +408,23 @@ namespace TinyRenderer
 		const auto &submeshes = drawable->getDrawableSubMeshes();
 
 		//Configuration
-		m_shading_state.trCullFaceMode = drawable->getCullfaceMode();
-		m_shading_state.trDepthTestMode = drawable->getDepthtestMode();
-		m_shading_state.trDepthWriteMode = drawable->getDepthwriteMode();
-		m_shading_state.trAlphaBlendMode = drawable->getAlphablendMode();
+		m_shadingState.m_trCullFaceMode = drawable->getCullfaceMode();
+		m_shadingState.m_trDepthTestMode = drawable->getDepthtestMode();
+		m_shadingState.m_trDepthWriteMode = drawable->getDepthwriteMode();
+		m_shadingState.m_trAlphaBlendMode = drawable->getAlphablendMode();
 
 		//Setup the shading options
-		m_shader_handler->setModelMatrix(drawable->getModelMatrix());
-		m_shader_handler->setLightingEnable(drawable->getLightingMode() == TRLightingMode::TR_LIGHTING_ENABLE);
-		m_shader_handler->setAmbientCoef(drawable->getAmbientCoff());
-		m_shader_handler->setDiffuseCoef(drawable->getDiffuseCoff());
-		m_shader_handler->setSpecularCoef(drawable->getSpecularCoff());
-		m_shader_handler->setEmissionColor(drawable->getEmissionCoff());
-		m_shader_handler->setShininess(drawable->getSpecularExponent());
-		m_shader_handler->setTransparency(drawable->getTransparency());
+		m_shaderHandler->setModelMatrix(drawable->getModelMatrix());
+		m_shaderHandler->setLightingEnable(drawable->getLightingMode() == TRLightingMode::TR_LIGHTING_ENABLE);
+		m_shaderHandler->setAmbientCoef(drawable->getAmbientCoff());
+		m_shaderHandler->setDiffuseCoef(drawable->getDiffuseCoff());
+		m_shaderHandler->setSpecularCoef(drawable->getSpecularCoff());
+		m_shaderHandler->setEmissionColor(drawable->getEmissionCoff());
+		m_shaderHandler->setShininess(drawable->getSpecularExponent());
+		m_shaderHandler->setTransparency(drawable->getTransparency());
 
 		//Note: For those drawables which need the alpha blending, we should make sure the faces rendered in a fixed order 
-		tbb::filter_mode executeMopde = m_shading_state.trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_DISABLE ?
+		tbb::filter_mode executeMopde = m_shadingState.m_trAlphaBlendMode == TRAlphaBlendingMode::TR_ALPHA_DISABLE ?
 			tbb::filter_mode::parallel : tbb::filter_mode::serial_in_order;
 
 		//Setting for drawcall
@@ -439,14 +439,14 @@ namespace TinyRenderer
 			num_triangles += faceNum;
 
 			//Texture setting
-			m_shader_handler->setDiffuseTexId(submesh.getDiffuseMapTexId());
-			m_shader_handler->setSpecularTexId(submesh.getSpecularMapTexId());
-			m_shader_handler->setNormalTexId(submesh.getNormalMapTexId());
-			m_shader_handler->setGlowTexId(submesh.getGlowMapTexId());
+			m_shaderHandler->setDiffuseTexId(submesh.getDiffuseMapTexId());
+			m_shaderHandler->setSpecularTexId(submesh.getSpecularMapTexId());
+			m_shaderHandler->setNormalTexId(submesh.getNormalMapTexId());
+			m_shaderHandler->setGlowTexId(submesh.getGlowMapTexId());
 
 			//Draw call setting
-			DrawcallSetting drawCall(submesh.getVertices(), submesh.getIndices(), m_shader_handler.get(),
-				m_shading_state, m_viewportMatrix, m_frustum_near_far.x, m_frustum_near_far.y, m_backBuffer.get());
+			DrawcallSetting drawCall(submesh.getVertices(), submesh.getIndices(), m_shaderHandler.get(),
+				m_shadingState, m_viewportMatrix, m_frustumNearFar.x, m_frustumNearFar.y, m_backBuffer.get());
 
 			for (int f = 0; f < faceNum; f += PIPELINE_BATCH_SIZE)
 			{
@@ -503,123 +503,123 @@ namespace TinyRenderer
 			};
 
 			//Totally inside
-			if (isPointInsideInClipingFrustum(v0.cpos, near, far) &&
-				isPointInsideInClipingFrustum(v1.cpos, near, far) &&
-				isPointInsideInClipingFrustum(v2.cpos, near, far))
+			if (isPointInsideInClipingFrustum(v0.m_cpos, near, far) &&
+				isPointInsideInClipingFrustum(v1.m_cpos, near, far) &&
+				isPointInsideInClipingFrustum(v2.m_cpos, near, far))
 			{
 				return { v0,v1,v2 };
 			}
 
 			//Totally outside
-			if (v0.cpos.w < near && v1.cpos.w < near && v2.cpos.w < near)
+			if (v0.m_cpos.w < near && v1.m_cpos.w < near && v2.m_cpos.w < near)
 				return{};
-			if (v0.cpos.w > far && v1.cpos.w > far && v2.cpos.w > far)
+			if (v0.m_cpos.w > far && v1.m_cpos.w > far && v2.m_cpos.w > far)
 				return{};
-			if (v0.cpos.x > v0.cpos.w && v1.cpos.x > v1.cpos.w && v2.cpos.x > v2.cpos.w)
+			if (v0.m_cpos.x > v0.m_cpos.w && v1.m_cpos.x > v1.m_cpos.w && v2.m_cpos.x > v2.m_cpos.w)
 				return{};
-			if (v0.cpos.x < -v0.cpos.w && v1.cpos.x < -v1.cpos.w && v2.cpos.x < -v2.cpos.w)
+			if (v0.m_cpos.x < -v0.m_cpos.w && v1.m_cpos.x < -v1.m_cpos.w && v2.m_cpos.x < -v2.m_cpos.w)
 				return{};
-			if (v0.cpos.y > v0.cpos.w && v1.cpos.y > v1.cpos.w && v2.cpos.y > v2.cpos.w)
+			if (v0.m_cpos.y > v0.m_cpos.w && v1.m_cpos.y > v1.m_cpos.w && v2.m_cpos.y > v2.m_cpos.w)
 				return{};
-			if (v0.cpos.y < -v0.cpos.w && v1.cpos.y < -v1.cpos.w && v2.cpos.y < -v2.cpos.w)
+			if (v0.m_cpos.y < -v0.m_cpos.w && v1.m_cpos.y < -v1.m_cpos.w && v2.m_cpos.y < -v2.m_cpos.w)
 				return{};
-			if (v0.cpos.z > v0.cpos.w && v1.cpos.z > v1.cpos.w && v2.cpos.z > v2.cpos.w)
+			if (v0.m_cpos.z > v0.m_cpos.w && v1.m_cpos.z > v1.m_cpos.w && v2.m_cpos.z > v2.m_cpos.w)
 				return{};
-			if (v0.cpos.z < -v0.cpos.w && v1.cpos.z < -v1.cpos.w && v2.cpos.z < -v2.cpos.w)
+			if (v0.m_cpos.z < -v0.m_cpos.w && v1.m_cpos.z < -v1.m_cpos.w && v2.m_cpos.z < -v2.m_cpos.w)
 				return{};
 		}
 
-		std::vector<TRShadingPipeline::VertexData> inside_vertices;
+		std::vector<TRShadingPipeline::VertexData> insideVertices;
 		std::vector<TRShadingPipeline::VertexData> tmp = { v0, v1, v2 };
 		enum Axis { X = 0, Y = 1, Z = 2 };
 
 		//w=x plane & w=-x plane
 		{
-			inside_vertices = clipingSutherlandHodgeman_aux(tmp, Axis::X, +1);
-			tmp = inside_vertices;
+			insideVertices = clipingSutherlandHodgemanAux(tmp, Axis::X, +1);
+			tmp = insideVertices;
 
-			inside_vertices = clipingSutherlandHodgeman_aux(tmp, Axis::X, -1);
-			tmp = inside_vertices;
+			insideVertices = clipingSutherlandHodgemanAux(tmp, Axis::X, -1);
+			tmp = insideVertices;
 		}
 
 		//w=y plane & w=-y plane
 		{
-			inside_vertices = clipingSutherlandHodgeman_aux(tmp, Axis::Y, +1);
-			tmp = inside_vertices;
+			insideVertices = clipingSutherlandHodgemanAux(tmp, Axis::Y, +1);
+			tmp = insideVertices;
 
-			inside_vertices = clipingSutherlandHodgeman_aux(tmp, Axis::Y, -1);
-			tmp = inside_vertices;
+			insideVertices = clipingSutherlandHodgemanAux(tmp, Axis::Y, -1);
+			tmp = insideVertices;
 		}
 
 		//w=z plane & w=-z plane
 		{
-			inside_vertices = clipingSutherlandHodgeman_aux(tmp, Axis::Z, +1);
-			tmp = inside_vertices;
+			insideVertices = clipingSutherlandHodgemanAux(tmp, Axis::Z, +1);
+			tmp = insideVertices;
 
-			inside_vertices = clipingSutherlandHodgeman_aux(tmp, Axis::Z, -1);
-			tmp = inside_vertices;
+			insideVertices = clipingSutherlandHodgemanAux(tmp, Axis::Z, -1);
+			tmp = insideVertices;
 		}
 
 		//w=1e-5 plane
 		{
-			inside_vertices = {};
-			int num_verts = tmp.size();
-			constexpr float w_clipping_plane = 1e-5;
-			for (int i = 0; i < num_verts; ++i)
+			insideVertices = {};
+			int numVerts = tmp.size();
+			constexpr float wClippingPlane = 1e-5;
+			for (int i = 0; i < numVerts; ++i)
 			{
-				const auto &beg_vert = tmp[(i - 1 + num_verts) % num_verts];
-				const auto &end_vert = tmp[i];
-				float beg_is_inside = (beg_vert.cpos.w < w_clipping_plane) ? -1 : 1;
-				float end_is_inside = (end_vert.cpos.w < w_clipping_plane) ? -1 : 1;
+				const auto &begVert = tmp[(i - 1 + numVerts) % numVerts];
+				const auto &endVert = tmp[i];
+				float begIsInside = (begVert.m_cpos.w < wClippingPlane) ? -1 : 1;
+				float endIsInside = (endVert.m_cpos.w < wClippingPlane) ? -1 : 1;
 				//One of them is outside
-				if (beg_is_inside * end_is_inside < 0)
+				if (begIsInside * endIsInside < 0)
 				{
 					// t = (w_clipping_plane-w1)/((w1-w2)
-					float t = (w_clipping_plane - beg_vert.cpos.w) / (beg_vert.cpos.w - end_vert.cpos.w);
-					auto intersected_vert = TRShadingPipeline::VertexData::lerp(beg_vert, end_vert, t);
-					inside_vertices.push_back(intersected_vert);
+					float t = (wClippingPlane - begVert.m_cpos.w) / (begVert.m_cpos.w - endVert.m_cpos.w);
+					auto intersectedVert = TRShadingPipeline::VertexData::lerp(begVert, endVert, t);
+					insideVertices.push_back(intersectedVert);
 				}
 				//If current vertices is inside
-				if (end_is_inside > 0)
+				if (endIsInside > 0)
 				{
-					inside_vertices.push_back(end_vert);
+					insideVertices.push_back(endVert);
 				}
 			}
 		}
 
-		return inside_vertices;
+		return insideVertices;
 	}
 
-	std::vector<TRShadingPipeline::VertexData> TRRenderer::clipingSutherlandHodgeman_aux(
+	std::vector<TRShadingPipeline::VertexData> TRRenderer::clipingSutherlandHodgemanAux(
 		const std::vector<TRShadingPipeline::VertexData> &polygon,
 		const int &axis,
 		const int &side)
 	{
-		std::vector<TRShadingPipeline::VertexData> inside_polygon;
+		std::vector<TRShadingPipeline::VertexData> insidePolygon;
 
-		int num_verts = polygon.size();
-		for (int i = 0; i < num_verts; ++i)
+		int numVerts = polygon.size();
+		for (int i = 0; i < numVerts; ++i)
 		{
-			const auto &beg_vert = polygon[(i - 1 + num_verts) % num_verts];
-			const auto &end_vert = polygon[i];
-			char beg_is_inside = ((side * (beg_vert.cpos[axis]) <= beg_vert.cpos.w) ? 1 : -1);
-			char end_is_inside = ((side * (end_vert.cpos[axis]) <= end_vert.cpos.w) ? 1 : -1);
+			const auto &begVert = polygon[(i - 1 + numVerts) % numVerts];
+			const auto &endVert = polygon[i];
+			char begIsInside = ((side * (begVert.m_cpos[axis]) <= begVert.m_cpos.w) ? 1 : -1);
+			char endIsInside = ((side * (endVert.m_cpos[axis]) <= endVert.m_cpos.w) ? 1 : -1);
 			//One of them is outside
-			if (beg_is_inside * end_is_inside < 0)
+			if (begIsInside * endIsInside < 0)
 			{
 				// t = (w1 - y1)/((w1-y1)-(w2-y2))
-				float t = (beg_vert.cpos.w - side * beg_vert.cpos[axis])
-					/ ((beg_vert.cpos.w - side * beg_vert.cpos[axis]) - (end_vert.cpos.w - side * end_vert.cpos[axis]));
-				auto intersected_vert = TRShadingPipeline::VertexData::lerp(beg_vert, end_vert, t);
-				inside_polygon.push_back(intersected_vert);
+				float t = (begVert.m_cpos.w - side * begVert.m_cpos[axis])
+					/ ((begVert.m_cpos.w - side * begVert.m_cpos[axis]) - (endVert.m_cpos.w - side * endVert.m_cpos[axis]));
+				auto intersectedVert = TRShadingPipeline::VertexData::lerp(begVert, endVert, t);
+				insidePolygon.push_back(intersectedVert);
 			}
 			//If current vertices is inside
-			if (end_is_inside > 0)
+			if (endIsInside > 0)
 			{
-				inside_polygon.push_back(end_vert);
+				insidePolygon.push_back(endVert);
 			}
 		}
-		return inside_polygon;
+		return insidePolygon;
 	}
 
 }

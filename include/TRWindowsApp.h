@@ -40,19 +40,19 @@ namespace TinyRenderer
 			Uint32 getTicks();
 
 			//Checks the status of the timer
-			bool isStarted() { return mStarted; }
-			bool isPaused() { return mPaused && mStarted; }
+			bool isStarted() { return m_started; }
+			bool isPaused() { return m_paused && m_started; }
 
 		private:
 			//The clock time when the timer started
-			Uint32 mStartTicks;
+			Uint32 m_startTicks;
 
 			//The ticks stored when the timer was paused
-			Uint32 mPausedTicks;
+			Uint32 m_pausedTicks;
 
 			//The timer status
-			bool mPaused;
-			bool mStarted;
+			bool m_paused;
+			bool m_started;
 		};
 
 		~TRWindowsApp();
@@ -63,10 +63,10 @@ namespace TinyRenderer
 		void processEvent();
 		bool shouldWindowClose() const { return m_quit; }
 		double getTimeFromStart() { return m_timer.getTicks(); }
-		int getMouseMotionDeltaX() const { return m_mouse_delta_x; }
-		int getMouseMotionDeltaY() const { return m_mouse_delta_y; }
-		int getMouseWheelDelta() const { return m_wheel_delta; }
-		bool getIsMouseLeftButtonPressed() const { return m_mouse_left_button_pressed; }
+		int getMouseMotionDeltaX() const { return m_mouseDeltaX; }
+		int getMouseMotionDeltaY() const { return m_mouseDeltaY; }
+		int getMouseWheelDelta() const { return m_wheelDelta; }
+		bool getIsMouseLeftButtonPressed() const { return m_mouseLeftButtonPressed; }
 
 		//Copy the rendered image to screen for displaying
 		double updateScreenSurface(
@@ -82,35 +82,35 @@ namespace TinyRenderer
 	private:
 
 		//Mouse tracking
-		int m_last_mouse_x, m_last_mouse_y;
-		int m_mouse_delta_x, m_mouse_delta_y;
-		bool m_mouse_left_button_pressed = false;
-		int m_last_wheel_pos;
-		int m_wheel_delta;
+		int m_lastMouseX, m_lastMouseY;
+		int m_mouseDeltaX, m_mouseDeltaY;
+		bool m_mouseLeftButtonPressed = false;
+		int m_lastWheelPos;
+		int m_wheelDelta;
 
 		//Timer
 		LTimer m_timer;
-		double m_last_time_point;
-		double m_delta_time;
-		double m_fps_counter;
-		double m_fps_time_recorder;
+		double m_lastTimePoint;
+		double m_deltaTime;
+		double m_fpsCounter;
+		double m_fpsTimeRecorder;
 		unsigned int m_fps;
 
 		//Screen size
-		int m_screen_width;
-		int m_screen_height;
+		int m_screenWidth;
+		int m_screenHeight;
 
 		bool m_quit = false;
 		
 		//Window title
-		std::string m_window_title;
+		std::string m_windowTitle;
 
 		//Event handler
 		SDL_Event m_events;
 
 		//Window handler
-		SDL_Window* m_window_handle = nullptr;
-		SDL_Surface* m_screen_surface = nullptr;
+		SDL_Window* m_windowHandle = nullptr;
+		SDL_Surface* m_screenSurface = nullptr;
 
 		//Singleton pattern
 		static TRWindowsApp::ptr m_instance;

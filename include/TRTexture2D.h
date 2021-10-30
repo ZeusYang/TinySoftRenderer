@@ -21,7 +21,7 @@ namespace TinyRenderer
 		TRTexture2D(bool generatedMipmap);
 		~TRTexture2D() = default;
 
-		bool isGeneratedMipmap() const { return m_generate_mipmap; }
+		bool isGeneratedMipmap() const { return m_generateMipmap; }
 		int getWidth() const { return m_texHolders[0]->getWidth(); }
 		int getHeight() const { return m_texHolders[0]->getHeight(); }
 
@@ -45,11 +45,11 @@ namespace TinyRenderer
 		void generateMipmap(unsigned char *pixels, int width, int height, int channel);
 
 	private:
-		bool m_generate_mipmap = false;
+		bool m_generateMipmap = false;
 		std::vector<TRTextureHolder::ptr> m_texHolders;
 
-		TRTextureWarpMode m_warp_mode;
-		TRTextureFilterMode m_filtering_mode;
+		TRTextureWarpMode m_warpMode;
+		TRTextureFilterMode m_filteringMode;
 
 		friend class TRTexture2DSampler;
 	};
@@ -59,8 +59,8 @@ namespace TinyRenderer
 	public:
 
 		//Sampling algorithm
-		static glm::vec4 textureSampling_nearest(TRTextureHolder::ptr texture, glm::vec2 uv);
-		static glm::vec4 textureSampling_bilinear(TRTextureHolder::ptr texture, glm::vec2 uv);
+		static glm::vec4 textureSamplingNearest(TRTextureHolder::ptr texture, glm::vec2 uv);
+		static glm::vec4 textureSamplingBilinear(TRTextureHolder::ptr texture, glm::vec2 uv);
 	};
 }
 

@@ -15,13 +15,13 @@ namespace TinyRenderer
 
 		struct Config
 		{
-			glm::vec3 cameraPos;
-			glm::vec3 cameraFocus;
-			glm::vec3 cameraUp;
+			glm::vec3 m_cameraPos;
+			glm::vec3 m_cameraFocus;
+			glm::vec3 m_cameraUp;
 
-			float frustumFovy;
-			float frustumNear;
-			float frustumFar;
+			float m_frustumFovy;
+			float m_frustumNear;
+			float m_frustumFar;
 
 			std::map<std::string, int> m_lights;
 			std::map<std::string, TRDrawableMesh::ptr> m_entities;
