@@ -52,18 +52,18 @@ int main(int argc, char* args[])
 	TRSceneParser parser;
 	parser.parse("../../scenes/alpha.scene", renderer, generatedMipmap);
 
-	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
-		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));
-	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(parser.m_scene.frustumFovy,
-		static_cast<float>(width) / height, parser.m_scene.frustumNear, parser.m_scene.frustumFar),
-		parser.m_scene.frustumNear, parser.m_scene.frustumFar);
+	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.m_cameraPos,
+		parser.m_scene.m_cameraFocus, parser.m_scene.m_cameraUp));
+	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(parser.m_scene.m_frustumFovy,
+		static_cast<float>(width) / height, parser.m_scene.m_frustumNear, parser.m_scene.m_frustumFar),
+		parser.m_scene.m_frustumNear, parser.m_scene.m_frustumFar);
 
 	winApp->readyToStart();
 
 	renderer->setShaderPipeline(std::make_shared<TRAlphaBlendingShadingPipeline>());
 
-	glm::vec3 cameraPos = parser.m_scene.cameraPos;
-	glm::vec3 lookAtTarget = parser.m_scene.cameraFocus;
+	glm::vec3 cameraPos = parser.m_scene.m_cameraPos;
+	glm::vec3 lookAtTarget = parser.m_scene.m_cameraFocus;
 
 	//Rendering loop
 	while (!winApp->shouldWindowClose())

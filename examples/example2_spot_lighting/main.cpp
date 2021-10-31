@@ -52,11 +52,11 @@ int main(int argc, char* args[])
 	TRSceneParser parser;
 	parser.parse("../../scenes/spotlight.scene", renderer, generatedMipmap);
 
-	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.cameraPos,
-		parser.m_scene.cameraFocus, parser.m_scene.cameraUp));
-	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(parser.m_scene.frustumFovy,
-		static_cast<float>(width) / height, parser.m_scene.frustumNear, parser.m_scene.frustumFar),
-		parser.m_scene.frustumNear, parser.m_scene.frustumFar);
+	renderer->setViewMatrix(TRMathUtils::calcViewMatrix(parser.m_scene.m_cameraPos,
+		parser.m_scene.m_cameraFocus, parser.m_scene.m_cameraUp));
+	renderer->setProjectMatrix(TRMathUtils::calcPerspProjectMatrix(parser.m_scene.m_frustumFovy,
+		static_cast<float>(width) / height, parser.m_scene.m_frustumNear, parser.m_scene.m_frustumFar),
+		parser.m_scene.m_frustumNear, parser.m_scene.m_frustumFar);
 
 	winApp->readyToStart();
 
@@ -70,8 +70,8 @@ int main(int argc, char* args[])
 	glm::vec3& lightPos2 = light2->getLightPos();
 	glm::mat4 lightModelMat1(1.0f), lightModelMat2(1.0f);
 
-	glm::vec3 cameraPos = parser.m_scene.cameraPos;
-	glm::vec3 lookAtTarget = parser.m_scene.cameraFocus;
+	glm::vec3 cameraPos = parser.m_scene.m_cameraPos;
+	glm::vec3 lookAtTarget = parser.m_scene.m_cameraFocus;
 
 	TRDrawableMesh::ptr lightMesh1 = parser.getEntity("SpotLight1");
 	TRDrawableMesh::ptr lightMesh2 = parser.getEntity("SpotLight2");
